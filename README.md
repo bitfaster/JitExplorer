@@ -1,6 +1,6 @@
 # JitExplorer
 
-Like compiler explorer, but for .NET JIT.
+Like [compiler explorer](https://godbolt.org/), but for .NET JIT.
 
 Window on the left has c# code
 https://github.com/robinrodricks/ScintillaNET.Demo
