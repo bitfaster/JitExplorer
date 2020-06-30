@@ -5,8 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:JitExplorer"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="JitExplorer" Height="450" Width="800">
     <Grid>
-
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Button Grid.Row="0" Name="Jit" Grid.Column="3" Click="Jit_Click">Jit</Button>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <TextBox Name="SourceCode" Grid.Column="0" AcceptsReturn="True" FontFamily="Courier New" />
+            <TextBox Name="Assembly" Grid.Column="1" AcceptsReturn="True" FontFamily="Courier New" />
+        </Grid>
     </Grid>
 </Window>

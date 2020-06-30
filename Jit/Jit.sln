@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JitExplorer", "JitExplorer\JitExplorer.csproj", "{D17651F1-1591-4652-82E4-2758392A1759}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JitExplorer", "JitExplorer\JitExplorer.csproj", "{D17651F1-1591-4652-82E4-2758392A1759}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JitExplorer.Engine", "JitExplorer.Engine\JitExplorer.Engine.csproj", "{A1D4DA12-3D21-4E3C-A7B2-C191B8D27C73}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JitExplorer.Engine.UnitTests", "JitExplorer.Engine.UnitTests\JitExplorer.Engine.UnitTests.csproj", "{F3087146-48E1-443B-8E46-C8C755C5EC53}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{D17651F1-1591-4652-82E4-2758392A1759}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D17651F1-1591-4652-82E4-2758392A1759}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D17651F1-1591-4652-82E4-2758392A1759}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1D4DA12-3D21-4E3C-A7B2-C191B8D27C73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1D4DA12-3D21-4E3C-A7B2-C191B8D27C73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1D4DA12-3D21-4E3C-A7B2-C191B8D27C73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1D4DA12-3D21-4E3C-A7B2-C191B8D27C73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F3087146-48E1-443B-8E46-C8C755C5EC53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F3087146-48E1-443B-8E46-C8C755C5EC53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F3087146-48E1-443B-8E46-C8C755C5EC53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F3087146-48E1-443B-8E46-C8C755C5EC53}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
