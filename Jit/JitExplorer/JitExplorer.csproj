@@ -6,4 +6,8 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\JitExplorer.Engine\JitExplorer.Engine.csproj" />
+  </ItemGroup>
+
 </Project>

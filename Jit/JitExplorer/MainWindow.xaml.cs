@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JitExplorer.Engine;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,21 @@ namespace JitExplorer
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        private void Jit_Click(object sender, RoutedEventArgs e)
+        {
+            var exp = new IsolatedExplorer();
+
+            try
+            {
+                this.Assembly.Text = exp.CompileJitAndDisassemble(this.SourceCode.Text);
+            }
+            catch (Exception ex)
+            {
+                this.Assembly.Text = ex.ToString();
+            }
+            
         }
     }
 }

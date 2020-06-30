@@ -4,41 +4,30 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
-using System.Runtime.CompilerServices;
+using System.Linq;
 using System.Text;
 using System.Threading;
-using Xunit;
-using Xunit.Abstractions;
 
-namespace JitExplorer.Engine.UnitTests
+namespace JitExplorer.Engine
 {
-    public class EndToEnd
+    public class IsolatedExplorer
     {
-        private readonly ITestOutputHelper output;
-
-        public EndToEnd(ITestOutputHelper output)
+        public string CompileJitAndDisassemble(string sourceCode)
         {
-            this.output = output;
-        }
+            var c = Compile("test.exe", sourceCode);
 
-        [Fact]
-        public void TestIsolatedProcess()
-        {
-            // Real impl
-            // - need to generate a well defined entry point, it will have 2 signals (which replace sleeps)
-            // - entry point executed, JIT is done
-            // - then wait for signal to stop, when Disassemble is done
-            // - entry point will need to invoke whatever code user has typed in, like the benchmark.
-            //   or use reflection to try to prepare all non-generic methods (visit syntax tree to generate this code)
+            if (!c.Succeeded)
+            {
+                StringBuilder sb = new StringBuilder();
 
-            // 1. compile source code
-            // 2. write to disk
-            // 3. execute via process
-            // 4. attach and decompile
-            // 5. print result
+                foreach (var e in c.Messages)
+                {
+                    sb.AppendLine(e.ToString());
+                }
 
-            var c = Compile("test.exe");
+                return sb.ToString();
+            }
+
             WriteExeToDisk("test.exe", c);
             using (var p = Execute("test.exe"))
             {
@@ -47,43 +36,50 @@ namespace JitExplorer.Engine.UnitTests
                 // TODO: why does compiled .exe not contain the program class? Decompile shows it is there.
                 // Because exe can't run
                 // test.runtimeconfig.json
-                var r = AttachAndDecompile(p.Id, "Testing.Program", "Main");
+                var result = AttachAndDecompile(p.Id, "Testing.Program", "Main");
 
                 p.WaitForExit();
 
-                foreach (var result in r.Methods)
+                StringBuilder sb = new StringBuilder();
+
+                int referenceIndex = 0;
+                int methodIndex = 0;
+                foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
                 {
-                    output.WriteLine(result.Name);
+                    referenceIndex++;
+
+                    var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}");
+
+                    sb.AppendLine($"{method.Name}");
+
+                    foreach (var element in pretty)
+                    {
+                        sb.AppendLine(element.TextRepresentation);
+                    }
                 }
+
+                foreach (var withProblems in result.Methods
+                .Where(method => !string.IsNullOrEmpty(method.Problem))
+                .GroupBy(method => method.Problem))
+                {
+                    sb.AppendLine(withProblems.Key);
+
+                    foreach (var withProblem in withProblems)
+                    {
+                        sb.AppendLine(withProblem.Name);
+                    }
+                }
+
+                return sb.ToString();
             }
         }
 
-        [Fact]
-        public void TestInMem()
-        {
-            var c = Compile("test.exe");
-
-            var a = Assembly.Load(c.programExecutable.ToArray());
-
-            var t = a.GetType("Testing.Program");
-            var m = t.GetMethod("Main");
-            RuntimeHelpers.PrepareMethod(m.MethodHandle);
-
-            var r = AttachAndDecompile(Process.GetCurrentProcess().Id, "Testing.Program", "Main");
-
-            foreach (var result in r.Methods)
-            {
-                output.WriteLine(result.Name);
-            }
-        }
-
-        private Compilation Compile(string assembylyName)
+        private Compilation Compile(string assembylyName, string source)
         {
             var options = new CompilerOptions() { OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication };
             Compiler c = new Compiler(options);
 
-            string source = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; System.Threading.Thread.Sleep(2000); } } public class Testy {} }";
-
+            
             return c.Compile(assembylyName, "program.cs", source);
         }
 
