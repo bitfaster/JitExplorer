@@ -34,9 +34,9 @@ namespace JitExplorer.Engine.Disassemble
                 // TODO: why no Program?
                 var types = state.Runtime.Heap.EnumerateTypes().Where(t => t.Name.Contains("Testy")).ToList();
 
-                var typeWithBenchmark = state.Runtime.Heap.GetTypeByName(settings.TypeName);
+                var targetType = state.Runtime.Heap.GetTypeByName(settings.TypeName);
 
-                if (typeWithBenchmark == null)
+                if (targetType == null)
                 {
                     throw new Exception($"Unable to load type {settings.TypeName}");
                 }
@@ -44,7 +44,8 @@ namespace JitExplorer.Engine.Disassemble
                 state.Todo.Enqueue(
                     new MethodInfo(
                         // the Disassembler Entry Method is always parameterless, so check by name is enough
-                        typeWithBenchmark.Methods.Single(method => method.IsPublic && method.Name == settings.MethodName),
+                        // method.IsPublic && 
+                        targetType.Methods.Single(method => method.Name == settings.MethodName),
                         0));
 
                 var disassembledMethods = Disassemble(settings, state);

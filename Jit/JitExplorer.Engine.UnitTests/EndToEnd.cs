@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using Xunit;
@@ -21,7 +23,7 @@ namespace JitExplorer.Engine.UnitTests
         }
 
         [Fact]
-        public void Test()
+        public void TestIsolatedProcess()
         {
             // Real impl
             // - need to generate a well defined entry point, it will have 2 signals (which replace sleeps)
@@ -43,7 +45,8 @@ namespace JitExplorer.Engine.UnitTests
                 Thread.Sleep(1000);
 
                 // TODO: why does compiled .exe not contain the program class? Decompile shows it is there.
-                // Is it related to release build or embedded debug info?
+                // Because exe can't run
+                // test.runtimeconfig.json
                 var r = AttachAndDecompile(p.Id, "Testing.Program", "Main");
 
                 p.WaitForExit();
@@ -55,12 +58,34 @@ namespace JitExplorer.Engine.UnitTests
             }
         }
 
+        [Fact]
+        public void TestInMem()
+        {
+            var c = Compile("test.exe");
+
+            var a = Assembly.Load(c.programExecutable.ToArray());
+
+            var t = a.GetType("Testing.Program");
+
+            var m = t.GetMethod("Main");
+            RuntimeHelpers.PrepareMethod(m.MethodHandle);
+
+            //m.Invoke(null, null);
+
+            var r = AttachAndDecompile(Process.GetCurrentProcess().Id, "Testing.Program", "Main");
+
+            foreach (var result in r.Methods)
+            {
+                output.WriteLine(result.Name);
+            }
+        }
+
         private Compilation Compile(string assembylyName)
         {
             var options = new CompilerOptions() { OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication };
             Compiler c = new Compiler(options);
 
-            string source = "namespace Testing { public class Program { public static void Main() { int i = 0; System.Threading.Thread.Sleep(50000); } } public class Testy {} }";
+            string source = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; System.Threading.Thread.Sleep(2000); } } public class Testy {} }";
 
             return c.Compile(assembylyName, "program.cs", source);
         }
@@ -71,16 +96,32 @@ namespace JitExplorer.Engine.UnitTests
             {
                 compilation.programExecutable.WriteTo(fs);
             }
+
+            string json = @"{
+  ""runtimeOptions"": {
+    ""tfm"": ""netcoreapp3.0"",
+    ""framework"": {
+                ""name"": ""Microsoft.NETCore.App"",
+      ""version"": ""3.0.0-preview6-27804-01""
+    }
+        }
+    }";
+
+            if (!File.Exists("test.runtimeconfig.json"))
+            {
+                File.WriteAllText("test.runtimeconfig.json", json);
+            }
         }
 
         private Process Execute(string path)
         {
+            // Process.Start("dotnet", assemblyPath);
             var proc = new Process
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = path,
-                    Arguments = string.Empty,
+                    FileName = "dotnet",
+                    Arguments = path,
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true

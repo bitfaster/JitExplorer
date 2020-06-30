@@ -54,13 +54,13 @@ namespace JitExplorer.Engine.Compile
             var compilation = Compile(assemblyName, sourceText, sourceCodePath);
 
             var emitOptions = new EmitOptions(
-                debugInformationFormat: DebugInformationFormat.Embedded,
-                pdbFilePath: symbolsName
+                //debugInformationFormat: DebugInformationFormat.Embedded,
+                //pdbFilePath: symbolsName
             );
 
             var result = compilation.Emit(
                 peStream,
-                embeddedTexts: new[] { EmbeddedText.FromSource(sourceCodePath, sourceText) },
+                //embeddedTexts: new[] { EmbeddedText.FromSource(sourceCodePath, sourceText) },
                 options: emitOptions);
 
             if (result.Success)
@@ -114,7 +114,6 @@ namespace JitExplorer.Engine.Compile
                     .WithAllowUnsafe(this.compilerOptions.AllowUnsafe));
 
             compilation = compilation.AddReferences(MetadataReferences);
-
 
             return compilation;
         }
