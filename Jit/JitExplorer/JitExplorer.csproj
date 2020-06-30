@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AvalonEdit" Version="6.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\JitExplorer.Engine\JitExplorer.Engine.csproj" />
   </ItemGroup>
 
