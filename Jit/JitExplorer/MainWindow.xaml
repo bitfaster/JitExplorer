@@ -22,10 +22,19 @@
             <avalonedit:TextEditor x:Name="CodeEditor"
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
-                               ShowLineNumbers="True">
+                               ShowLineNumbers="True"
+                               FontFamily="Courier New">
              
             </avalonedit:TextEditor>
-            <TextBox Name="Assembly" Grid.Column="1" AcceptsReturn="True" FontFamily="Courier New" />
+            <!--TextBox Name="Assembly" Grid.Column="1" AcceptsReturn="True" FontFamily="Courier New" /-->
+            <avalonedit:TextEditor Name="AssemblerView"
+                               Grid.Column="1"
+                               IsReadOnly="True"
+                               ShowLineNumbers="False"
+                               SyntaxHighlighting="BUILD_MSG"
+                               WordWrap="True"
+                               FontFamily="Courier New">
+            </avalonedit:TextEditor>
         </Grid>
     </Grid>
 </Window>
