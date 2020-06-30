@@ -31,6 +31,8 @@ namespace JitExplorer.Engine.UnitTests
             // - then wait for signal to stop, when Disassemble is done
             // - entry point will need to invoke whatever code user has typed in, like the benchmark.
             //   or use reflection to try to prepare all non-generic methods (visit syntax tree to generate this code)
+            //   Let's say the rule is that you must define a non generic class. Will it be enough to prepare method 
+            //   on these root objects?
 
             // 1. compile source code
             // 2. write to disk

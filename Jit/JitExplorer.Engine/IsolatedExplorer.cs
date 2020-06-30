@@ -56,6 +56,8 @@ namespace JitExplorer.Engine
                     {
                         sb.AppendLine(element.TextRepresentation);
                     }
+
+                    sb.AppendLine();
                 }
 
                 foreach (var withProblems in result.Methods
@@ -92,10 +94,10 @@ namespace JitExplorer.Engine
 
             string json = @"{
   ""runtimeOptions"": {
-    ""tfm"": ""netcoreapp3.0"",
+    ""tfm"": ""netcoreapp3.1"",
     ""framework"": {
                 ""name"": ""Microsoft.NETCore.App"",
-      ""version"": ""3.0.0-preview6-27804-01""
+      ""version"": ""3.1.0""
     }
         }
     }";
