@@ -32,7 +32,7 @@ namespace JitExplorer
 
             try
             {
-                this.Assembly.Text = exp.CompileJitAndDisassemble(this.SourceCode.Text);
+                this.Assembly.Text = exp.CompileJitAndDisassemble(this.CodeEditor.Text);
             }
             catch (Exception ex)
             {
