@@ -16,6 +16,12 @@ namespace JitExplorer.Engine.Disassemble
                 (uint)TimeSpan.FromSeconds(5).TotalMilliseconds,
                 AttachFlag.Passive))
             {
+                bool isTarget64Bit = dataTarget.DataReader.GetArchitecture() == Architecture.Amd64;
+                if (Environment.Is64BitProcess != isTarget64Bit)
+                {
+                    throw new Exception(string.Format("Architecture mismatch:  Process is {0} but target is {1}", Environment.Is64BitProcess ? "64 bit" : "32 bit", isTarget64Bit ? "64 bit" : "32 bit"));
+                }
+
                 var runtime = dataTarget.ClrVersions.Single().CreateRuntime();
 
                 // Per https://github.com/microsoft/clrmd/issues/303
@@ -25,7 +31,15 @@ namespace JitExplorer.Engine.Disassemble
 
                 var state = new State(runtime);
 
+                // TODO: why no Program?
+                var types = state.Runtime.Heap.EnumerateTypes().Where(t => t.Name.Contains("Testy")).ToList();
+
                 var typeWithBenchmark = state.Runtime.Heap.GetTypeByName(settings.TypeName);
+
+                if (typeWithBenchmark == null)
+                {
+                    throw new Exception($"Unable to load type {settings.TypeName}");
+                }
 
                 state.Todo.Enqueue(
                     new MethodInfo(

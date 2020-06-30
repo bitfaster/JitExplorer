@@ -10,11 +10,12 @@ namespace JitExplorer.Engine.UnitTests
         [Fact]
         public void Test1()
         {
-            Compiler c = new Compiler();
+            var options = new CompilerOptions() { OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication };
+            Compiler c = new Compiler(options);
 
-            string source = "public class Test { public int i; }";
+            string source = "public class Program { public static void Main() {} }";
 
-            var exec = c.Compile("foo.cs", source, true);
+            var exec = c.Compile("test.exe", "foo.cs", source);
         }
     }
 }

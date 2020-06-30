@@ -43,17 +43,18 @@ namespace JitExplorer.Engine.UnitTests
             output.WriteLine(sb.ToString());
         }
 
-
-
+        // This only passes in Release build
         [Fact]
         public void BenchmarkDotNetMethod()
         {
             // works if wrapper is invoked - it is jitted.
             Wrapper();
 
-            // also works with this
+            // also works with PrepareMethod
             //var methodInfo = typeof(DisassembleTests).GetMethod("Wrapper");
             //RuntimeHelpers.PrepareMethod(methodInfo.MethodHandle);
+
+            string fn = typeof(DisassembleTests).FullName;
 
             // Settings(int processId, string typeName, string methodName, bool printSource, int maxDepth, string resultsPath)
             var settings = new Settings(
@@ -127,7 +128,6 @@ namespace JitExplorer.Engine.UnitTests
                     }
                     //output.WriteLine("<tr><td colspan=\"{2}\"></td></tr>");
                 }
-
             }
         }
 

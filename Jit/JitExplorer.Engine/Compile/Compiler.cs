@@ -10,18 +10,48 @@ using System.Text;
 
 namespace JitExplorer.Engine.Compile
 {
+    public class CompilerOptions
+    {
+        public CompilerOptions()
+        {
+            this.OptimizationLevel = OptimizationLevel.Release;
+            this.LanguageVersion = LanguageVersion.Default;
+            this.OutputKind = OutputKind.DynamicallyLinkedLibrary;
+            this.Platform = Platform.AnyCpu;
+            this.AllowUnsafe = false;
+        }
+
+        public OptimizationLevel OptimizationLevel { get; set; }
+
+        // Does this control framework version?
+        public LanguageVersion LanguageVersion { get; set; }
+
+        public OutputKind OutputKind { get; set; }
+
+        public Platform Platform { get; set; }
+
+        public bool AllowUnsafe { get; set; }
+    }
+
     public class Compiler
     {
-        public Compilation Compile(string sourceCodePath, string sourceCode, bool isReleaseBuild)
+        private readonly CompilerOptions compilerOptions;
+
+        public Compiler(CompilerOptions compilerOptions)
+        {
+            this.compilerOptions = compilerOptions;
+        }
+
+        public Compilation Compile(string assemblyName, string sourceCodePath, string sourceCode)
         {
             var peStream = new MemoryStream();
 
-            var symbolsName = Path.ChangeExtension("compiled.dll", ".pdb");
+            var symbolsName = Path.ChangeExtension(assemblyName, ".pdb");
 
             var buffer = Encoding.UTF8.GetBytes(sourceCode);
             var sourceText = SourceText.From(buffer, buffer.Length, Encoding.UTF8, canBeEmbedded: true);
 
-            var compilation = Compile("compiled.dll", sourceText, sourceCodePath, isReleaseBuild);
+            var compilation = Compile(assemblyName, sourceText, sourceCodePath);
 
             var emitOptions = new EmitOptions(
                 debugInformationFormat: DebugInformationFormat.Embedded,
@@ -67,9 +97,9 @@ namespace JitExplorer.Engine.Compile
             }
         }
 
-        private CSharpCompilation Compile(string assemblyName, SourceText sourceText, string sourceCodePath, bool isReleaseBuild)
+        private CSharpCompilation Compile(string assemblyName, SourceText sourceText, string sourceCodePath)
         {
-            var options = CSharpParseOptions.Default.WithLanguageVersion(LanguageVersion.Default);
+            var options = CSharpParseOptions.Default.WithLanguageVersion(this.compilerOptions.LanguageVersion);
             var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, options, path: sourceCodePath);
 
             var syntaxRootNode = syntaxTree.GetRoot() as CSharpSyntaxNode;
@@ -78,12 +108,13 @@ namespace JitExplorer.Engine.Compile
             var compilation = CSharpCompilation.Create(
                 assemblyName,
                 new[] { encoded },
-                options: new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
-                    .WithOptimizationLevel(isReleaseBuild ? OptimizationLevel.Release : OptimizationLevel.Debug)
-                    .WithPlatform(Platform.AnyCpu)
-                    .WithAllowUnsafe(true));
+                options: new CSharpCompilationOptions(this.compilerOptions.OutputKind)
+                    .WithOptimizationLevel(this.compilerOptions.OptimizationLevel)
+                    .WithPlatform(this.compilerOptions.Platform)
+                    .WithAllowUnsafe(this.compilerOptions.AllowUnsafe));
 
             compilation = compilation.AddReferences(MetadataReferences);
+
 
             return compilation;
         }
