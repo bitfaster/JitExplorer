@@ -36,7 +36,7 @@ namespace JitExplorer.Engine.Disassemble
 
         public static IReadOnlyList<Element> Prettify(DisassembledMethod method, DisassemblyResult disassemblyResult, string labelPrefix)
         {
-            bool printInstructionAddresses = true;
+            bool printInstructionAddresses = false;
 
             var asmInstructions = method.Maps.SelectMany(map => map.SourceCodes.OfType<Asm>()).ToArray();
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JitExplorer.Engine.Compile
 {
-    public class Compilation
+    public class Compilation : IDisposable
     {
         public readonly MemoryStream programExecutable;
         public readonly Message[] Messages;
@@ -16,6 +16,11 @@ namespace JitExplorer.Engine.Compile
         {
             this.programExecutable = programExecutable;
             Messages = messages;
+        }
+
+        public void Dispose()
+        {
+            this.programExecutable.Dispose();
         }
     }
 }

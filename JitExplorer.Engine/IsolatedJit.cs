@@ -10,11 +10,11 @@ using System.Threading;
 
 namespace JitExplorer.Engine
 {
-    public class IsolatedExplorer
+    public class IsolatedJit
     {
         public string CompileJitAndDisassemble(string sourceCode)
         {
-            var c = Compile("test.exe", sourceCode);
+            using var c = Compile("test.exe", sourceCode);
 
             if (!c.Succeeded)
             {
@@ -31,14 +31,16 @@ namespace JitExplorer.Engine
             WriteExeToDisk("test.exe", c);
             using (var p = Execute("test.exe"))
             {
-                Thread.Sleep(1000);
+                //Thread.Sleep(1000);
+                using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
+                cpipe.Connect(1000);
 
-                // TODO: why does compiled .exe not contain the program class? Decompile shows it is there.
-                // Because exe can't run
-                // test.runtimeconfig.json
                 var result = AttachAndDecompile(p.Id, "Testing.Program", "Main");
 
-                p.WaitForExit();
+                // signal dissassemble complete
+                cpipe.WriteByte(1);
+
+                p.WaitForExit(1000);
 
                 StringBuilder sb = new StringBuilder();
 
@@ -81,8 +83,26 @@ namespace JitExplorer.Engine
             var options = new CompilerOptions() { OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication };
             Compiler c = new Compiler(options);
 
-            
-            return c.Compile(assembylyName, "program.cs", source);
+            // string pipeName = "MyTest.Pipe";
+
+            var jitExplSource = @"namespace JitExplorer 
+{ 
+    public static class Signal 
+    { 
+        public static void __Jit() 
+        { 
+            using (var sPipe = new System.IO.Pipes.NamedPipeServerStream(""MyTest.Pipe"", System.IO.Pipes.PipeDirection.InOut))
+            {
+                sPipe.WaitForConnection();
+                sPipe.ReadByte(); // wait for signal that code is dissassembled
+            }
+        } 
+    } 
+}";
+
+            var jitSyntax = c.CreateSyntaxTree("jitexpl.cs", jitExplSource);
+            var syntax = c.CreateSyntaxTree("program.cs", source);
+            return c.Compile(assembylyName, syntax, jitSyntax);
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)

@@ -31,9 +31,6 @@ namespace JitExplorer.Engine.Disassemble
 
                 var state = new State(runtime);
 
-                // TODO: why no Program?
-                var types = state.Runtime.Heap.EnumerateTypes().Where(t => t.Name.Contains("Testy")).ToList();
-
                 var targetType = state.Runtime.Heap.GetTypeByName(settings.TypeName);
 
                 if (targetType == null)

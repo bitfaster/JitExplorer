@@ -42,16 +42,11 @@ namespace JitExplorer.Engine.Compile
             this.compilerOptions = compilerOptions;
         }
 
-        public Compilation Compile(string assemblyName, string sourceCodePath, string sourceCode)
+        public Compilation Compile(string assemblyName, params SyntaxTree[] syntaxTrees)
         {
             var peStream = new MemoryStream();
-
             var symbolsName = Path.ChangeExtension(assemblyName, ".pdb");
-
-            var buffer = Encoding.UTF8.GetBytes(sourceCode);
-            var sourceText = SourceText.From(buffer, buffer.Length, Encoding.UTF8, canBeEmbedded: true);
-
-            var compilation = Compile(assemblyName, sourceText, sourceCodePath);
+            var compilation = CsCompile(assemblyName, syntaxTrees);
 
             var emitOptions = new EmitOptions(
                 //debugInformationFormat: DebugInformationFormat.Embedded,
@@ -97,17 +92,23 @@ namespace JitExplorer.Engine.Compile
             }
         }
 
-        private CSharpCompilation Compile(string assemblyName, SourceText sourceText, string sourceCodePath)
+        public SyntaxTree CreateSyntaxTree(string sourceCodePath, string sourceCode)
         {
+            var buffer = Encoding.UTF8.GetBytes(sourceCode);
+            var sourceText = SourceText.From(buffer, buffer.Length, Encoding.UTF8, canBeEmbedded: true);
+
             var options = CSharpParseOptions.Default.WithLanguageVersion(this.compilerOptions.LanguageVersion);
             var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, options, path: sourceCodePath);
 
             var syntaxRootNode = syntaxTree.GetRoot() as CSharpSyntaxNode;
-            var encoded = CSharpSyntaxTree.Create(syntaxRootNode, null, sourceCodePath, Encoding.UTF8);
+            return CSharpSyntaxTree.Create(syntaxRootNode, null, sourceCodePath, Encoding.UTF8);
+        }
 
+        private CSharpCompilation CsCompile(string assemblyName, IEnumerable<SyntaxTree> syntaxTrees)
+        {
             var compilation = CSharpCompilation.Create(
                 assemblyName,
-                new[] { encoded },
+                syntaxTrees,
                 options: new CSharpCompilationOptions(this.compilerOptions.OutputKind)
                     .WithOptimizationLevel(this.compilerOptions.OptimizationLevel)
                     .WithPlatform(this.compilerOptions.Platform)

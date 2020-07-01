@@ -86,7 +86,8 @@ namespace JitExplorer.Engine.UnitTests
 
             string source = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; System.Threading.Thread.Sleep(2000); } } public class Testy {} }";
 
-            return c.Compile(assembylyName, "program.cs", source);
+            var syntax = c.CreateSyntaxTree("program.cs", source);
+            return c.Compile(assembylyName, syntax);
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)
