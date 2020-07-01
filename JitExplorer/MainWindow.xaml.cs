@@ -1,4 +1,5 @@
 ﻿using JitExplorer.Engine;
+using Microsoft.CodeAnalysis;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -23,9 +24,14 @@ namespace JitExplorer
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly IsolatedJit isolatedJit;
+
         public MainWindow()
         {
             InitializeComponent();
+
+            this.isolatedJit = new IsolatedJit();
+            this.isolatedJit.Progress += IsolatedJit_Progress;
 
             this.CodeEditor.Text = @"namespace Testing
 {
@@ -41,21 +47,49 @@ namespace JitExplorer
 }";
         }
 
+        private void IsolatedJit_Progress(object sender, ProgressEventArgs e)
+        {
+            this.Dispatcher.Invoke(() => this.StatusText.Text = e.StatusMessage);
+        }
+
         private void Jit_Click(object sender, RoutedEventArgs e)
         {
             this.Jit.IsEnabled = false;
-            this.StatusText.Text = "Compiling...";
             string source = this.CodeEditor.Text;
-            Task.Run(() => this.JitIt(source));
+
+            var config = new Config()
+            {
+                Platform = GetPlatform(),
+                OptimizationLevel = GetOptimizationLevel(),
+                UseTieredCompilation = this.TieredCompilation.IsChecked.Value,
+            };
+
+            Task.Run(() => this.JitIt(source, config));
         }
 
-        private void JitIt(string source)
+        private Platform GetPlatform()
         {
-            var exp = new IsolatedJit();
+            switch (this.Platform.SelectedIndex)
+            {
+                case 0:
+                    return Microsoft.CodeAnalysis.Platform.X64;
+                case 1:
+                    return Microsoft.CodeAnalysis.Platform.X64;
+            }
 
+            return Microsoft.CodeAnalysis.Platform.AnyCpu;
+        }
+
+        private OptimizationLevel GetOptimizationLevel()
+        {
+            return this.BuildConfig.SelectedIndex == 0 ? OptimizationLevel.Release : OptimizationLevel.Debug;
+        }
+
+        private void JitIt(string source, Config config)
+        {
             try
             {
-                var result = exp.CompileJitAndDisassemble(source);
+                var result = this.isolatedJit.CompileJitAndDisassemble(source, config);
                 this.Dispatcher.Invoke(() => this.AssemblerView.Text = result);
             }
             catch (Exception ex)
