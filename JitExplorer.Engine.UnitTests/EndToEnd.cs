@@ -141,7 +141,8 @@ namespace JitExplorer.Engine.UnitTests
                 methodName,
                 true,
                 3,
-                "results.txt"
+                "results.txt",
+                Array.Empty<string>()
                 );
 
             return ClrMdDisassembler.AttachAndDisassemble(settings);

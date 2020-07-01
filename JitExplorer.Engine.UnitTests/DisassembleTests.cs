@@ -63,8 +63,8 @@ namespace JitExplorer.Engine.UnitTests
                 "Wrapper",
                 true,
                 3,
-                "results.txt"
-                );
+                "results.txt",
+                Array.Empty<string>());
 
             var result = ClrMdDisassembler.AttachAndDisassemble(settings);
 
