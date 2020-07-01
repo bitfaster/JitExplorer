@@ -156,6 +156,14 @@ namespace JitExplorer.Engine
                 }
             };
 
+            bool tieredCompilation = false;
+            bool quickJit = false;
+            bool quickLoopJit = false;
+
+            proc.StartInfo.Environment["COMPlus_TieredCompilation"] = tieredCompilation ? "1" : "0";
+            proc.StartInfo.Environment["COMPlus_TC_QuickJit"] = quickJit ? "1" : "0";
+            proc.StartInfo.Environment["COMPlus_TC_QuickJitForLoops"] = quickLoopJit ? "1" : "0";
+
             proc.Start();
 
             return proc;
