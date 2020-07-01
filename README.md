@@ -1,12 +1,14 @@
 # JitExplorer
 
-Like [compiler explorer](https://godbolt.org/), but for .NET JIT.
+Like [Compiler Explorer](https://godbolt.org/), but for .NET JIT.
 
-![image](https://user-images.githubusercontent.com/12851828/86214409-03839200-bb30-11ea-92d2-9b50af60df5c.png)
+Supports generics:
+
+![image](https://user-images.githubusercontent.com/12851828/86298224-1a6ac880-bbb2-11ea-90e4-7bd5114284e9.png)
 
 # TODO:
 
-- Why is jitted code not release version? Is it related to roslyn compile?
+- Why is jitted code not release version matching benchmarkdotnet? Is it related to roslyn compile?
 - Background jit, without button
 - Better UI, pull down for language version, emit ass line nos, all jit compilation options etc.
 - Better status bar, progress spinner
