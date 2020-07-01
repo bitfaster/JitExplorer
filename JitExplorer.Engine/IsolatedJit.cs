@@ -10,10 +10,16 @@ using System.Threading;
 
 namespace JitExplorer.Engine
 {
+    // Requires source code calls JitExplorer.Signal.__Jit();
     public class IsolatedJit
     {
         public string CompileJitAndDisassemble(string sourceCode)
         {
+            if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
+            {
+                return "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();";
+            }
+
             using var c = Compile("test.exe", sourceCode);
 
             if (!c.Succeeded)
@@ -112,15 +118,22 @@ namespace JitExplorer.Engine
                 compilation.programExecutable.WriteTo(fs);
             }
 
-            string json = @"{
-  ""runtimeOptions"": {
-    ""tfm"": ""netcoreapp3.1"",
-    ""framework"": {
-                ""name"": ""Microsoft.NETCore.App"",
-      ""version"": ""3.1.0""
-    }
+            string json = @"
+{
+    ""runtimeOptions"": 
+    {
+        ""tfm"": ""netcoreapp3.1"",
+        ""framework"": 
+        {
+            ""name"": ""Microsoft.NETCore.App"",
+            ""version"": ""3.1.0""
+        },
+        ""configProperties"": 
+        {
+            ""TieredCompilation"": ""false""
         }
-    }";
+    }
+ }";
 
             if (!File.Exists("test.runtimeconfig.json"))
             {

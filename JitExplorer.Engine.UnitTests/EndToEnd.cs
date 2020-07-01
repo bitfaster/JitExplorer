@@ -60,6 +60,8 @@ namespace JitExplorer.Engine.UnitTests
             }
         }
 
+#if !DEBUG
+        // Requires release build
         [Fact]
         public void TestInMem()
         {
@@ -78,6 +80,7 @@ namespace JitExplorer.Engine.UnitTests
                 output.WriteLine(result.Name);
             }
         }
+#endif
 
         private Compilation Compile(string assembylyName)
         {
