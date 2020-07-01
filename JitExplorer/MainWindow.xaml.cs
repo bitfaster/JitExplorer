@@ -43,20 +43,28 @@ namespace JitExplorer
 
         private void Jit_Click(object sender, RoutedEventArgs e)
         {
+            this.Jit.IsEnabled = false;
+            this.StatusText.Text = "Compiling...";
+            string source = this.CodeEditor.Text;
+            Task.Run(() => this.JitIt(source));
+        }
+
+        private void JitIt(string source)
+        {
             var exp = new IsolatedJit();
 
             try
             {
-                this.lblCursorPosition.Text = "Compiling...";
-                this.AssemblerView.Text = exp.CompileJitAndDisassemble(this.CodeEditor.Text);
+                var result = exp.CompileJitAndDisassemble(source);
+                this.Dispatcher.Invoke(() => this.AssemblerView.Text = result);
             }
             catch (Exception ex)
             {
-                this.AssemblerView.Text = ex.ToString();
+                this.Dispatcher.Invoke(() => this.AssemblerView.Text = ex.ToString());
             }
             finally
             {
-                this.lblCursorPosition.Text = "Ready";
+                this.Dispatcher.Invoke(() => { this.Jit.IsEnabled = true; this.StatusText.Text = "Ready"; });
             }
         }
 
