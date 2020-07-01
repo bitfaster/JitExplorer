@@ -10,6 +10,7 @@ Like [compiler explorer](https://godbolt.org/), but for .NET JIT.
 - Async UI, progress bar
 - Richer UI, pull down for x86/x64, debug/release, language version, platform, emit ass line nos, tiered compilation
 - IsolatedJit Events/status for compile/jit/dissassemble, show in status bar
+https://www.wpf-tutorial.com/common-interface-controls/statusbar-control/
 - Code auto complete, like RoslynPad
 
 

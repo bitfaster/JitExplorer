@@ -1,6 +1,8 @@
 ﻿using JitExplorer.Engine;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -45,13 +47,51 @@ namespace JitExplorer
 
             try
             {
+                this.lblCursorPosition.Text = "Compiling...";
                 this.AssemblerView.Text = exp.CompileJitAndDisassemble(this.CodeEditor.Text);
             }
             catch (Exception ex)
             {
                 this.AssemblerView.Text = ex.ToString();
             }
+            finally
+            {
+                this.lblCursorPosition.Text = "Ready";
+            }
+        }
+
+        private async void OpenFile(object sender, RoutedEventArgs e)
+        {
+            var d = new OpenFileDialog();
             
+            if (d.ShowDialog().Value)
+            {
+                var text = await File.ReadAllTextAsync(d.FileName);
+                this.CodeEditor.Text = text;
+            }
+        }
+
+        private async void SaveCode(object sender, RoutedEventArgs e)
+        {
+            var d = new SaveFileDialog();
+            if (d.ShowDialog().Value)
+            {
+                await File.WriteAllTextAsync(d.FileName, this.CodeEditor.Text);
+            }
+        }
+
+        private async void SaveDissassemble(object sender, RoutedEventArgs e)
+        {
+            var d = new SaveFileDialog();
+            if (d.ShowDialog().Value)
+            {
+                await File.WriteAllTextAsync(d.FileName, this.AssemblerView.Text);
+            }
+        }
+
+        private void Exit(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }
