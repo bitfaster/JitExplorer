@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -23,7 +24,14 @@ namespace JitExplorer.Engine.UnitTests
 
             var jit = new IsolatedJit();
 
-            string jitOut = jit.CompileJitAndDisassemble(source);
+            var config = new Config()
+            {
+                Platform = Microsoft.CodeAnalysis.Platform.X64,
+                OptimizationLevel = OptimizationLevel.Release,
+                UseTieredCompilation = false,
+            };
+
+            string jitOut = jit.CompileJitAndDisassemble(source, config);
 
             output.WriteLine(jitOut);
 
