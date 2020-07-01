@@ -10,17 +10,25 @@ using System.Threading;
 
 namespace JitExplorer.Engine
 {
+    public class ProgressEventArgs : EventArgs
+    {
+        public string StatusMessage { get; set; }
+    }
+
     // Requires source code calls JitExplorer.Signal.__Jit();
     public class IsolatedJit
     {
-        public string CompileJitAndDisassemble(string sourceCode)
+        public event EventHandler<ProgressEventArgs> Progress;
+
+        public string CompileJitAndDisassemble(string sourceCode, Config config)
         {
             if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
             {
                 return "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();";
             }
 
-            using var c = Compile("test.exe", sourceCode);
+            this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
+            using var c = Compile("test.exe", sourceCode, config);
 
             if (!c.Succeeded)
             {
@@ -34,10 +42,14 @@ namespace JitExplorer.Engine
                 return sb.ToString();
             }
 
+            this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
             WriteExeToDisk("test.exe", c);
-            using (var p = Execute("test.exe"))
+
+            this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
+            using (var p = Execute("test.exe", config))
             {
                 //Thread.Sleep(1000);
+                this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
                 using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
                 cpipe.Connect(1000);
 
@@ -46,7 +58,10 @@ namespace JitExplorer.Engine
                 // signal dissassemble complete
                 cpipe.WriteByte(1);
 
-                p.WaitForExit(1000);
+                if (!p.WaitForExit(1000))
+                {
+                    p.Kill();
+                }
 
                 StringBuilder sb = new StringBuilder();
 
@@ -84,9 +99,15 @@ namespace JitExplorer.Engine
             }
         }
 
-        private Compilation Compile(string assembylyName, string source)
+        private Compilation Compile(string assembylyName, string source, Config config)
         {
-            var options = new CompilerOptions() { OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication };
+            var options = new CompilerOptions() 
+            { 
+                OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication,
+                OptimizationLevel = config.OptimizationLevel,
+                Platform = config.Platform,
+            };
+
             Compiler c = new Compiler(options);
 
             // string pipeName = "MyTest.Pipe";
@@ -141,7 +162,7 @@ namespace JitExplorer.Engine
             }
         }
 
-        private Process Execute(string path)
+        private Process Execute(string path, Config config)
         {
             // Process.Start("dotnet", assemblyPath);
             var proc = new Process
@@ -156,7 +177,8 @@ namespace JitExplorer.Engine
                 }
             };
 
-            bool tieredCompilation = false;
+            // https://docs.microsoft.com/en-us/dotnet/core/run-time-config/compilation
+            bool tieredCompilation = config.UseTieredCompilation;
             bool quickJit = false;
             bool quickLoopJit = false;
 

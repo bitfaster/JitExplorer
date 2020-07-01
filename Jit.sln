@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JitExplorer", "JitExplorer\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JitExplorer.Engine", "JitExplorer.Engine\JitExplorer.Engine.csproj", "{A1D4DA12-3D21-4E3C-A7B2-C191B8D27C73}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JitExplorer.Engine.UnitTests", "JitExplorer.Engine.UnitTests\JitExplorer.Engine.UnitTests.csproj", "{F3087146-48E1-443B-8E46-C8C755C5EC53}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JitExplorer.Engine.UnitTests", "JitExplorer.Engine.UnitTests\JitExplorer.Engine.UnitTests.csproj", "{F3087146-48E1-443B-8E46-C8C755C5EC53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{628F990E-3225-4060-9150-D77A18E24731}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{F3087146-48E1-443B-8E46-C8C755C5EC53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F3087146-48E1-443B-8E46-C8C755C5EC53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F3087146-48E1-443B-8E46-C8C755C5EC53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{628F990E-3225-4060-9150-D77A18E24731}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{628F990E-3225-4060-9150-D77A18E24731}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{628F990E-3225-4060-9150-D77A18E24731}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{628F990E-3225-4060-9150-D77A18E24731}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -7,9 +7,10 @@ Like [compiler explorer](https://godbolt.org/), but for .NET JIT.
 # TODO:
 
 - Why is jitted code not release version? Is it related to roslyn compile?
-- Async UI, progress bar
-- Richer UI, pull down for x86/x64, debug/release, language version, platform, emit ass line nos, tiered compilation
-- IsolatedJit Events/status for compile/jit/dissassemble, show in status bar
+- Background jit, without button
+- Better UI, pull down for language version, emit ass line nos, all jit compilation options etc.
+- Better status bar, progress spinner
+https://stackoverflow.com/questions/6359848/wpf-loading-spinner
 https://www.wpf-tutorial.com/common-interface-controls/statusbar-control/
 - Code auto complete, like RoslynPad
 
