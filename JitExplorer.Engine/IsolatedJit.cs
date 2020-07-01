@@ -150,13 +150,22 @@ namespace JitExplorer.Engine
 
         private DisassemblyResult AttachAndDecompile(int processId, string className, string methodName)
         {
+            // filter out the synchronization code
+            string[] filtered = {
+                "JitExplorer.Signal.__Jit()",
+                "System.IO.Pipes.NamedPipeServerStream..ctor(System.String, System.IO.Pipes.PipeDirection)",
+                "System.IO.Pipes.NamedPipeServerStream.WaitForConnection()",
+                "Interop+Kernel32.ConnectNamedPipe(Microsoft.Win32.SafeHandles.SafePipeHandle, IntPtr)",
+            };
+
             var settings = new Settings(
                 processId,
                 className,
                 methodName,
                 true,
                 3,
-                "results.txt"
+                "results.txt",
+                filtered
                 );
 
             return ClrMdDisassembler.AttachAndDisassemble(settings);
