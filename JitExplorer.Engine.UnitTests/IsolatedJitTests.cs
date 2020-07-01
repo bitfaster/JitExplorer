@@ -27,18 +27,7 @@ namespace JitExplorer.Engine.UnitTests
 
             output.WriteLine(jitOut);
 
-            jitOut.Should().NotBeNullOrEmpty();
-
-            //var sPipe = new System.IO.Pipes.NamedPipeServerStream("MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut);
-            //sPipe.WaitForConnection();
-            //sPipe.ReadByte();
-
-            //var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
-            //cpipe.Connect();
-
-            // jit
-
-            //cpipe.WriteByte(1);
+            jitOut.Should().StartWith("Testing.Program.Main(System.String[])");
         }
     }
 }
