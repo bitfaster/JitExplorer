@@ -10,30 +10,47 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="20"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition ></RowDefinition>
+            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="20"></RowDefinition>
         </Grid.RowDefinitions>
-        <Button Grid.Row="0" Name="Jit" Grid.Column="3" Click="Jit_Click">Jit</Button>
+        <Menu Grid.Row="0">
+            <MenuItem Header="_File" HorizontalContentAlignment="Left">
+                <MenuItem Header="_Open" Click="OpenFile"/>
+                <MenuItem Header="_Save Code" Click="SaveCode"/>
+                <MenuItem Header="Save Dissassemble"  Click="SaveDissassemble"/>
+                <Separator />
+                <MenuItem Header="_Exit" Click="Exit" />
+            </MenuItem>
+        </Menu>
+        <Button Grid.Row="2" Name="Jit" Grid.Column="3" Click="Jit_Click" Width="200" HorizontalAlignment="Right" Margin="5">Jit</Button>
+        <StatusBar Grid.Row="3">
+            <StatusBarItem>
+                <TextBlock Name="lblCursorPosition" Text="Ready" />
+            </StatusBarItem>
+        </StatusBar>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="400"></ColumnDefinition>
+                <ColumnDefinition Width="5"></ColumnDefinition>
                 <ColumnDefinition ></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <!--TextBox Name="SourceCode" Grid.Column="0" AcceptsReturn="True" FontFamily="Courier New" /-->
             <avalonedit:TextEditor x:Name="CodeEditor"
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
                                ShowLineNumbers="True"
-                               FontFamily="Courier New">
-             
+                               FontFamily="Courier New" 
+                               MinWidth="5">
             </avalonedit:TextEditor>
-            <!--TextBox Name="Assembly" Grid.Column="1" AcceptsReturn="True" FontFamily="Courier New" /-->
+            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="DarkGray" />
             <avalonedit:TextEditor Name="AssemblerView"
-                               Grid.Column="1"
+                               Grid.Column="2"
                                IsReadOnly="True"
                                ShowLineNumbers="False"
                                SyntaxHighlighting="BUILD_MSG"
                                WordWrap="True"
-                               FontFamily="Courier New">
+                               FontFamily="Courier New"
+                               MinWidth="5">
             </avalonedit:TextEditor>
         </Grid>
     </Grid>
