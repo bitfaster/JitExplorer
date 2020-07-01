@@ -12,7 +12,7 @@
             <RowDefinition Height="20"></RowDefinition>
             <RowDefinition ></RowDefinition>
             <RowDefinition Height="30"></RowDefinition>
-            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
         </Grid.RowDefinitions>
         <Menu Grid.Row="0">
             <MenuItem Header="_File" HorizontalContentAlignment="Left">
@@ -26,7 +26,7 @@
         <Button Grid.Row="2" Name="Jit" Grid.Column="3" Click="Jit_Click" Width="200" HorizontalAlignment="Right" Margin="5">Jit</Button>
         <StatusBar Grid.Row="3">
             <StatusBarItem>
-                <TextBlock Name="lblCursorPosition" Text="Ready" />
+                <TextBlock Name="StatusText" Text="Ready" />
             </StatusBarItem>
         </StatusBar>
         <Grid Grid.Row="1">
