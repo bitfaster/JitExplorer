@@ -15,7 +15,8 @@ namespace JitExplorer.Engine.UnitTests
 
             string source = "public class Program { public static void Main() {} }";
 
-            var exec = c.Compile("test.exe", "foo.cs", source);
+            var syntax = c.CreateSyntaxTree("foo.cs", source);
+            var exec = c.Compile("test.exe", syntax);
         }
     }
 }

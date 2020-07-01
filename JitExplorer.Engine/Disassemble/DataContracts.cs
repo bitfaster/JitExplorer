@@ -94,7 +94,7 @@ namespace JitExplorer.Engine.Disassemble
 
     public static class DisassemblerConstants
     {
-        public const string DisassemblerEntryMethodName = "__ForDisassemblyDiagnoser__";
+        public const string DisassemblerEntryMethodName = "__Jit";
     }
 
     public class Settings

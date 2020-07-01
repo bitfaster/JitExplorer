@@ -28,7 +28,7 @@ namespace JitExplorer
 
         private void Jit_Click(object sender, RoutedEventArgs e)
         {
-            var exp = new IsolatedExplorer();
+            var exp = new IsolatedJit();
 
             try
             {
