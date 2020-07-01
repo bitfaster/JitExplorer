@@ -2,7 +2,7 @@
 
 Like [compiler explorer](https://godbolt.org/), but for .NET JIT.
 
-![image](https://user-images.githubusercontent.com/12851828/86090161-71f81f80-ba5e-11ea-9d45-7fbc13bb44cc.png)
+![image](https://user-images.githubusercontent.com/12851828/86214260-cae3b880-bb2f-11ea-80b1-5c86e83ced64.png)
 
 # TODO:
 
