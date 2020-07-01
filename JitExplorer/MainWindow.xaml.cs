@@ -24,6 +24,19 @@ namespace JitExplorer
         public MainWindow()
         {
             InitializeComponent();
+
+            this.CodeEditor.Text = @"namespace Testing
+{
+    using System;
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+            JitExplorer.Signal.__Jit();
+        }
+    }
+}";
         }
 
         private void Jit_Click(object sender, RoutedEventArgs e)
