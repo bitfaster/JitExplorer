@@ -4,6 +4,7 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
+    <InternalsAssemblyNames>Microsoft.CodeAnalysis.CSharp;Microsoft.CodeAnalysis.Features;Microsoft.CodeAnalysis.CSharp.Features;Microsoft.CodeAnalysis.Scripting;Microsoft.CodeAnalysis.CSharp.Scripting;Microsoft.CodeAnalysis.Workspaces;Microsoft.CodeAnalysis.CSharp.Workspaces;Microsoft.CodeAnalysis.Extensions;Microsoft.CodeAnalysis.PooledObjects</InternalsAssemblyNames>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="BitFaster.Caching" Version="0.9.4" />
+    <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.4.0" />
   </ItemGroup>
 
   <ItemGroup>

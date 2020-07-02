@@ -73,7 +73,7 @@ namespace JitExplorer.Engine.Compile
             return compilation;
         }
 
-        public MetadataReference[] MetadataReferences { get; } = EnumMetadataReferences().ToArray();
+        public static MetadataReference[] MetadataReferences { get; } = EnumMetadataReferences().ToArray();
 
         private static IEnumerable<MetadataReference> EnumMetadataReferences()
         {
