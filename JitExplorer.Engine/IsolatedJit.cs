@@ -149,13 +149,16 @@ namespace JitExplorer.Engine
             };
 
             // https://docs.microsoft.com/en-us/dotnet/core/run-time-config/compilation
-            bool tieredCompilation = config.UseTieredCompilation;
+            // https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/uselegacyjit-element
+            bool tieredCompilation = false;
             bool quickJit = false;
             bool quickLoopJit = false;
+            bool useLegacyJit = config.UseTieredCompilation;
 
             proc.StartInfo.Environment["COMPlus_TieredCompilation"] = tieredCompilation ? "1" : "0";
             proc.StartInfo.Environment["COMPlus_TC_QuickJit"] = quickJit ? "1" : "0";
             proc.StartInfo.Environment["COMPlus_TC_QuickJitForLoops"] = quickLoopJit ? "1" : "0";
+            proc.StartInfo.Environment["COMPlus_useLegacyJit"] = useLegacyJit ? "1" : "0";
 
             proc.Start();
 
