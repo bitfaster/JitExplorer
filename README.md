@@ -2,7 +2,9 @@
 
 Like [Compiler Explorer](https://godbolt.org/), but for .NET JIT.
 
-Supports generics:
+C# source code is compiled to an executable using [Roslyn](https://github.com/dotnet/roslyn), then executed. While it is executing, and after JIT is complete, [ClrMD](https://github.com/microsoft/clrmd) is attached and the methods are decompiled using [Iced](https://github.com/0xd4d/iced). The code that does this comes from [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet/tree/master/src/BenchmarkDotNet.Disassembler.x64).
+
+The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDasm) is that it supports jitting generics:
 
 ![image](https://user-images.githubusercontent.com/12851828/86298224-1a6ac880-bbb2-11ea-90e4-7bd5114284e9.png)
 
