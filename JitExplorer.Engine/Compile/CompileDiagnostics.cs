@@ -14,7 +14,7 @@ namespace JitExplorer.Engine.Compile
 
         private readonly string severity;
         private readonly string id;
-        private readonly string text;
+        private readonly string message;
 
         public CompileDiagnostic(Diagnostic diagnostic)
         {
@@ -25,9 +25,12 @@ namespace JitExplorer.Engine.Compile
             this.endLine = lineSpan.End.Line;
             this.endCharacter = lineSpan.End.Character;
             this.severity = diagnostic.Severity.ToString().ToLower();
-            this.text = diagnostic.GetMessage();
+            this.message = diagnostic.GetMessage();
+            this.id = diagnostic.Id;
         }
 
-        public override string ToString() => $"({startLine + 1},{startCharacter + 1}) {severity} {id}: {text}";
+        // Visual studio format
+        // CompileDiagnostics.cs(31,38,31,41): error CS1002: ; expected
+        public override string ToString() => $"({startLine + 1},{startCharacter + 1},{endLine + 1},{endCharacter + 1}): {severity} {id}: {message}";
     }
 }

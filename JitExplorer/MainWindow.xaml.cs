@@ -1,4 +1,6 @@
-﻿using JitExplorer.Engine;
+﻿using ICSharpCode.AvalonEdit.CodeCompletion;
+using JitExplorer.Completion;
+using JitExplorer.Engine;
 using Microsoft.CodeAnalysis;
 using Microsoft.Win32;
 using System;
@@ -45,6 +47,10 @@ namespace JitExplorer
         }
     }
 }";
+
+            // in the constructor:
+            this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
+            this.CodeEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
         }
 
         private void IsolatedJit_Progress(object sender, ProgressEventArgs e)
@@ -134,6 +140,40 @@ namespace JitExplorer
         private void Exit(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        CompletionWindow completionWindow;
+
+        void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text == ".")
+            {
+                // Open code completion after the user has pressed dot:
+                completionWindow = new CompletionWindow(this.CodeEditor.TextArea);
+                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                data.Add(new MyCompletionData("Item1"));
+                data.Add(new MyCompletionData("Item2"));
+                data.Add(new MyCompletionData("Item3"));
+                completionWindow.Show();
+                completionWindow.Closed += delegate {
+                    completionWindow = null;
+                };
+            }
+        }
+
+        void textEditor_TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length > 0 && completionWindow != null)
+            {
+                if (!char.IsLetterOrDigit(e.Text[0]))
+                {
+                    // Whenever a non-letter is typed while the completion window is open,
+                    // insert the currently selected element.
+                    completionWindow.CompletionList.RequestInsertion(e);
+                }
+            }
+            // Do not set e.Handled=true.
+            // We still want to insert the character that was typed.
         }
     }
 }
