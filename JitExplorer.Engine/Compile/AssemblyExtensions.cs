@@ -7,6 +7,7 @@ using System.Text;
 
 namespace JitExplorer.Engine.Compile
 {
+    // https://stackoverflow.com/questions/798971/how-to-identify-if-the-dll-is-debug-or-release-build-in-net
     // https://github.com/dotnet/BenchmarkDotNet/blob/0b83c934e5f983ff2aa43c82e63d242216d330bf/src/BenchmarkDotNet/Extensions/AssemblyExtensions.cs
     public static class AssemblyExtensions
     {

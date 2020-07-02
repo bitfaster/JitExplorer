@@ -98,9 +98,31 @@ namespace JitExplorer.Engine
     } 
 }";
 
+            // DebuggableAttribute:
+            // https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.debuggableattribute.-ctor?view=netcore-3.1#System_Diagnostics_DebuggableAttribute__ctor_System_Diagnostics_DebuggableAttribute_DebuggingModes_
+
+            var assemblyInfo = @"
+using System.Diagnostics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
+
+[assembly: CompilationRelaxations(8)]
+[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+[assembly: Debuggable(false, false)]
+[assembly: TargetFramework("".NETCoreApp,Version=v3.1"", FrameworkDisplayName = """")]
+[assembly: AssemblyCompany(""Test"")]
+[assembly: AssemblyConfiguration(""Release"")]
+[assembly: AssemblyFileVersion(""1.0.0.0"")]
+[assembly: AssemblyInformationalVersion(""1.0.0"")]
+[assembly: AssemblyProduct(""Test"")]
+[assembly: AssemblyTitle(""Test"")]
+[assembly: AssemblyVersion(""1.0.0.0"")]";
+
             var jitSyntax = c.CreateSyntaxTree("jitexpl.cs", jitExplSource);
+            var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
             var syntax = c.CreateSyntaxTree("program.cs", source);
-            return c.Compile(assembylyName, syntax, jitSyntax);
+            return c.Compile(assembylyName, syntax, assSyntax, jitSyntax);
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)
@@ -154,7 +176,7 @@ namespace JitExplorer.Engine
             proc.StartInfo.Environment["COMPlus_TieredCompilation"] = tieredCompilation ? "1" : "0";
             proc.StartInfo.Environment["COMPlus_TC_QuickJit"] = quickJit ? "1" : "0";
             proc.StartInfo.Environment["COMPlus_TC_QuickJitForLoops"] = quickLoopJit ? "1" : "0";
-            //proc.StartInfo.Environment["COMPlus_useLegacyJit"] = useLegacyJit ? "1" : "0";
+            proc.StartInfo.Environment["COMPlus_useLegacyJit"] = useLegacyJit ? "1" : "0";
 
             proc.Start();
 

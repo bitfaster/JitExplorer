@@ -4,7 +4,7 @@ Like [Compiler Explorer](https://godbolt.org/), but for .NET JIT.
 
 C# source code is compiled to an executable using [Roslyn](https://github.com/dotnet/roslyn), then executed. While it is executing, and after JIT is complete, [ClrMD](https://github.com/microsoft/clrmd) is attached and the methods are decompiled using [Iced](https://github.com/0xd4d/iced). The code that does this comes from [BenchmarkDotNet](https://github.com/dotnet/BenchmarkDotNet/tree/master/src/BenchmarkDotNet.Disassembler.x64).
 
-The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDasm) is that it supports jitting generics:
+The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDasm) is that it supports dissassembly of generic methods:
 
 ![image](https://user-images.githubusercontent.com/12851828/86315174-53b92d80-bbde-11ea-8e24-cdfd52ea6d00.png)
 
