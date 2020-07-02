@@ -119,10 +119,6 @@ namespace JitExplorer.Engine
         {
             ""name"": ""Microsoft.NETCore.App"",
             ""version"": ""3.1.0""
-        },
-        ""configProperties"": 
-        {
-            ""TieredCompilation"": ""false""
         }
     }
  }";
@@ -158,7 +154,7 @@ namespace JitExplorer.Engine
             proc.StartInfo.Environment["COMPlus_TieredCompilation"] = tieredCompilation ? "1" : "0";
             proc.StartInfo.Environment["COMPlus_TC_QuickJit"] = quickJit ? "1" : "0";
             proc.StartInfo.Environment["COMPlus_TC_QuickJitForLoops"] = quickLoopJit ? "1" : "0";
-            proc.StartInfo.Environment["COMPlus_useLegacyJit"] = useLegacyJit ? "1" : "0";
+            //proc.StartInfo.Environment["COMPlus_useLegacyJit"] = useLegacyJit ? "1" : "0";
 
             proc.Start();
 
