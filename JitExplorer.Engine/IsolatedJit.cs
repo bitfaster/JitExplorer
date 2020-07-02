@@ -43,7 +43,7 @@ namespace JitExplorer.Engine
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
             using (var p = Execute("test.exe", config))
             {
-                using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
+                using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "JitExplorer.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
                 
                 try
                 {
@@ -81,15 +81,13 @@ namespace JitExplorer.Engine
 
             Compiler c = new Compiler(options);
 
-            // string pipeName = "MyTest.Pipe";
-
             var jitExplSource = @"namespace JitExplorer 
 { 
     public static class Signal 
     { 
         public static void __Jit() 
         { 
-            using (var sPipe = new System.IO.Pipes.NamedPipeServerStream(""MyTest.Pipe"", System.IO.Pipes.PipeDirection.InOut))
+            using (var sPipe = new System.IO.Pipes.NamedPipeServerStream(""JitExplorer.Pipe"", System.IO.Pipes.PipeDirection.InOut))
             {
                 sPipe.WaitForConnection();
                 sPipe.ReadByte(); // wait for signal that code is dissassembled
@@ -101,6 +99,8 @@ namespace JitExplorer.Engine
             // DebuggableAttribute:
             // https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.debuggableattribute.-ctor?view=netcore-3.1#System_Diagnostics_DebuggableAttribute__ctor_System_Diagnostics_DebuggableAttribute_DebuggingModes_
 
+            // This seems to result in DotPeek reporting assembly framework as .NET core instead of 4.8.
+            // But it still shows the .dll as debug, even with correct DebuggableAttribute.
             var assemblyInfo = @"
 using System.Diagnostics;
 using System.Reflection;
@@ -120,9 +120,9 @@ using System.Runtime.Versioning;
 [assembly: AssemblyVersion(""1.0.0.0"")]";
 
             var jitSyntax = c.CreateSyntaxTree("jitexpl.cs", jitExplSource);
-            var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
+            // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
             var syntax = c.CreateSyntaxTree("program.cs", source);
-            return c.Compile(assembylyName, syntax, assSyntax, jitSyntax);
+            return c.Compile(assembylyName, syntax, jitSyntax);
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)

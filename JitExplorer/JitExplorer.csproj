@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
+    <PackageReference Include="BitFaster.Caching" Version="0.9.4" />
   </ItemGroup>
 
   <ItemGroup>
