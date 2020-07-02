@@ -81,9 +81,17 @@ namespace JitExplorer
             this.Dispatcher.Invoke(() => this.StatusText.Text = e.StatusMessage);
         }
 
+        // Each time a key is pressed, it starts a timer.
+        // After 100ms is elapsed, run Jit
+        // If key is pressed again, dispose and restart timer.
+        // If jit is already running, dispose and restart timer.
+        // Track 'version' each time edit occurs. Compare jitted source to current source.
+
         private void Jit_Click(object sender, RoutedEventArgs e)
         {
             this.Jit.IsEnabled = false;
+            this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Cog;
+            this.ProgressIcon.Spin = true;
             string source = this.CodeEditor.Text;
 
             var config = new Config()
@@ -130,7 +138,13 @@ namespace JitExplorer
             }
             finally
             {
-                this.Dispatcher.Invoke(() => { this.Jit.IsEnabled = true; this.StatusText.Text = "Ready"; });
+                this.Dispatcher.Invoke(() => 
+                { 
+                    this.Jit.IsEnabled = true; 
+                    this.StatusText.Text = "Ready";
+                    this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
+                    this.ProgressIcon.Spin = false;
+                });
             }
         }
 

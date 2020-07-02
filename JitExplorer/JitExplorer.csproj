@@ -14,6 +14,7 @@
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="BitFaster.Caching" Version="0.9.4" />
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
     <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.4.0" />
   </ItemGroup>
 
