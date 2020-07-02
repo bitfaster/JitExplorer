@@ -1,4 +1,5 @@
-﻿using ICSharpCode.AvalonEdit.CodeCompletion;
+﻿using BitFaster.Caching.Lru;
+using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
@@ -33,6 +34,7 @@ namespace JitExplorer
     {
         private readonly IsolatedJit isolatedJit;
         private readonly RoslynCodeCompletion codeCompletion;
+        private readonly ClassicLru<JitKey, string> cache = new ClassicLru<JitKey, string>(100);
 
         public MainWindow()
         {
@@ -116,7 +118,10 @@ namespace JitExplorer
         {
             try
             {
-                var result = this.isolatedJit.CompileJitAndDisassemble(source, config);
+                var jitKey = new JitKey(source, config.OptimizationLevel, config.Platform, config.UseTieredCompilation);
+
+                var result = this.cache.GetOrAdd(jitKey, k => this.isolatedJit.CompileJitAndDisassemble(source, config));
+
                 this.Dispatcher.Invoke(() => this.AssemblerView.Text = result);
             }
             catch (Exception ex)
