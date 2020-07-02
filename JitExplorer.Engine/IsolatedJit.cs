@@ -34,7 +34,7 @@ namespace JitExplorer.Engine
             {
                 StringBuilder sb = new StringBuilder();
 
-                foreach (var e in c.Messages)
+                foreach (var e in c.Diagnostics)
                 {
                     sb.AppendLine(e.ToString());
                 }
@@ -136,7 +136,7 @@ namespace JitExplorer.Engine
         {
             using (var fs = File.OpenWrite(path))
             {
-                compilation.programExecutable.WriteTo(fs);
+                compilation.Assembly.WriteTo(fs);
             }
 
             string json = @"

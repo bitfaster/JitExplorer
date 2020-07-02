@@ -67,7 +67,7 @@ namespace JitExplorer.Engine.UnitTests
         {
             var c = Compile("test.exe");
 
-            var a = Assembly.Load(c.programExecutable.ToArray());
+            var a = Assembly.Load(c.Assembly.ToArray());
 
             var t = a.GetType("Testing.Program");
             var m = t.GetMethod("Main");
@@ -97,7 +97,7 @@ namespace JitExplorer.Engine.UnitTests
         {
             using (var fs = File.OpenWrite(path))
             {
-                compilation.programExecutable.WriteTo(fs);
+                compilation.Assembly.WriteTo(fs);
             }
 
             string json = @"{

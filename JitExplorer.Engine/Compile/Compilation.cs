@@ -7,20 +7,24 @@ namespace JitExplorer.Engine.Compile
 {
     public class Compilation : IDisposable
     {
-        public readonly MemoryStream programExecutable;
-        public readonly Message[] Messages;
+        private readonly MemoryStream assembly;
+        private readonly CompileDiagnostic[] diagnostics;
 
-        public bool Succeeded => programExecutable.Length > 0;
+        public bool Succeeded => Assembly.Length > 0;
 
-        public Compilation(MemoryStream programExecutable, Message[] messages)
+        public MemoryStream Assembly => this.assembly;
+
+        public IEnumerable<CompileDiagnostic> Diagnostics => this.diagnostics;
+
+        public Compilation(MemoryStream assembly, CompileDiagnostic[] diagnostics)
         {
-            this.programExecutable = programExecutable;
-            Messages = messages;
+            this.assembly = assembly;
+            this.diagnostics = diagnostics;
         }
 
         public void Dispose()
         {
-            this.programExecutable.Dispose();
+            this.Assembly.Dispose();
         }
     }
 }
