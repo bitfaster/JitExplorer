@@ -1,6 +1,5 @@
 ﻿namespace Testing
 {
-    using System.Collections.Concurrent;
     using System;
     using System.Threading;
     using System.Runtime.CompilerServices;
@@ -15,32 +14,31 @@
     {
         public static void Main(string[] args)
         {
-           // int i = 0;
-
+            var lru2 = new BitFaster.Caching.Lru.ConcurrentLru<int, string>(5);
             var lru = new ConcurrentLru<int, string>(5);
-            //int c = lru.ColdCount;
 
             for (int i = 0; i < 100000; i++)
             {
                 var v = lru.TryGet(i, out var x);
+                var q = lru2.TryGet(i, out var y);
             }
 
             // try preparing all methods:
-            foreach (var method in lru.GetType().GetMethods(BindingFlags.DeclaredOnly |
-                        BindingFlags.NonPublic |
-                        BindingFlags.Public | BindingFlags.Instance |
-                        BindingFlags.Static))
-            {
-                System.Runtime.CompilerServices.RuntimeHelpers.PrepareMethod(method.MethodHandle);
-            }
+            //foreach (var method in lru.GetType().GetMethods(BindingFlags.DeclaredOnly |
+            //            BindingFlags.NonPublic |
+            //            BindingFlags.Public | BindingFlags.Instance |
+            //            BindingFlags.Static))
+            //{
+            //    System.Runtime.CompilerServices.RuntimeHelpers.PrepareMethod(method.MethodHandle);
+            //}
 
-            for (int i = 0; i < 100000; i++)
-            {
-                var v = lru.TryGet(i, out var x); 
-            }
+            //for (int i = 0; i < 100000; i++)
+            //{
+            //    var v = lru.TryGet(i, out var x);
+            //    var q = lru2.TryGet(i, out var y);
+            //}
 
             JitExplorer.Signal.__Jit();
-            //System.Threading.Thread.Sleep(1000);
         }
     }
 

@@ -97,7 +97,7 @@ namespace JitExplorer
                 case 0:
                     return Microsoft.CodeAnalysis.Platform.X64;
                 case 1:
-                    return Microsoft.CodeAnalysis.Platform.X64;
+                    return Microsoft.CodeAnalysis.Platform.X86;
             }
 
             return Microsoft.CodeAnalysis.Platform.AnyCpu;

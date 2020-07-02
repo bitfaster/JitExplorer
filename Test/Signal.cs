@@ -4,7 +4,7 @@
     {
         public static void __Jit()
         {
-            using (var sPipe = new System.IO.Pipes.NamedPipeServerStream("MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut))
+            using (var sPipe = new System.IO.Pipes.NamedPipeServerStream("JitExplorer.Pipe", System.IO.Pipes.PipeDirection.InOut))
             {
                 sPipe.WaitForConnection();
                 sPipe.ReadByte(); // wait for signal that code is dissassembled
