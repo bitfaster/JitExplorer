@@ -3,7 +3,9 @@ using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
 using JitExplorer.Engine;
+using JitExplorer.Engine.Compile;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -30,6 +32,7 @@ namespace JitExplorer
     public partial class MainWindow : Window
     {
         private readonly IsolatedJit isolatedJit;
+        private readonly RoslynCodeCompletion codeCompletion;
 
         public MainWindow()
         {
@@ -67,7 +70,8 @@ namespace JitExplorer
             this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
             this.CodeEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
 
-
+            this.codeCompletion = new RoslynCodeCompletion(Compiler.MetadataReferences);
+            this.codeCompletion.Initialize();
         }
 
         private void IsolatedJit_Progress(object sender, ProgressEventArgs e)
@@ -165,12 +169,12 @@ namespace JitExplorer
         {
             if (e.Text == ".")
             {
+                var result = codeCompletion.CompleteAsync(this.CodeEditor.Text, this.CodeEditor.CaretOffset, '.').Result;
+
                 // Open code completion after the user has pressed dot:
                 completionWindow = new CompletionWindow(this.CodeEditor.TextArea);
-                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
-                data.Add(new MyCompletionData("Item1"));
-                data.Add(new MyCompletionData("Item2"));
-                data.Add(new MyCompletionData("Item3"));
+                completionWindow.CompletionList.CompletionData.AddRange(result);
+
                 completionWindow.Show();
                 completionWindow.Closed += delegate {
                     completionWindow = null;

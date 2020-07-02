@@ -11,9 +11,9 @@ namespace JitExplorer.Completion
 
     // Implements AvalonEdit ICompletionData interface to provide the entries in the
     /// completion drop down.
-    public class MyCompletionData : ICompletionData
+    public class CompletionData : ICompletionData
     {
-        public MyCompletionData(string text)
+        public CompletionData(string text)
         {
             this.Text = text;
         }
