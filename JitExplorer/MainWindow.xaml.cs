@@ -34,16 +34,16 @@ namespace JitExplorer
         public MainWindow()
         {
             HighlightingManager.Instance.RegisterHighlighting(
-    "Asm", new string[] { ".s", ".asm" },
-    delegate {
-        using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.Asm-Mode.xshd"))
-        {
-            using (XmlTextReader reader = new XmlTextReader(s))
-            {
-                return HighlightingLoader.Load(reader, HighlightingManager.Instance);
-            }
-        }
-    });
+                "Asm", new string[] { ".s", ".asm" },
+                delegate {
+                    using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.Asm-Mode.xshd"))
+                    {
+                        using (XmlTextReader reader = new XmlTextReader(s))
+                        {
+                            return HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                        }
+                    }
+                });
 
             InitializeComponent();
 
