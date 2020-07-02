@@ -25,6 +25,7 @@ namespace JitExplorer.Engine.Compile
             this.endLine = lineSpan.End.Line;
             this.endCharacter = lineSpan.End.Character;
             this.severity = diagnostic.Severity.ToString().ToLower();
+            this.text = diagnostic.GetMessage();
         }
 
         public override string ToString() => $"({startLine + 1},{startCharacter + 1}) {severity} {id}: {text}";
