@@ -18,7 +18,7 @@ namespace JitExplorer.Engine.UnitTests
             Compiler c = new Compiler(options);
 
             var syntax = c.CreateSyntaxTree("foo.cs", simpleProgramSource);
-            using (var exec = c.Compile("test.exe", syntax))
+            using (var exec = c.Compile("simpleCompile.exe", syntax))
             {
                 exec.Succeeded.Should().BeTrue();
             }
@@ -36,7 +36,7 @@ namespace JitExplorer.Engine.UnitTests
             Compiler c = new Compiler(options);
 
             var syntax = c.CreateSyntaxTree("foo.cs", simpleProgramSource);
-            using (var exec = c.Compile("test.exe", syntax))
+            using (var exec = c.Compile("simpleRelease.exe", syntax))
             {
                 var a = Assembly.Load(exec.Assembly.ToArray());
                 a.IsJitOptimizationDisabled().Should().BeFalse();
@@ -55,7 +55,7 @@ namespace JitExplorer.Engine.UnitTests
             Compiler c = new Compiler(options);
 
             var syntax = c.CreateSyntaxTree("foo.cs", simpleProgramSource);
-            using (var exec = c.Compile("test.exe", syntax))
+            using (var exec = c.Compile("simpleDebug.exe", syntax))
             {
                 var a = Assembly.Load(exec.Assembly.ToArray());
                 a.IsJitOptimizationDisabled().Should().BeTrue();
