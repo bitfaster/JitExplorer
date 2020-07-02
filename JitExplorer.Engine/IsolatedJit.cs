@@ -44,8 +44,17 @@ namespace JitExplorer.Engine
             using (var p = Execute("test.exe", config))
             {
                 using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
-                cpipe.Connect(1000);
-
+                
+                try
+                {
+                    cpipe.Connect(3000);
+                }
+                catch
+                {
+                    p.Kill();
+                    throw;
+                }
+                
                 this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
                 var result = AttachAndDecompile(p.Id, "Testing.Program", "Main");
 
