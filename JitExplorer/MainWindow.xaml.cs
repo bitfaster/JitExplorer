@@ -1,4 +1,8 @@
-﻿using JitExplorer.Engine;
+﻿using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
+using JitExplorer.Completion;
+using JitExplorer.Engine;
 using Microsoft.CodeAnalysis;
 using Microsoft.Win32;
 using System;
@@ -16,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 
 namespace JitExplorer
 {
@@ -28,6 +33,18 @@ namespace JitExplorer
 
         public MainWindow()
         {
+            HighlightingManager.Instance.RegisterHighlighting(
+                "Asm", new string[] { ".s", ".asm" },
+                delegate {
+                    using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.Asm-Mode.xshd"))
+                    {
+                        using (XmlTextReader reader = new XmlTextReader(s))
+                        {
+                            return HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                        }
+                    }
+                });
+
             InitializeComponent();
 
             this.isolatedJit = new IsolatedJit();
@@ -45,6 +62,12 @@ namespace JitExplorer
         }
     }
 }";
+
+            // in the constructor:
+            this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
+            this.CodeEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
+
+
         }
 
         private void IsolatedJit_Progress(object sender, ProgressEventArgs e)
@@ -134,6 +157,40 @@ namespace JitExplorer
         private void Exit(object sender, RoutedEventArgs e)
         {
             this.Close();
+        }
+
+        CompletionWindow completionWindow;
+
+        void textEditor_TextArea_TextEntered(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text == ".")
+            {
+                // Open code completion after the user has pressed dot:
+                completionWindow = new CompletionWindow(this.CodeEditor.TextArea);
+                IList<ICompletionData> data = completionWindow.CompletionList.CompletionData;
+                data.Add(new MyCompletionData("Item1"));
+                data.Add(new MyCompletionData("Item2"));
+                data.Add(new MyCompletionData("Item3"));
+                completionWindow.Show();
+                completionWindow.Closed += delegate {
+                    completionWindow = null;
+                };
+            }
+        }
+
+        void textEditor_TextArea_TextEntering(object sender, TextCompositionEventArgs e)
+        {
+            if (e.Text.Length > 0 && completionWindow != null)
+            {
+                if (!char.IsLetterOrDigit(e.Text[0]))
+                {
+                    // Whenever a non-letter is typed while the completion window is open,
+                    // insert the currently selected element.
+                    completionWindow.CompletionList.RequestInsertion(e);
+                }
+            }
+            // Do not set e.Handled=true.
+            // We still want to insert the character that was typed.
         }
     }
 }

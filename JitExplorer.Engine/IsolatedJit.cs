@@ -150,10 +150,10 @@ namespace JitExplorer.Engine
 
             // https://docs.microsoft.com/en-us/dotnet/core/run-time-config/compilation
             // https://docs.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/uselegacyjit-element
-            bool tieredCompilation = false;
+            bool tieredCompilation = config.UseTieredCompilation;
             bool quickJit = false;
             bool quickLoopJit = false;
-            bool useLegacyJit = config.UseTieredCompilation;
+            bool useLegacyJit = false;
 
             proc.StartInfo.Environment["COMPlus_TieredCompilation"] = tieredCompilation ? "1" : "0";
             proc.StartInfo.Environment["COMPlus_TC_QuickJit"] = quickJit ? "1" : "0";

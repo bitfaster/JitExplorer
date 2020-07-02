@@ -41,7 +41,7 @@
                                Grid.Column="2"
                                IsReadOnly="True"
                                ShowLineNumbers="False"
-                               SyntaxHighlighting="BUILD_MSG"
+                               SyntaxHighlighting="Asm"
                                WordWrap="True"
                                FontFamily="Courier New"
                                MinWidth="5">
@@ -63,7 +63,7 @@
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
-            <CheckBox x:Name="TieredCompilation" Grid.Column="2">Tiered</CheckBox>
+            <CheckBox x:Name="TieredCompilation" Grid.Column="2">Tiered Compilation</CheckBox>
             <Button Name="Jit" Grid.Column="3" Click="Jit_Click" >Dissassemble</Button>
         </Grid>
         <StatusBar Grid.Row="3">
