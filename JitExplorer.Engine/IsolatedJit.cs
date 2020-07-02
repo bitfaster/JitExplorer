@@ -10,11 +10,6 @@ using System.Threading;
 
 namespace JitExplorer.Engine
 {
-    public class ProgressEventArgs : EventArgs
-    {
-        public string StatusMessage { get; set; }
-    }
-
     // Requires source code calls JitExplorer.Signal.__Jit();
     public class IsolatedJit
     {
@@ -48,11 +43,10 @@ namespace JitExplorer.Engine
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
             using (var p = Execute("test.exe", config))
             {
-                //Thread.Sleep(1000);
-                this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
                 using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "MyTest.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
                 cpipe.Connect(1000);
 
+                this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
                 var result = AttachAndDecompile(p.Id, "Testing.Program", "Main");
 
                 // signal dissassemble complete
@@ -63,39 +57,7 @@ namespace JitExplorer.Engine
                     p.Kill();
                 }
 
-                StringBuilder sb = new StringBuilder();
-
-                int referenceIndex = 0;
-                int methodIndex = 0;
-                foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
-                {
-                    referenceIndex++;
-
-                    var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}");
-
-                    sb.AppendLine($"{method.Name}");
-
-                    foreach (var element in pretty)
-                    {
-                        sb.AppendLine(element.TextRepresentation);
-                    }
-
-                    sb.AppendLine();
-                }
-
-                foreach (var withProblems in result.Methods
-                .Where(method => !string.IsNullOrEmpty(method.Problem))
-                .GroupBy(method => method.Problem))
-                {
-                    sb.AppendLine(withProblems.Key);
-
-                    foreach (var withProblem in withProblems)
-                    {
-                        sb.AppendLine(withProblem.Name);
-                    }
-                }
-
-                return sb.ToString();
+                return FormatResult(result);
             }
         }
 
@@ -196,8 +158,11 @@ namespace JitExplorer.Engine
             // filter out the synchronization code
             string[] filtered = {
                 "JitExplorer.Signal.__Jit()",
+                "System.IO.Pipes.NamedPipeServerStream..ctor(System.String, System.IO.Pipes.PipeDirection, Int32, System.IO.Pipes.PipeTransmissionMode, System.IO.Pipes.PipeOptions, Int32, Int32, System.IO.HandleInheritability)",
                 "System.IO.Pipes.NamedPipeServerStream..ctor(System.String, System.IO.Pipes.PipeDirection)",
                 "System.IO.Pipes.NamedPipeServerStream.WaitForConnection()",
+                "System.IO.Pipes.PipeStream.ReadByte()",
+                "System.IO.Pipes.PipeStream.Dispose(Boolean)",
                 "Interop+Kernel32.ConnectNamedPipe(Microsoft.Win32.SafeHandles.SafePipeHandle, IntPtr)",
             };
 
@@ -212,6 +177,43 @@ namespace JitExplorer.Engine
                 );
 
             return ClrMdDisassembler.AttachAndDisassemble(settings);
+        }
+
+        private static string FormatResult(DisassemblyResult result)
+        {
+            StringBuilder sb = new StringBuilder();
+
+            int referenceIndex = 0;
+            int methodIndex = 0;
+            foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
+            {
+                referenceIndex++;
+
+                var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}");
+
+                sb.AppendLine($"{method.Name}");
+
+                foreach (var element in pretty)
+                {
+                    sb.AppendLine(element.TextRepresentation);
+                }
+
+                sb.AppendLine();
+            }
+
+            foreach (var withProblems in result.Methods
+            .Where(method => !string.IsNullOrEmpty(method.Problem))
+            .GroupBy(method => method.Problem))
+            {
+                sb.AppendLine(withProblems.Key);
+
+                foreach (var withProblem in withProblems)
+                {
+                    sb.AppendLine(withProblem.Name);
+                }
+            }
+
+            return sb.ToString();
         }
     }
 }

@@ -47,12 +47,6 @@ namespace JitExplorer.Engine.Disassemble
 
                 var disassembledMethods = Disassemble(settings, state);
 
-                // we don't want to export the disassembler entry point method which is just an artificial method added to get generic types working
-                //var filteredMethods = disassembledMethods.Length == 1
-                //    ? disassembledMethods // if there is only one method we want to return it (most probably benchmark got inlined)
-                //    : disassembledMethods.Where(method => !method.Name.Contains(DisassemblerConstants.DisassemblerEntryMethodName)).ToArray();
-                //IEnumerable<string> FilterMethods
-
                 var filteredMethods = disassembledMethods.Where(m => !settings.FilterMethods.Contains(m.Name)).ToArray();
 
                 return new DisassemblyResult
