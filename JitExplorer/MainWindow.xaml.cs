@@ -1,4 +1,6 @@
 ﻿using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Highlighting;
+using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
 using JitExplorer.Engine;
 using Microsoft.CodeAnalysis;
@@ -18,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml;
 
 namespace JitExplorer
 {
@@ -30,6 +33,18 @@ namespace JitExplorer
 
         public MainWindow()
         {
+            HighlightingManager.Instance.RegisterHighlighting(
+    "Asm", new string[] { ".s", ".asm" },
+    delegate {
+        using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.Asm-Mode.xshd"))
+        {
+            using (XmlTextReader reader = new XmlTextReader(s))
+            {
+                return HighlightingLoader.Load(reader, HighlightingManager.Instance);
+            }
+        }
+    });
+
             InitializeComponent();
 
             this.isolatedJit = new IsolatedJit();
@@ -51,6 +66,8 @@ namespace JitExplorer
             // in the constructor:
             this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
             this.CodeEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
+
+
         }
 
         private void IsolatedJit_Progress(object sender, ProgressEventArgs e)

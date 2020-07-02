@@ -23,3 +23,4 @@ https://www.wpf-tutorial.com/common-interface-controls/statusbar-control/
 
 https://github.com/aelij/RoslynPad
 https://github.com/dotnet/BenchmarkDotNet/tree/master/src/BenchmarkDotNet.Disassembler.x64
+https://github.com/icsharpcode/ILSpy

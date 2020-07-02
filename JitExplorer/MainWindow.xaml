@@ -41,7 +41,7 @@
                                Grid.Column="2"
                                IsReadOnly="True"
                                ShowLineNumbers="False"
-                               SyntaxHighlighting="BUILD_MSG"
+                               SyntaxHighlighting="Asm"
                                WordWrap="True"
                                FontFamily="Courier New"
                                MinWidth="5">
