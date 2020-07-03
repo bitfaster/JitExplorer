@@ -66,7 +66,7 @@
     </Style>
 
     <!-- https://docs.microsoft.com/en-us/dotnet/framework/wpf/controls/scrollviewer-styles-and-templates -->
-
+    <!-- Template experiment - this has expected scroll bar rendering -->
     <Style x:Key="MyScroll" TargetType="{x:Type ScrollViewer}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
