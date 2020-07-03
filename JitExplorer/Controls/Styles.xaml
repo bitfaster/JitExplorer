@@ -36,10 +36,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="avalonedit:TextEditor">
+                    <!--Border brush outlines panel-->
                     <Border BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}"
                             BorderThickness="1"
                             CornerRadius="0">
-                         <!--ReSharper disable once Xaml.StaticResourceNotResolved-->
                         <ScrollViewer 
                             Name="PART_ScrollViewer"
                                       Padding="{TemplateBinding Padding}"
@@ -53,9 +53,6 @@
                                       HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
                                       VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}">
                         </ScrollViewer>
-                        
-                        <!--Style="{StaticResource BasicScrollViewerStyle}"-->
-                        
                     </Border>
                     
                     <ControlTemplate.Triggers>
