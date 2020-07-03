@@ -58,7 +58,7 @@
                                ShowLineNumbers="True"
                                MinWidth="5">
             </avalonedit:TextEditor>
-            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="#2D2D30" />
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
             <avalonedit:TextEditor Name="AssemblerView"
                                Grid.Column="2"
                                IsReadOnly="True"

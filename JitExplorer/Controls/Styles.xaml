@@ -36,12 +36,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="avalonedit:TextEditor">
-                    <Border Background="{TemplateBinding Background}"
-                            BorderThickness="0"
+                    <Border BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}"
+                            BorderThickness="1"
                             CornerRadius="0">
                          <!--ReSharper disable once Xaml.StaticResourceNotResolved-->
-                        <ScrollViewer Name="PART_ScrollViewer"
+                        <ScrollViewer 
+                            Name="PART_ScrollViewer"
                                       Padding="{TemplateBinding Padding}"
+                                      Background="{DynamicResource MahApps.Brushes.Background}"
                                       HorizontalContentAlignment="Left"
                                       VerticalContentAlignment="Top"
                                       CanContentScroll="True"
@@ -68,7 +70,7 @@
 
     <!-- https://docs.microsoft.com/en-us/dotnet/framework/wpf/controls/scrollviewer-styles-and-templates -->
 
-    <Style TargetType="{x:Type ScrollViewer}">
+    <Style x:Key="MyScroll" TargetType="{x:Type ScrollViewer}">
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
