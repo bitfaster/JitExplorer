@@ -9,7 +9,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:JitExplorer"
         mc:Ignorable="d"
-        Title="JitExplorer" TitleCharacterCasing="Normal"
+        Title="JitExplorer" TitleCharacterCasing="Normal" TitleForeground="{DynamicResource MahApps.Brushes.SemiTransparent}"
         Height="450" Width="800" 
         BorderThickness="0.5" BorderBrush="DarkOrange">
     <Window.Resources>
@@ -22,8 +22,8 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"></RowDefinition>
-            <RowDefinition ></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition ></RowDefinition>
             <RowDefinition Height="25"></RowDefinition>
         </Grid.RowDefinitions>
         <Grid.Resources>
@@ -42,7 +42,7 @@
                 <MenuItem Header="_Exit" Click="Exit" />
             </MenuItem>
         </Menu>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="400"></ColumnDefinition>
                 <ColumnDefinition Width="5"></ColumnDefinition>
@@ -70,7 +70,7 @@
             </ScrollViewer>-->
             <!-- TEMP -->
         </Grid>
-        <Grid Grid.Row="2" Margin="5">
+        <Grid Grid.Row="1" Margin="5">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
@@ -87,7 +87,12 @@
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
             <CheckBox Name="TieredCompilation" Grid.Column="2" Margin="5,0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" >Tiered Compilation</CheckBox>
-            <Button Name="Jit" Grid.Column="3" Click="Jit_Click" >Dissassemble</Button>
+            <Button Name="Jit" Grid.Column="3" Click="Jit_Click" >
+                <StackPanel Orientation="Horizontal">
+                    <fa:ImageAwesome Name="asd" Icon="Play" Height="10" Width="10" Margin="2,2,0,0" Foreground="LightGreen"/>
+                    <TextBlock Margin="5,0,0,0">Dissassemble</TextBlock>
+                </StackPanel>
+            </Button>
         </Grid>
         <StatusBar Grid.Row="3">
             <StatusBar.ItemsPanel>

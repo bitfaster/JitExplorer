@@ -88,6 +88,15 @@ namespace JitExplorer
 
             this.codeCompletion = new RoslynCodeCompletion(Compiler.MetadataReferences);
             this.codeCompletion.Initialize();
+
+            if (IntPtr.Size == 8)
+            { 
+                this.Title = "JitExplorer (x64)"; 
+            }
+            else
+            {
+                this.Title = "JitExplorer (x86)";
+            }
         }
 
         private void IsolatedJit_Progress(object sender, ProgressEventArgs e)
