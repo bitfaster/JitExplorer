@@ -9,7 +9,8 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:JitExplorer"
         mc:Ignorable="d"
-        Title="JitExplorer" Height="450" Width="800" TitleCharacterCasing="Normal">
+        Title="JitExplorer" Height="450" Width="800" TitleCharacterCasing="Normal"
+                 BorderThickness="0.5" BorderBrush="DarkOrange">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -88,7 +89,7 @@
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
-            <CheckBox x:Name="TieredCompilation" Grid.Column="2" Background="White" >Tiered Compilation</CheckBox>
+            <CheckBox Name="TieredCompilation" Grid.Column="2" Background="White" >Tiered Compilation</CheckBox>
             <Button Name="Jit" Grid.Column="3" Click="Jit_Click" >Dissassemble</Button>
         </Grid>
         <StatusBar Grid.Row="3">
