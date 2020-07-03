@@ -1,25 +1,43 @@
-﻿<Window x:Class="JitExplorer.MainWindow"
+﻿<mah:MetroWindow x:Class="JitExplorer.MainWindow"
         xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
         xmlns:fa="http://schemas.fontawesome.io/icons/"
+        xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:local="clr-namespace:JitExplorer"
         mc:Ignorable="d"
-        Title="JitExplorer" Height="450" Width="800">
+        Title="JitExplorer" TitleCharacterCasing="Normal"
+        Height="450" Width="800" 
+        BorderThickness="0.5" BorderBrush="DarkOrange">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
             <RowDefinition ></RowDefinition>
-            <RowDefinition Height="30"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="25"></RowDefinition>
         </Grid.RowDefinitions>
+        <Grid.Resources>
+            <ResourceDictionary>
+                <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Menu.xaml" />
+                </ResourceDictionary.MergedDictionaries>
+            </ResourceDictionary>
+        </Grid.Resources>
         <Menu Grid.Row="0">
             <MenuItem Header="_File" HorizontalContentAlignment="Left">
                 <MenuItem Header="_Open" Click="OpenFile"/>
-                <MenuItem Header="_Save Code" Click="SaveCode"/>
-                <MenuItem Header="Save Dissassemble"  Click="SaveDissassemble"/>
+                <MenuItem Header="_Save Source" Click="SaveCode"/>
+                <MenuItem Header="Save Assembler"  Click="SaveDissassemble"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="Exit" />
             </MenuItem>
@@ -29,24 +47,28 @@
                 <ColumnDefinition Width="400"></ColumnDefinition>
                 <ColumnDefinition Width="5"></ColumnDefinition>
                 <ColumnDefinition ></ColumnDefinition>
+                <!--<ColumnDefinition ></ColumnDefinition>--><!-- TEMP -->
             </Grid.ColumnDefinitions>
             <avalonedit:TextEditor x:Name="CodeEditor"
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
                                ShowLineNumbers="True"
-                               FontFamily="Courier New" 
                                MinWidth="5">
             </avalonedit:TextEditor>
-            <GridSplitter Grid.Column="1" Width="5" HorizontalAlignment="Stretch" Background="DarkGray" />
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
             <avalonedit:TextEditor Name="AssemblerView"
                                Grid.Column="2"
                                IsReadOnly="True"
                                ShowLineNumbers="False"
                                SyntaxHighlighting="Asm"
                                WordWrap="True"
-                               FontFamily="Courier New"
                                MinWidth="5">
             </avalonedit:TextEditor>
+            <!-- TEMP -->
+            <!--<ScrollViewer Grid.Column="3">
+                <TextBox AcceptsReturn="True" Background="#1E1E1E" >dsfsdf</TextBox>
+            </ScrollViewer>-->
+            <!-- TEMP -->
         </Grid>
         <Grid Grid.Row="2" Margin="5">
             <Grid.ColumnDefinitions>
@@ -55,16 +77,16 @@
                 <ColumnDefinition></ColumnDefinition>
                 <ColumnDefinition></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <ComboBox Name="BuildConfig" Grid.Column="0">
+            <ComboBox Name="BuildConfig" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}">
                 <ComboBoxItem IsSelected="True">Release</ComboBoxItem>
                 <ComboBoxItem>Debug</ComboBoxItem>
             </ComboBox>
-            <ComboBox Name="Platform" Grid.Column="1">
+            <ComboBox Name="Platform" Grid.Column="1" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0">
                 <ComboBoxItem IsSelected="True">x64</ComboBoxItem>
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
-            <CheckBox x:Name="TieredCompilation" Grid.Column="2">Tiered Compilation</CheckBox>
+            <CheckBox Name="TieredCompilation" Grid.Column="2" Margin="5,0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" >Tiered Compilation</CheckBox>
             <Button Name="Jit" Grid.Column="3" Click="Jit_Click" >Dissassemble</Button>
         </Grid>
         <StatusBar Grid.Row="3">
@@ -79,11 +101,11 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,0,0,0" />
+                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,2,0,0" Foreground="DarkOrange"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="1">
                 <TextBlock Name="StatusText" Text="Ready" />
             </StatusBarItem>
         </StatusBar>
     </Grid>
-</Window>
+</mah:MetroWindow>

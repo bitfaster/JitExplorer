@@ -20,15 +20,16 @@
  DEALINGS IN THE SOFTWARE.
 -->
 <SyntaxDefinition name = "Asm" extensions=".s;.asm" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
-	<Color name = "Comment" foreground="Green" exampleText="; comment" />
-	<Color name = "NumberLiteral" foreground="Orange" exampleText="0987654321" />
-	<Color name = "String" foreground="Magenta" exampleText="&quot;Hello, World!&quot;" />
-	<Color name = "Instructions" foreground="Blue" exampleText="nop" />
-	<Color name = "Math Instructions" foreground="#0080C0" exampleText="nop" />
-	<Color name = "Extended Instructions" foreground="Brown" exampleText="nop" />
-	<Color name = "Registers" foreground="#8080FF" background="#EEEEEE" exampleText="nop" />
-	<Color name = "Directives" foreground="Blue" fontWeight="bold" exampleText=".class" />
-	<Color name = "Directive Operands" foreground="DarkBlue" fontWeight="bold" exampleText=".class" />
+
+  <Color name = "Comment" foreground="#6A9955" exampleText="; comment" />
+  <Color name = "NumberLiteral" foreground="#569cd6" exampleText="0987654321" />
+  <Color name = "String" foreground="#ce9178" exampleText="&quot;Hello, World!&quot;" />
+  <Color name = "Instructions" foreground="#569cd6" exampleText="nop" />
+  <Color name = "Math Instructions" foreground="#0080C0" exampleText="fabs" />
+  <Color name = "Extended Instructions" foreground="Brown" exampleText="nop" />
+  <Color name = "Registers" foreground="#4EC9B0" exampleText="rax" />
+  <Color name = "Directives" foreground="#569cd6" fontWeight="bold" exampleText="if" />
+  <Color name = "Directive Operands" foreground="#b5cea8" fontWeight="bold" exampleText="addr" />
 	
 	<RuleSet ignoreCase = "false" >
 		<Keywords color="Instructions">
