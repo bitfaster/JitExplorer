@@ -1,0 +1,36 @@
+﻿<Controls:MetroWindow  x:Class="JitExplorer.Splash"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        ShowInTaskbar="False" 
+        ResizeMode="NoResize" 
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None" 
+        ShowTitleBar="False"
+        ShowCloseButton="False"
+        AllowsTransparency="True"
+        Title="JitExplorer" 
+        SizeToContent="Width" 
+        Topmost="True"
+        Height="100"
+        BorderThickness="0.5" BorderBrush="DarkOrange">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/VS/Colors.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Border CornerRadius="8" Margin="15">
+
+
+
+        <TextBlock FontSize="40"       
+                   Foreground="White"
+                   Margin="10"
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Center"
+                   Text="JitExplorer">
+        </TextBlock>
+    </Border>
+</Controls:MetroWindow>
