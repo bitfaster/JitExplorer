@@ -5,6 +5,7 @@ using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
 using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
+using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;
@@ -30,7 +31,7 @@ namespace JitExplorer
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow 
     {
         private readonly IsolatedJit isolatedJit;
         private readonly RoslynCodeCompletion codeCompletion;
@@ -42,6 +43,19 @@ namespace JitExplorer
                 "Asm", new string[] { ".s", ".asm" },
                 delegate {
                     using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.Asm-Mode.xshd"))
+                    {
+                        using (XmlTextReader reader = new XmlTextReader(s))
+                        {
+                            return HighlightingLoader.Load(reader, HighlightingManager.Instance);
+                        }
+                    }
+                });
+
+            HighlightingManager.Instance.RegisterHighlighting(
+                "C#", new string[] { ".cs" },
+                delegate
+                {
+                    using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.CSharp-Mode.xshd"))
                     {
                         using (XmlTextReader reader = new XmlTextReader(s))
                         {
