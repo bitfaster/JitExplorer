@@ -33,6 +33,7 @@
                     BasedOn="{StaticResource StandardMenuItem}" />
                 <Style TargetType="Menu"
                     BasedOn="{StaticResource StandardMenu}" />-->
+                
             </ResourceDictionary>
         </Grid.Resources>
         <Menu Grid.Row="0">
@@ -49,14 +50,12 @@
                 <ColumnDefinition Width="400"></ColumnDefinition>
                 <ColumnDefinition Width="5"></ColumnDefinition>
                 <ColumnDefinition ></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <avalonedit:TextEditor x:Name="CodeEditor"
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
                                ShowLineNumbers="True"
-                               FontFamily="Consolas" 
-                               Background="#1E1E1E"
-                               Foreground="#D4D4D4"
                                MinWidth="5">
             </avalonedit:TextEditor>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="#2D2D30" />
@@ -66,11 +65,12 @@
                                ShowLineNumbers="False"
                                SyntaxHighlighting="Asm"
                                WordWrap="True"
-                               FontFamily="Consolas"
-                               Background="#1E1E1E"
-                               Foreground="#D4D4D4"
                                MinWidth="5">
             </avalonedit:TextEditor>
+            <ScrollViewer  Grid.Column="3">
+                <TextBox  AcceptsReturn="True" Background="#1E1E1E" >dsfsdf</TextBox>
+            </ScrollViewer>
+            
         </Grid>
         <Grid Grid.Row="2" Margin="5">
             <Grid.ColumnDefinitions>
@@ -88,7 +88,7 @@
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
-            <CheckBox x:Name="TieredCompilation" Grid.Column="2" Foreground="White">Tiered Compilation</CheckBox>
+            <CheckBox x:Name="TieredCompilation" Grid.Column="2" Background="White" >Tiered Compilation</CheckBox>
             <Button Name="Jit" Grid.Column="3" Click="Jit_Click" >Dissassemble</Button>
         </Grid>
         <StatusBar Grid.Row="3">
@@ -103,7 +103,7 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,2,0,0" Foreground="Orange"/>
+                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,2,0,0" Foreground="DarkOrange"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="1">
                 <TextBlock Name="StatusText" Text="Ready" />

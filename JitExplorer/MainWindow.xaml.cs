@@ -209,7 +209,7 @@ namespace JitExplorer
                 completionWindow.CompletionList.CompletionData.AddRange(result);
 
                 // TODO: how to correctly style this?
-                //completionWindow.CompletionList.Background = SystemColors.ControlDarkDarkBrush;
+                completionWindow.CompletionList.Background = SystemColors.ControlDarkDarkBrush;
 
                 completionWindow.Show();
                 completionWindow.Closed += delegate {
