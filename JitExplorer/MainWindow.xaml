@@ -19,7 +19,7 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="20"></RowDefinition>
+            <RowDefinition Height="25"></RowDefinition>
             <RowDefinition ></RowDefinition>
             <RowDefinition Height="Auto"></RowDefinition>
             <RowDefinition Height="25"></RowDefinition>
@@ -38,8 +38,8 @@
         <Menu Grid.Row="0">
             <MenuItem Header="_File" HorizontalContentAlignment="Left">
                 <MenuItem Header="_Open" Click="OpenFile"/>
-                <MenuItem Header="_Save Code" Click="SaveCode"/>
-                <MenuItem Header="Save Dissassemble"  Click="SaveDissassemble"/>
+                <MenuItem Header="_Save Source" Click="SaveCode"/>
+                <MenuItem Header="Save Assembler"  Click="SaveDissassemble"/>
                 <Separator />
                 <MenuItem Header="_Exit" Click="Exit" />
             </MenuItem>
@@ -88,7 +88,7 @@
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
-            <CheckBox x:Name="TieredCompilation" Grid.Column="2">Tiered Compilation</CheckBox>
+            <CheckBox x:Name="TieredCompilation" Grid.Column="2" Foreground="White">Tiered Compilation</CheckBox>
             <Button Name="Jit" Grid.Column="3" Click="Jit_Click" >Dissassemble</Button>
         </Grid>
         <StatusBar Grid.Row="3">
@@ -103,7 +103,7 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,2,0,0" Foreground="#d7ba7d"/>
+                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,2,0,0" Foreground="Orange"/>
             </StatusBarItem>
             <StatusBarItem Grid.Column="1">
                 <TextBlock Name="StatusText" Text="Ready" />

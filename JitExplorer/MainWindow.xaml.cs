@@ -207,6 +207,7 @@ namespace JitExplorer
                 // Open code completion after the user has pressed dot:
                 completionWindow = new CompletionWindow(this.CodeEditor.TextArea);
                 completionWindow.CompletionList.CompletionData.AddRange(result);
+                completionWindow.CompletionList.Background = SystemColors.ControlDarkDarkBrush;
 
                 completionWindow.Show();
                 completionWindow.Closed += delegate {
