@@ -28,8 +28,9 @@
 
                 <!-- Theme setting -->
                 <ResourceDictionary Source="pack://application:,,,/MahApps.Metro;component/Styles/Themes/Dark.Blue.xaml" />
-                
-                
+
+                <ResourceDictionary Source="Component/Styles/CompletionWindow.xaml" />
+                <ResourceDictionary Source="Component/Styles/TextEditor.xaml" />
                 <ResourceDictionary Source="Controls/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

@@ -4,67 +4,6 @@
                     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                     xmlns:codeCompletion="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion;assembly=ICSharpCode.AvalonEdit">
 
-    <Style TargetType="codeCompletion:CompletionWindow">
-        <Style.Resources>
-            <Style TargetType="ScrollViewer" BasedOn="{StaticResource MahApps.Styles.ScrollViewer}"  />
-        </Style.Resources>
-
-        <Setter Property="WindowStyle" Value="None" />
-        <Setter Property="ResizeMode" Value="NoResize" />
-        <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Background" Value="{StaticResource MahApps.Brushes.SubmenuItem.Background}"  />
-        <Setter Property="TextElement.FontFamily" Value="{StaticResource MahApps.Fonts.Family.Control}" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="Auto" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Animated" />
-    </Style>
-
-    <Style TargetType="codeCompletion:CompletionListBox">
-        <Style.Resources>
-            <Style TargetType="codeCompletion:CompletionListBox" BasedOn="{StaticResource MahApps.Styles.ListBox}"></Style>
-        </Style.Resources>
-        <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Background}" ></Setter>
-        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Foreground}" ></Setter>
-        <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Border.Normal}"></Setter>
-    </Style>
-
-    <Style TargetType="avalonedit:TextEditor">
-        <Setter Property="FontFamily" Value="Consolas" />
-        <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Background}" />
-        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Foreground}" />
-
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="avalonedit:TextEditor">
-                    <!--Border brush outlines panel-->
-                    <Border BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}"
-                            BorderThickness="1"
-                            CornerRadius="0">
-                        <ScrollViewer 
-                            Name="PART_ScrollViewer"
-                                      Padding="{TemplateBinding Padding}"
-                                      Background="{DynamicResource MahApps.Brushes.Background}"
-                                      HorizontalContentAlignment="Left"
-                                      VerticalContentAlignment="Top"
-                                      CanContentScroll="True"
-                                      Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextArea}"
-                                      Focusable="False"
-                                      Style="{StaticResource MahApps.Styles.ScrollViewer}"
-                                      HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
-                                      VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}">
-                        </ScrollViewer>
-                    </Border>
-                    
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="WordWrap" Value="True">
-                            <Setter TargetName="PART_ScrollViewer" Property="HorizontalScrollBarVisibility" Value="Disabled" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
-
     <!-- https://docs.microsoft.com/en-us/dotnet/framework/wpf/controls/scrollviewer-styles-and-templates -->
     <!-- Template experiment - this has expected scroll bar rendering -->
     <Style x:Key="MyScroll" TargetType="{x:Type ScrollViewer}">
@@ -106,9 +45,4 @@
         </Setter>
     </Style>
 
-    <Style TargetType="avalonedit:TextArea">
-        <Setter Property="Margin" Value="4" />
-        <Setter Property="SelectionCornerRadius" Value="0" />
-        <Setter Property="SelectionBorder" Value="{x:Null}" />
-    </Style>
 </ResourceDictionary>
