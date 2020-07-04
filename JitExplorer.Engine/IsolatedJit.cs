@@ -128,9 +128,9 @@ namespace JitExplorer.Engine
 //[assembly: AssemblyTitle(""Test"")]
 //[assembly: AssemblyVersion(""1.0.0.0"")]";
 
-            var jitSyntax = c.CreateSyntaxTree("jitexpl.cs", jitExplSource);
+            var jitSyntax = c.Parse("jitexpl.cs", jitExplSource);
             // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
-            var syntax = c.CreateSyntaxTree("program.cs", source);
+            var syntax = c.Parse("program.cs", source);
             return c.Compile(assembylyName, syntax, jitSyntax);
         }
 
@@ -139,6 +139,16 @@ namespace JitExplorer.Engine
             using (var fs = File.OpenWrite(path))
             {
                 compilation.Assembly.WriteTo(fs);
+            }
+
+            if (compilation.Pdb != Stream.Null)
+            {
+                string pdbPath = Path.ChangeExtension(path, ".pdb");
+
+                using (var fs = File.OpenWrite(pdbPath))
+                {
+                    compilation.Pdb.WriteTo(fs);
+                }
             }
 
             string json = @"

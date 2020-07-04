@@ -10,29 +10,54 @@ using System.Text;
 
 namespace JitExplorer.Engine.Compile
 {
+    public class ParsedTree
+    {
+        public ParsedTree(SyntaxTree syntaxTree, EmbeddedText embeddedText)
+        {
+            this.SyntaxTree = syntaxTree;
+            this.EmbeddedText = embeddedText;
+        }
+
+        public SyntaxTree SyntaxTree { get; }
+
+        public EmbeddedText EmbeddedText { get; }
+    }
+
     public class Compiler
     {
         private readonly CompilerOptions compilerOptions;
+
+        private static readonly MemoryStream Empty = new MemoryStream(Array.Empty<byte>());
 
         public Compiler(CompilerOptions compilerOptions)
         {
             this.compilerOptions = compilerOptions;
         }
 
-        public Compilation Compile(string assemblyName, params SyntaxTree[] syntaxTrees)
+        // https://stackoverflow.com/questions/50649795/how-to-debug-dll-generated-from-roslyn-compilation
+        public Compilation Compile(string assemblyName, params ParsedTree[] parsedTrees)
         {
             var peStream = new MemoryStream();
-            var compilation = CsCompile(assemblyName, syntaxTrees);
+            var pdbStream = new MemoryStream();
+
+            var compilation = CsCompile(assemblyName, parsedTrees.Select(t => t.SyntaxTree));
+
+            var emitOptions = new EmitOptions(
+                debugInformationFormat: DebugInformationFormat.Pdb,
+                pdbFilePath: Path.ChangeExtension(assemblyName, ".pdb")
+            );
 
             var result = compilation.Emit(
                 peStream,
-                options: new EmitOptions());
+                pdbStream,
+                embeddedTexts: parsedTrees.Select(t => t.EmbeddedText),
+                options: emitOptions);
 
             if (result.Success)
             {
-                peStream.Seek(0, SeekOrigin.Begin);
+                peStream.Position = pdbStream.Position = 0;
 
-                return new Compilation(peStream, Array.Empty<CompileDiagnostic>());
+                return new Compilation(peStream, pdbStream, Array.Empty<CompileDiagnostic>());
             }
 
             var errors = result.Diagnostics
@@ -43,10 +68,10 @@ namespace JitExplorer.Engine.Compile
                 .Select(x => new CompileDiagnostic(x))
                 .ToArray();
 
-            return new Compilation(new MemoryStream(0), errors);
+            return new Compilation(Empty, Empty, errors);
         }
 
-        public SyntaxTree CreateSyntaxTree(string sourceCodePath, string sourceCode)
+        public ParsedTree Parse(string sourceCodePath, string sourceCode)
         {
             var buffer = Encoding.UTF8.GetBytes(sourceCode);
             var sourceText = SourceText.From(buffer, buffer.Length, Encoding.UTF8, canBeEmbedded: true);
@@ -55,7 +80,10 @@ namespace JitExplorer.Engine.Compile
             var syntaxTree = CSharpSyntaxTree.ParseText(sourceText, options, path: sourceCodePath);
 
             var syntaxRootNode = syntaxTree.GetRoot() as CSharpSyntaxNode;
-            return CSharpSyntaxTree.Create(syntaxRootNode, null, sourceCodePath, Encoding.UTF8);
+
+            return new ParsedTree(
+                CSharpSyntaxTree.Create(syntaxRootNode, null, sourceCodePath, Encoding.UTF8), 
+                EmbeddedText.FromSource(sourceCodePath, sourceText));
         }
 
         private CSharpCompilation CsCompile(string assemblyName, IEnumerable<SyntaxTree> syntaxTrees)
