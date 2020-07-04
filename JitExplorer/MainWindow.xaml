@@ -70,28 +70,20 @@
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
-            <CheckBox Name="TieredCompilation" Grid.Column="2" Margin="5,0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" >Tiered Compilation</CheckBox>
 
-            <Button Name="Tiered" Grid.Column="3" Margin="5,0,5,0" ToolTip="Tiered JIT">
-                <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Name="TieredIcon" Icon="Cubes" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple" />
-                </StackPanel>
-            </Button>
-            <Button Name="QuickJit" Grid.Column="3" Margin="5,0,5,0" ToolTip="Quick JIT">
-                <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Name="QuickJitIcon" Icon="FastForward" Height="10" Width="10" Margin="2,2,0,0" Foreground="MediumPurple"/>
-                </StackPanel>
-            </Button>
-            <Button Name="LoopJit" Grid.Column="3" Margin="5,0,5,0" ToolTip="Quick Loop JIT">
-                <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Name="LoopJitIcon" Icon="Info" Height="10" Width="10" Margin="2,2,0,0" Foreground="MediumPurple"/>
-                </StackPanel>
-            </Button>
-            <Button Name="Legacy" Grid.Column="3" Margin="5,0,5,0" ToolTip="Legacy JIT">
-                <StackPanel Orientation="Horizontal">
-                    <fa:ImageAwesome Name="LegacyIcon" Icon="FortAwesome" Height="10" Width="10" Margin="2,2,0,0" Foreground="MediumPurple"/>
-                </StackPanel>
-            </Button>
+            <ToggleButton x:Name="TieredCompilation" BorderBrush="Transparent" ToolTip="Tiered JIT">
+                <fa:ImageAwesome Icon="Cubes" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple" />
+            </ToggleButton>
+            <ToggleButton x:Name="QuickJit" BorderBrush="Transparent" ToolTip="Quick JIT">
+                <fa:ImageAwesome Name="QuickJitIcon" Icon="FastForward" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple"/>
+            </ToggleButton>
+            <ToggleButton x:Name="LoopJit" BorderBrush="Transparent" ToolTip="Quick Loop JIT">
+                <fa:ImageAwesome Name="LoopJitIcon" Icon="Info" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple"/>
+            </ToggleButton>
+            <ToggleButton x:Name="Legacy" BorderBrush="Transparent" ToolTip="Legacy JIT">
+                <fa:ImageAwesome Name="LegacyIcon" Icon="FortAwesome" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple"/>
+            </ToggleButton>
+
             <Button Name="Jit" Grid.Column="3" Click="Jit_Click" ToolTip="Dissassemble source code using selected Compile and JIT options">
                 <StackPanel Orientation="Horizontal">
                     <fa:ImageAwesome Name="JitIcon" Icon="Play" Height="10" Width="10" Margin="2,2,0,0" Foreground="LightGreen"/>
