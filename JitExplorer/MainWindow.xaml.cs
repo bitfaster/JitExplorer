@@ -11,8 +11,10 @@ using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -240,6 +242,52 @@ namespace JitExplorer
             }
             // Do not set e.Handled=true.
             // We still want to insert the character that was typed.
+        }
+
+        private void ShowLineNumbersHandler(object sender, RoutedEventArgs e)
+        {
+            this.CodeEditor.ShowLineNumbers = !this.CodeEditor.ShowLineNumbers;
+        }
+
+        private void UndoHandler(object sender, RoutedEventArgs e)
+        {
+            this.CodeEditor.Undo();
+        }
+
+        private void RedoHandler(object sender, RoutedEventArgs e)
+        {
+            this.CodeEditor.Redo();
+        }
+
+        private void CutHandler(object sender, RoutedEventArgs e)
+        {
+            this.CodeEditor.Cut();
+        }
+
+        private void CopyHandler(object sender, RoutedEventArgs e)
+        {
+            this.CodeEditor.Copy();
+        }
+
+        private void PasteHandler(object sender, RoutedEventArgs e)
+        {
+            this.CodeEditor.Paste();
+        }
+
+        private void AboutHandler(object sender, RoutedEventArgs e)
+        {
+            string url = @"https://github.com/bitfaster/JitExplorer";
+
+            try
+            {
+                Process.Start(url);
+            }
+            catch
+            {
+                // hack because of this: https://github.com/dotnet/corefx/issues/10361
+                url = url.Replace("&", "^&");
+                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+            }
         }
     }
 }
