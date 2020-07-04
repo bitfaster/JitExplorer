@@ -99,32 +99,5 @@ namespace JitExplorer.Engine.Disassemble
 
             return prettified;
         }
-
-        //internal static Formatter GetFormatterWithSymbolSolver(IReadOnlyDictionary<ulong, string> addressToNameMapping)
-        //{
-        //    var symbolSolver = new SymbolResolver(addressToNameMapping);
-
-        //    var formatter = new MasmFormatter();
-        //    formatter.Options.FirstOperandCharIndex = 10; // pad right the mnemonic
-        //    formatter.Options.HexSuffix = default; // don't print "h" at the end of every hex address
-        //    formatter.Options.TabSize = 0; // use spaces
-            
-
-        //    //switch (Formatter)
-        //    //{
-        //    //    case MasmFormatter masmFormatter:
-        //    return new MasmFormatter(formatter.MasmOptions, symbolSolver);
-        //    //    case NasmFormatter nasmFormatter:
-        //    //        return new NasmFormatter(nasmFormatter.NasmOptions, symbolSolver);
-        //    //    case GasFormatter gasFormatter:
-        //    //        return new GasFormatter(gasFormatter.GasOptions, symbolSolver);
-        //    //    case IntelFormatter intelFormatter:
-        //    //        return new IntelFormatter(intelFormatter.IntelOptions, symbolSolver);
-        //    //    default:
-        //    //        // we don't know how to translate it so we just return the original one
-        //    //        // it's better not to solve symbols rather than throw exception ;)
-        //    //        return Formatter;
-        //    //}
-        //}
     }
 }
