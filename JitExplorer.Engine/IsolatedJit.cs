@@ -77,6 +77,7 @@ namespace JitExplorer.Engine
                 OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication,
                 OptimizationLevel = config.OptimizationLevel,
                 Platform = config.Platform,
+                LanguageVersion = config.LanguageVersion,
             };
 
             Compiler c = new Compiler(options);

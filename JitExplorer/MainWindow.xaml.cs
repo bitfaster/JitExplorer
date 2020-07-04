@@ -7,6 +7,7 @@ using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;
 using System;
@@ -121,12 +122,46 @@ namespace JitExplorer
 
             var config = new Config()
             {
+                LanguageVersion = GetLanguageVersion(),
                 Platform = GetPlatform(),
                 OptimizationLevel = GetOptimizationLevel(),
                 JitMode = GetJitMode(),
             };
 
             Task.Run(() => this.JitIt(source, config));
+        }
+
+        private LanguageVersion GetLanguageVersion()
+        {
+            switch (this.LanguageVersion.SelectedIndex)
+            {
+                case 1:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
+                case 2:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp2;
+                case 3:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp3;
+                case 4:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
+                case 5:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
+                case 6:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
+                case 7:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7;
+                case 8:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_1;
+                case 9:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_2;
+                case 10:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_3;
+                case 11:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp8;
+                case 12:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Latest;
+                default:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default;
+            }
         }
 
         private Platform GetPlatform()

@@ -61,11 +61,26 @@
 
         <!-- Toolbar -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,15">
-            <ComboBox Name="BuildConfig" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}">
+            <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}">
+                <ComboBoxItem IsSelected="True">C# (Default)</ComboBoxItem>
+                <ComboBoxItem>C# 1</ComboBoxItem>
+                <ComboBoxItem>C# 2</ComboBoxItem>
+                <ComboBoxItem>C# 3</ComboBoxItem>
+                <ComboBoxItem>C# 4</ComboBoxItem>
+                <ComboBoxItem>C# 5</ComboBoxItem>
+                <ComboBoxItem>C# 6</ComboBoxItem>
+                <ComboBoxItem>C# 7</ComboBoxItem>
+                <ComboBoxItem>C# 7.1</ComboBoxItem>
+                <ComboBoxItem>C# 7.2</ComboBoxItem>
+                <ComboBoxItem>C# 7.3</ComboBoxItem>
+                <ComboBoxItem>C# 8</ComboBoxItem>
+                <ComboBoxItem>C# (Latest)</ComboBoxItem>
+            </ComboBox>
+            <ComboBox Name="BuildConfig" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0">
                 <ComboBoxItem IsSelected="True">Release</ComboBoxItem>
                 <ComboBoxItem>Debug</ComboBoxItem>
             </ComboBox>
-            <ComboBox Name="Platform" Grid.Column="1" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0">
+            <ComboBox Name="Platform" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0">
                 <ComboBoxItem IsSelected="True">x64</ComboBoxItem>
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
