@@ -11,7 +11,7 @@ namespace JitExplorer
         public JitKey(string sourceCode, OptimizationLevel optimizationLevel, Platform platform, JitMode jitMode)
         {
             this.SourceCode = sourceCode;
-            this.OptimizationLevel = this.OptimizationLevel;
+            this.OptimizationLevel = optimizationLevel;
             this.Platform = platform;
             this.JitMode = jitMode;
         }
