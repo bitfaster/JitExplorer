@@ -230,8 +230,8 @@ namespace JitExplorer.Engine
             foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
             {
                 referenceIndex++;
-
-                var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}");
+                var f = new AsmFormat();
+                var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
                 sb.AppendLine($"{method.Name}");
 

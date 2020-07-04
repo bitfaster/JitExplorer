@@ -55,8 +55,8 @@ namespace JitExplorer.Engine.UnitTests
             foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
             {
                 referenceIndex++;
-                
-                var pretty = DisassemblyPrettifier.Prettify(method, result,  $"M{methodIndex++:00}");
+                var f = new AsmFormat();
+                var pretty = DisassemblyPrettifier.Prettify(method, result,  $"M{methodIndex++:00}", f);
 
                 //output.WriteLine($"<tr><th colspan=\"2\" style=\"text-align: left;\">{method.Name}</th><th></th></tr>");
                 output.WriteLine($"{method.Name}");
