@@ -89,7 +89,7 @@ namespace JitExplorer.Engine.UnitTests
 
             string source = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; System.Threading.Thread.Sleep(2000); } } public class Testy {} }";
 
-            var syntax = c.CreateSyntaxTree("program.cs", source);
+            var syntax = c.Parse("program.cs", source);
             return c.Compile(assembylyName, syntax);
         }
 
