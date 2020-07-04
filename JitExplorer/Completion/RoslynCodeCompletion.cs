@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 
 namespace JitExplorer.Completion
 {
+    // https://github.com/aelij/RoslynPad/blob/f9cf2b3f14333d73210aa91329ec162324de2b70/src/RoslynPad.Editor.Shared/RoslynCodeEditorCompletionProvider.cs
     public class RoslynCodeCompletion
     {
         private readonly AdhocWorkspace workspace;
