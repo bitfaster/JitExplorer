@@ -34,7 +34,7 @@
             </ResourceDictionary>
         </Grid.Resources>
 
-        
+        <!-- Menu -->
         <Menu Grid.Row="0">
             <MenuItem Header="_File" HorizontalContentAlignment="Left">
                 <MenuItem Header="_Open" Click="OpenFile"/>
@@ -45,35 +45,7 @@
             </MenuItem>
         </Menu>
 
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="400"></ColumnDefinition>
-                <ColumnDefinition Width="5"></ColumnDefinition>
-                <ColumnDefinition ></ColumnDefinition>
-                <!--<ColumnDefinition ></ColumnDefinition>--><!-- TEMP -->
-            </Grid.ColumnDefinitions>
-            <avalonedit:TextEditor x:Name="CodeEditor"
-                               Grid.Column="0"
-                               SyntaxHighlighting="C#" 
-                               ShowLineNumbers="True"
-                               MinWidth="5">
-            </avalonedit:TextEditor>
-            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
-            <avalonedit:TextEditor Name="AssemblerView" 
-                               Grid.Column="2"
-                               IsReadOnly="True"
-                               ShowLineNumbers="False"
-                               SyntaxHighlighting="Asm"
-                               WordWrap="True"
-                               MinWidth="5">
-            </avalonedit:TextEditor>
-            <!-- TEMP -->
-            <!--<ScrollViewer Grid.Column="3" HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Visible">
-                <TextBox AcceptsReturn="True" TextWrapping="NoWrap"   Background="{DynamicResource MahApps.Brushes.Background}" >dsfsdf</TextBox>
-            </ScrollViewer>-->
-            <!-- TEMP -->
-        </Grid>
-
+        <!-- Toolbar -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,15">
             <ComboBox Name="BuildConfig" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}">
                 <ComboBoxItem IsSelected="True">Release</ComboBoxItem>
@@ -113,15 +85,32 @@
                 </StackPanel>
             </Button>
         </StackPanel>
-        <!--<Grid Margin="5">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
 
-        </Grid>-->
+        <!-- Code editor/dissassembly -->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="400"></ColumnDefinition>
+                <ColumnDefinition Width="5"></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <avalonedit:TextEditor x:Name="CodeEditor"
+                               Grid.Column="0"
+                               SyntaxHighlighting="C#" 
+                               ShowLineNumbers="True"
+                               MinWidth="5">
+            </avalonedit:TextEditor>
+            <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
+            <avalonedit:TextEditor Name="AssemblerView" 
+                               Grid.Column="2"
+                               IsReadOnly="True"
+                               ShowLineNumbers="False"
+                               SyntaxHighlighting="Asm"
+                               WordWrap="True"
+                               MinWidth="5">
+            </avalonedit:TextEditor>
+        </Grid>
+
+        <!-- Status bar -->
         <StatusBar Grid.Row="3">
             <StatusBar.ItemsPanel>
                 <ItemsPanelTemplate>
