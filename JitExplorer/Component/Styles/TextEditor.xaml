@@ -3,13 +3,93 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:avalonedit="http://icsharpcode.net/sharpdevelop/avalonedit"
                     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls">
-    <Style TargetType="avalonedit:TextEditor" >
 
+    <Style x:Key="ReplaceScrollViewer" TargetType="{x:Type ScrollViewer}">
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <!-- This is the content panel -->
+                        <Border Grid.Column="0" BorderThickness="1,1,1,1">
+                            <Border.BorderBrush>
+                                <SolidColorBrush Color="{DynamicResource BorderMediumColor}" />
+                            </Border.BorderBrush>
+                            <ScrollContentPresenter Content="{TemplateBinding ScrollViewer.Content}" />
+                        </Border>
+                        <!-- Wrap in a grid with different background color, since these inherit parent -->
+                        <Grid Grid.Row="0"
+                             Grid.Column="1" 
+                             Background="{DynamicResource MahApps.Brushes.ScrollBar.PageButtonBackgroundHighlighted}">
+                            <ScrollBar x:Name="PART_VerticalScrollBar"
+                                 Style="{DynamicResource MahApps.Styles.ScrollBar.VisualStudio}"
+                                 Orientation="Vertical"
+                             
+                                 Value="{TemplateBinding VerticalOffset}"
+                                 Maximum="{TemplateBinding ScrollableHeight}"
+                                 ViewportSize="{TemplateBinding ViewportHeight}"
+                                 Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+                        </Grid>
+                        <!-- Wrap in a grid with different background color, since these inherit parent -->
+                        <Grid Grid.Row="1"
+                             Grid.Column="0"
+                             Background="{DynamicResource MahApps.Brushes.ScrollBar.PageButtonBackgroundHighlighted}">
+                            <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                 Style="{DynamicResource MahApps.Styles.ScrollBar.VisualStudio}"
+                                 Orientation="Horizontal"
+                             
+                                 Value="{TemplateBinding HorizontalOffset}"
+                                 Maximum="{TemplateBinding ScrollableWidth}"
+                                 ViewportSize="{TemplateBinding ViewportWidth}"
+                                 Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                        </Grid>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="avalonedit:TextEditor" >
         <Setter Property="FontFamily" Value="Consolas" />
         <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Background}" />
         <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Foreground}" />
         <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Border.Normal}" />
         <Setter Property="BorderThickness" Value="{DynamicResource ComboBoxBorderThemeThickness}" />
+        
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="avalonedit:TextEditor">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderThickness="0"
+                            CornerRadius="0">
+                        <!-- ReSharper disable once Xaml.StaticResourceNotResolved -->
+                        <ScrollViewer Name="PART_ScrollViewer"
+                                      Padding="{TemplateBinding Padding}"
+                                      HorizontalContentAlignment="Left"
+                                      VerticalContentAlignment="Top"
+                                      CanContentScroll="True"
+                                      Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=TextArea}"
+                                      Focusable="False"
+                                      Style="{StaticResource ReplaceScrollViewer}"
+                                      HorizontalScrollBarVisibility="{TemplateBinding HorizontalScrollBarVisibility}"
+                                      VerticalScrollBarVisibility="{TemplateBinding VerticalScrollBarVisibility}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="WordWrap" Value="True">
+                            <Setter TargetName="PART_ScrollViewer" Property="HorizontalScrollBarVisibility" Value="Disabled" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="avalonedit:TextArea">

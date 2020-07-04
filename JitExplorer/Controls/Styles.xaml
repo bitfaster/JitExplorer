@@ -5,6 +5,7 @@
                     xmlns:codeCompletion="clr-namespace:ICSharpCode.AvalonEdit.CodeCompletion;assembly=ICSharpCode.AvalonEdit">
 
     <!-- Experiment to style scroll bars https://docs.microsoft.com/en-us/dotnet/framework/wpf/controls/scrollbar-styles-and-templates -->
+    <!-- https://github.com/MahApps/MahApps.Metro/blob/develop/src/MahApps.Metro/Styles/VS/ScrollBar.xaml -->
     
     <Style x:Key="ScrollBarLineButton"
        TargetType="{x:Type RepeatButton}">
@@ -128,6 +129,9 @@
         </Setter>
     </Style>
 
+    <!-- #00FFFFFF thumb background (the background of the part you drag) -->
+    <!-- MahApps.Brushes.Background.Normal = Metro Thumb background (the part you drag with the mouse to scroll)-->
+    
     <ControlTemplate x:Key="VerticalScrollBar" TargetType="{x:Type ScrollBar}">
         <Grid>
             <Grid.RowDefinitions>
