@@ -69,7 +69,7 @@ namespace JitExplorer
 
             InitializeComponent();
 
-            this.isolatedJit = new IsolatedJit();
+            this.isolatedJit = new IsolatedJit("test.exe");
             this.isolatedJit.Progress += IsolatedJit_Progress;
 
             this.CodeEditor.Text = @"namespace Testing

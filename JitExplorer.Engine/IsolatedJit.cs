@@ -15,6 +15,14 @@ namespace JitExplorer.Engine
     {
         public event EventHandler<ProgressEventArgs> Progress;
 
+        private readonly string exeName;
+
+        public IsolatedJit(string exeName)
+        {
+            ValidateExeName(exeName);
+            this.exeName = exeName;
+        }
+
         public string CompileJitAndDisassemble(string sourceCode, Config config)
         {
             if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
@@ -23,7 +31,7 @@ namespace JitExplorer.Engine
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
-            using var c = Compile("test.exe", sourceCode, config);
+            using var c = Compile(this.exeName, sourceCode, config);
 
             if (!c.Succeeded)
             {
@@ -38,10 +46,10 @@ namespace JitExplorer.Engine
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
-            WriteExeToDisk("test.exe", c);
+            WriteExeToDisk(this.exeName, c);
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
-            using (var p = Execute("test.exe", config))
+            using (var p = Execute(this.exeName, config))
             {
                 using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "JitExplorer.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
                 
@@ -102,23 +110,23 @@ namespace JitExplorer.Engine
 
             // This seems to result in DotPeek reporting assembly framework as .NET core instead of 4.8.
             // But it still shows the .dll as debug, even with correct DebuggableAttribute.
-            var assemblyInfo = @"
-using System.Diagnostics;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.Versioning;
+//            var assemblyInfo = @"
+//using System.Diagnostics;
+//using System.Reflection;
+//using System.Runtime.CompilerServices;
+//using System.Runtime.Versioning;
 
-[assembly: CompilationRelaxations(8)]
-[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
-[assembly: Debuggable(false, false)]
-[assembly: TargetFramework("".NETCoreApp,Version=v3.1"", FrameworkDisplayName = """")]
-[assembly: AssemblyCompany(""Test"")]
-[assembly: AssemblyConfiguration(""Release"")]
-[assembly: AssemblyFileVersion(""1.0.0.0"")]
-[assembly: AssemblyInformationalVersion(""1.0.0"")]
-[assembly: AssemblyProduct(""Test"")]
-[assembly: AssemblyTitle(""Test"")]
-[assembly: AssemblyVersion(""1.0.0.0"")]";
+//[assembly: CompilationRelaxations(8)]
+//[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+//[assembly: Debuggable(false, false)]
+//[assembly: TargetFramework("".NETCoreApp,Version=v3.1"", FrameworkDisplayName = """")]
+//[assembly: AssemblyCompany(""Test"")]
+//[assembly: AssemblyConfiguration(""Release"")]
+//[assembly: AssemblyFileVersion(""1.0.0.0"")]
+//[assembly: AssemblyInformationalVersion(""1.0.0"")]
+//[assembly: AssemblyProduct(""Test"")]
+//[assembly: AssemblyTitle(""Test"")]
+//[assembly: AssemblyVersion(""1.0.0.0"")]";
 
             var jitSyntax = c.CreateSyntaxTree("jitexpl.cs", jitExplSource);
             // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
@@ -245,6 +253,14 @@ using System.Runtime.Versioning;
             }
 
             return sb.ToString();
+        }
+
+        private static void ValidateExeName(string exeName)
+        { 
+            if (!exeName.EndsWith(".exe"))
+            {
+                throw new ArgumentException("Invalid exe name");
+            }
         }
     }
 }

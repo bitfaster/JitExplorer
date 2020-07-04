@@ -110,10 +110,12 @@ namespace JitExplorer.Engine.UnitTests
             }
         }
 
+#pragma warning disable xUnit1013 // Public method should be marked as test
         public void Wrapper()
         {
             var lru = new FastConcurrentLru<int, int>(5);
             lru.TryGet(1, out var v);
         }
+#pragma warning restore xUnit1013 // Public method should be marked as test
     }
 }
