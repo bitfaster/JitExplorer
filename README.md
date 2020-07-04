@@ -6,14 +6,15 @@ C# source code is compiled to an executable using [Roslyn](https://github.com/do
 
 The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDasm) is that it supports dissassembly of generic methods:
 
-![image](https://user-images.githubusercontent.com/12851828/86504903-39fd1f00-bd73-11ea-91db-821f1ef48e3e.png)
+![image](https://user-images.githubusercontent.com/12851828/86521372-c3106680-be04-11ea-90bd-81aead515b07.png)
 
 # TODO:
 
 - JIT is not consistent in some cases. Attempt to provide some degree of warmup.
 - Auto background jit, without button.
 - Hide program, just show JitExplorer.JitAndDissassemble.This()
-- Better UI: Asm combos to pick method and type, emit assembly addr nos, choose instr format
+- Better UI: Asm combos to pick method and type, emit assembly addr nos, choose instr format, depth
+- Short names in asm
 - UI bugs: fix toggle button style
 - Different TextEditor for error messages with propery highlighting
 - Full code auto complete, like RoslynPad
