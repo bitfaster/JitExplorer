@@ -1,6 +1,5 @@
 ﻿using BitFaster.Caching.Lru;
 using Iced.Intel;
-using JitBuddy;
 using JitExplorer.Engine.Disassemble;
 using System;
 using System.Collections.Generic;
@@ -21,26 +20,6 @@ namespace JitExplorer.Engine.UnitTests
         public DisassembleTests(ITestOutputHelper output)
         {
             this.output = output;
-        }
-
-        [Fact]
-        public void JitBuddy()
-        {
-            var lru = new ConcurrentLru<int, int>(5);
-            lru.TryGet(1, out var v);
-
-            var type = typeof(FastConcurrentLru<int, int>);
-            var method = type.GetMethod("TryGet", BindingFlags.Public | BindingFlags.Instance);
-
-            var formatter = new MasmFormatter();
-            formatter.Options.FirstOperandCharIndex = 10; // pad right the mnemonic
-            formatter.Options.HexSuffix = default; // don't print "h" at the end of every hex address
-            formatter.Options.TabSize = 0; // use spaces
-
-            var sb = new StringBuilder();
-            method.ToAsm(sb, formatter);
-
-            output.WriteLine(sb.ToString());
         }
 
         // This only passes in Release build
@@ -131,10 +110,12 @@ namespace JitExplorer.Engine.UnitTests
             }
         }
 
+#pragma warning disable xUnit1013 // Public method should be marked as test
         public void Wrapper()
         {
             var lru = new FastConcurrentLru<int, int>(5);
             lru.TryGet(1, out var v);
         }
+#pragma warning restore xUnit1013 // Public method should be marked as test
     }
 }

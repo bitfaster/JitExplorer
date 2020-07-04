@@ -18,17 +18,18 @@ namespace JitExplorer.Engine.UnitTests
         }
 
         [Fact]
-        public void Test()
+        public void SimpleProgramProducesDissassembledOutput()
         {
             string source = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; JitExplorer.Signal.__Jit(); } } }";
 
-            var jit = new IsolatedJit();
+            var jit = new IsolatedJit("test2.exe");
 
             var config = new Config()
             {
                 Platform = Microsoft.CodeAnalysis.Platform.X64,
                 OptimizationLevel = OptimizationLevel.Release,
-                UseTieredCompilation = false,
+                JitMode = JitMode.Default,
+                LanguageVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default,
             };
 
             string jitOut = jit.CompileJitAndDisassemble(source, config);

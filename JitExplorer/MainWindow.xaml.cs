@@ -7,6 +7,7 @@ using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;
 using System;
@@ -68,7 +69,7 @@ namespace JitExplorer
 
             InitializeComponent();
 
-            this.isolatedJit = new IsolatedJit();
+            this.isolatedJit = new IsolatedJit("test.exe");
             this.isolatedJit.Progress += IsolatedJit_Progress;
 
             this.CodeEditor.Text = @"namespace Testing
@@ -121,12 +122,46 @@ namespace JitExplorer
 
             var config = new Config()
             {
+                LanguageVersion = GetLanguageVersion(),
                 Platform = GetPlatform(),
                 OptimizationLevel = GetOptimizationLevel(),
-                UseTieredCompilation = this.TieredCompilation.IsChecked.Value,
+                JitMode = GetJitMode(),
             };
 
             Task.Run(() => this.JitIt(source, config));
+        }
+
+        private LanguageVersion GetLanguageVersion()
+        {
+            switch (this.LanguageVersion.SelectedIndex)
+            {
+                case 1:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
+                case 2:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp2;
+                case 3:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp3;
+                case 4:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
+                case 5:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
+                case 6:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
+                case 7:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7;
+                case 8:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_1;
+                case 9:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_2;
+                case 10:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_3;
+                case 11:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp8;
+                case 12:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Latest;
+                default:
+                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default;
+            }
         }
 
         private Platform GetPlatform()
@@ -147,11 +182,38 @@ namespace JitExplorer
             return this.BuildConfig.SelectedIndex == 0 ? OptimizationLevel.Release : OptimizationLevel.Debug;
         }
 
+        private JitMode GetJitMode()
+        {
+            JitMode jitMode = JitMode.Default;
+
+            if (this.TieredCompilation.IsChecked.Value)
+            {
+                jitMode = JitMode.Tiered;
+            }
+
+            if (this.QuickJit.IsChecked.Value)
+            {
+                jitMode = jitMode | JitMode.Quick;
+            }
+
+            if (this.LoopJit.IsChecked.Value)
+            {
+                jitMode = jitMode | JitMode.QuickLoop;
+            }
+
+            if (this.Legacy.IsChecked.Value)
+            {
+                jitMode = jitMode | JitMode.Legacy;
+            }
+
+            return jitMode;
+        }
+
         private void JitIt(string source, Config config)
         {
             try
             {
-                var jitKey = new JitKey(source, config.OptimizationLevel, config.Platform, config.UseTieredCompilation);
+                var jitKey = new JitKey(source, config.OptimizationLevel, config.Platform, config.JitMode);
 
                 var result = this.cache.GetOrAdd(jitKey, k => this.isolatedJit.CompileJitAndDisassemble(source, config));
 
@@ -287,6 +349,24 @@ namespace JitExplorer
                 // hack because of this: https://github.com/dotnet/corefx/issues/10361
                 url = url.Replace("&", "^&");
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+            }
+        }
+
+        private void Legacy_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Legacy.IsChecked.Value)
+            {
+                this.TieredCompilation.IsChecked = false;
+                this.LoopJit.IsChecked = false;
+                this.QuickJit.IsChecked = false;
+            }    
+        }
+
+        private void ModernJit_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.TieredCompilation.IsChecked.Value || this.LoopJit.IsChecked.Value || this.QuickJit.IsChecked.Value)
+            {
+                this.Legacy.IsChecked = false;
             }
         }
     }
