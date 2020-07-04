@@ -30,6 +30,7 @@
                 <!-- Control styling -->
                 <ResourceDictionary Source="Component/Styles/CompletionWindow.xaml" />
                 <ResourceDictionary Source="Component/Styles/TextEditor.xaml" />
+                <ResourceDictionary Source="Component/Styles/ToggleButton.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
