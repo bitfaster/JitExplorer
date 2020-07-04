@@ -316,5 +316,23 @@ namespace JitExplorer
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
             }
         }
+
+        private void Legacy_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.Legacy.IsChecked.Value)
+            {
+                this.TieredCompilation.IsChecked = false;
+                this.LoopJit.IsChecked = false;
+                this.QuickJit.IsChecked = false;
+            }    
+        }
+
+        private void ModernJit_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.TieredCompilation.IsChecked.Value || this.LoopJit.IsChecked.Value || this.QuickJit.IsChecked.Value)
+            {
+                this.Legacy.IsChecked = false;
+            }
+        }
     }
 }

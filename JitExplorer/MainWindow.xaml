@@ -71,11 +71,11 @@
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
 
-            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,0,0,0" Background="{DynamicResource MahApps.Brushes.Border.Normal}" />
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,0,10,0" Background="{DynamicResource MahApps.Brushes.Border.Normal}" />
 
             <ToggleButton x:Name="TieredCompilation" BorderBrush="Transparent" ToolTip="Tiered JIT" Controls:ControlsHelper.CornerRadius="0" 
                           Controls:ControlsHelper.MouseOverBorderBrush="Transparent"
-                          Controls:ControlsHelper.FocusBorderThickness="0.5">
+                          Controls:ControlsHelper.FocusBorderThickness="0.5" Click="ModernJit_Click">
                 <fa:ImageAwesome Icon="Cubes" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple" />
                 <ToggleButton.Style>
                     <Style TargetType="{x:Type ToggleButton}">
@@ -92,19 +92,19 @@
                     </Style>
                 </ToggleButton.Style>
             </ToggleButton>
-            <ToggleButton x:Name="QuickJit" BorderBrush="Transparent" ToolTip="Quick JIT">
+            <ToggleButton x:Name="QuickJit" BorderBrush="Transparent" ToolTip="Quick JIT" Click="ModernJit_Click">
                 <fa:ImageAwesome Name="QuickJitIcon" Icon="FastForward" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple"/>
             </ToggleButton>
-            <ToggleButton x:Name="LoopJit" BorderBrush="Transparent" ToolTip="Quick Loop JIT">
+            <ToggleButton x:Name="LoopJit" BorderBrush="Transparent" ToolTip="Quick Loop JIT" Click="ModernJit_Click">
                 <TextBlock FontFamily="Consolas" Foreground="MediumPurple">for</TextBlock>
             </ToggleButton>
-            <ToggleButton x:Name="Legacy" BorderBrush="Transparent" ToolTip="Legacy JIT">
+            <ToggleButton x:Name="Legacy" BorderBrush="Transparent" ToolTip="Legacy JIT" Click="Legacy_Click">
                 <fa:ImageAwesome Name="LegacyIcon" Icon="FortAwesome" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple"/>
             </ToggleButton>
 
-            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,0,0,0" Background="{DynamicResource MahApps.Brushes.Border.Normal}" />
+            <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,0,10,0" Background="{DynamicResource MahApps.Brushes.Border.Normal}" />
             
-            <Button Name="Jit" Margin="5,0,0,0"  Click="Jit_Click" ToolTip="Dissassemble source code using selected Compile and JIT options">
+            <Button Name="Jit"  Click="Jit_Click" ToolTip="Dissassemble source code using selected Compile and JIT options">
                 <Border Padding="4">
                     <fa:ImageAwesome Name="JitIcon" Icon="Play" Height="10" Width="10" Foreground="LightGreen"/>
                     <!--<TextBlock Margin="5,0,0,0">Dissassemble</TextBlock>-->
