@@ -14,7 +14,7 @@
   <ItemGroup>
     <PackageReference Include="AvalonEdit" Version="6.0.1" />
     <PackageReference Include="BitFaster.Caching" Version="1.0.0" />
-    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" NoWarn="NU1701" />
     <PackageReference Include="IgnoresAccessChecksToGenerator" Version="0.4.0" />
     <PackageReference Include="MahApps.Metro" Version="2.1.1" />
   </ItemGroup>
