@@ -27,6 +27,8 @@ namespace JitExplorer.Engine.Compile
     {
         private readonly CompilerOptions compilerOptions;
 
+        private static readonly MemoryStream Empty = new MemoryStream(Array.Empty<byte>());
+
         public Compiler(CompilerOptions compilerOptions)
         {
             this.compilerOptions = compilerOptions;
@@ -66,7 +68,7 @@ namespace JitExplorer.Engine.Compile
                 .Select(x => new CompileDiagnostic(x))
                 .ToArray();
 
-            return new Compilation(Stream.Null, Stream.Null, errors);
+            return new Compilation(Empty, Empty, errors);
         }
 
         public ParsedTree Parse(string sourceCodePath, string sourceCode)

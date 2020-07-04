@@ -138,7 +138,7 @@ namespace JitExplorer.Engine
         {
             using (var fs = File.OpenWrite(path))
             {
-                compilation.Assembly.CopyTo(fs);
+                compilation.Assembly.WriteTo(fs);
             }
 
             if (compilation.Pdb != Stream.Null)
@@ -147,7 +147,7 @@ namespace JitExplorer.Engine
 
                 using (var fs = File.OpenWrite(pdbPath))
                 {
-                    compilation.Pdb.CopyTo(fs);
+                    compilation.Pdb.WriteTo(fs);
                 }
             }
 

@@ -7,19 +7,19 @@ namespace JitExplorer.Engine.Compile
 {
     public class Compilation : IDisposable
     {
-        private readonly Stream assembly;
-        private readonly Stream pdb;
+        private readonly MemoryStream assembly;
+        private readonly MemoryStream pdb;
         private readonly CompileDiagnostic[] diagnostics;
 
         public bool Succeeded => Assembly.Length > 0;
 
-        public Stream Assembly => this.assembly;
+        public MemoryStream Assembly => this.assembly;
 
-        public Stream Pdb => this.pdb;
+        public MemoryStream Pdb => this.pdb;
 
         public IEnumerable<CompileDiagnostic> Diagnostics => this.diagnostics;
 
-        public Compilation(Stream assembly, Stream pdb, CompileDiagnostic[] diagnostics)
+        public Compilation(MemoryStream assembly, MemoryStream pdb, CompileDiagnostic[] diagnostics)
         {
             this.assembly = assembly;
             this.pdb = pdb;
