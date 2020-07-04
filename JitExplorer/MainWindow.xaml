@@ -108,7 +108,7 @@
                 </ToggleButton.Style>-->
             </ToggleButton>
             <ToggleButton x:Name="QuickJit" BorderBrush="Transparent" ToolTip="Quick JIT" Click="ModernJit_Click">
-                <fa:ImageAwesome Name="QuickJitIcon" Icon="FastForward" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple"/>
+                <fa:ImageAwesome Name="QuickJitIcon" Icon="Bolt" Height="14" Width="14" Margin="2,2,0,0" Foreground="MediumPurple"/>
             </ToggleButton>
             <ToggleButton x:Name="LoopJit" BorderBrush="Transparent" ToolTip="Quick Loop JIT" Click="ModernJit_Click">
                 <TextBlock FontFamily="Consolas" Foreground="MediumPurple">for</TextBlock>
