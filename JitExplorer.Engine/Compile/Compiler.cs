@@ -41,7 +41,7 @@ namespace JitExplorer.Engine.Compile
             var compilation = CsCompile(assemblyName, parsedTrees.Select(t => t.SyntaxTree));
 
             var emitOptions = new EmitOptions(
-                debugInformationFormat: DebugInformationFormat.PortablePdb,
+                debugInformationFormat: DebugInformationFormat.Pdb,
                 pdbFilePath: Path.ChangeExtension(assemblyName, ".pdb")
             );
 
