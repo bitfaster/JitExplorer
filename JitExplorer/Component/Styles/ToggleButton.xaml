@@ -4,15 +4,17 @@
                     xmlns:controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro">
     
     <!-- https://gist.github.com/punker76/c334fc4da4f5f3fa9615f60c8cb83bcc -->
+    <!-- Current issues:
+        - Not using IsCheckedBackgroundRect, animations not working
+        - Mouse over color does not match combo box
+    -->
     <Style x:Key="MetroToggleButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="Foreground" Value="MediumPurple" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="{DynamicResource GrayBrush3}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="5,6,5,6" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Padding" Value="1" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="controls:ControlsHelper.CornerRadius" Value="0" />
         <Setter Property="Template">
