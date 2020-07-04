@@ -11,6 +11,6 @@ namespace JitExplorer.Engine
 
         public Platform Platform { get; set; }
 
-        public bool UseTieredCompilation { get; set; }
+        public JitMode JitMode { get; set; }
     }
 }

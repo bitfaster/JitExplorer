@@ -123,7 +123,7 @@ namespace JitExplorer
             {
                 Platform = GetPlatform(),
                 OptimizationLevel = GetOptimizationLevel(),
-                UseTieredCompilation = this.TieredCompilation.IsChecked.Value,
+                JitMode = GetJitMode(),
             };
 
             Task.Run(() => this.JitIt(source, config));
@@ -147,11 +147,38 @@ namespace JitExplorer
             return this.BuildConfig.SelectedIndex == 0 ? OptimizationLevel.Release : OptimizationLevel.Debug;
         }
 
+        private JitMode GetJitMode()
+        {
+            JitMode jitMode = JitMode.Default;
+
+            if (this.TieredCompilation.IsChecked.Value)
+            {
+                jitMode = JitMode.Tiered;
+            }
+
+            if (this.QuickJit.IsChecked.Value)
+            {
+                jitMode = jitMode | JitMode.Quick;
+            }
+
+            if (this.LoopJit.IsChecked.Value)
+            {
+                jitMode = jitMode | JitMode.QuickLoop;
+            }
+
+            if (this.Legacy.IsChecked.Value)
+            {
+                jitMode = jitMode | JitMode.Legacy;
+            }
+
+            return jitMode;
+        }
+
         private void JitIt(string source, Config config)
         {
             try
             {
-                var jitKey = new JitKey(source, config.OptimizationLevel, config.Platform, config.UseTieredCompilation);
+                var jitKey = new JitKey(source, config.OptimizationLevel, config.Platform, config.JitMode);
 
                 var result = this.cache.GetOrAdd(jitKey, k => this.isolatedJit.CompileJitAndDisassemble(source, config));
 

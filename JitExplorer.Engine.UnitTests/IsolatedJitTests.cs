@@ -28,7 +28,7 @@ namespace JitExplorer.Engine.UnitTests
             {
                 Platform = Microsoft.CodeAnalysis.Platform.X64,
                 OptimizationLevel = OptimizationLevel.Release,
-                UseTieredCompilation = false,
+                JitMode = JitMode.Default,
             };
 
             string jitOut = jit.CompileJitAndDisassemble(source, config);
