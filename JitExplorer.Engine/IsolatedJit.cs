@@ -154,9 +154,12 @@ namespace JitExplorer.Engine
     }
  }";
 
-            if (!File.Exists("test.runtimeconfig.json"))
+            // "test.runtimeconfig.json"
+            var settingsFileName = Path.ChangeExtension(path, ".runtimeconfig.json");
+
+            if (!File.Exists(settingsFileName))
             {
-                File.WriteAllText("test.runtimeconfig.json", json);
+                File.WriteAllText(settingsFileName, json);
             }
         }
 
