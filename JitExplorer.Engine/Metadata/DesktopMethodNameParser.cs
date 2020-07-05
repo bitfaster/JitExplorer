@@ -7,16 +7,15 @@ namespace JitExplorer.Engine.Metadata
     // Parse the dissassebled method names that come from Microsoft.Diagnostics.Runtime.Desktop.DesktopMethod.GetFullSignature()
     public class DesktopMethodNameParser
     {
-        // "Testing.Program.Main(System.String[])"
         public static MethodInfo Parse(string methodFullSignature)
         {
-            int firstParan = methodFullSignature.IndexOf('(');
+            int firstParan = methodFullSignature.IndexOf('(', StringComparison.Ordinal);
 
-            string stem = methodFullSignature.Substring(0, firstParan);
-            int d = stem.LastIndexOf('.');
-            string methodName = methodFullSignature.Substring(d + 1, stem.Length - d - 1);
+            var stem2 = methodFullSignature.AsSpan(0, firstParan);
+            int d = stem2.LastIndexOf('.');
+            string methodName = methodFullSignature.Substring(d + 1, stem2.Length - d - 1);
 
-            string qn = stem.Substring(0, d);
+            var qn = stem2.Slice(0, d);
 
             var type = ExtractClassType(qn);
             var args = ExtractArgs(methodFullSignature.Substring(firstParan + 1, methodFullSignature.Length - firstParan - 2));
@@ -24,12 +23,12 @@ namespace JitExplorer.Engine.Metadata
             return new MethodInfo(methodName, type, args);
         }
 
-        // "Testing.Program"
-        // "System.String[]"
-        // "System.Int32"
-        // "Testing.ConcurrentLru`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]]."
-        // "Int32"	
-        private static ClassInfo ExtractClassType(string qn)
+        // "SomeType"	
+        // "Namespace.SomeType"
+        // "Namespace.SomeTypeArray[]"
+        // "Namespace.GenericType`1[[Namespace.SomeType, Assembly.Fully.Qualified]]"
+        // "Namespace.GenericType`2[[Namespace.SomeType, Assembly.Fully.Qualified],[Namespace.SomeType, Assembly.Fully.Qualified]]"
+        private static ClassInfo ExtractClassType(ReadOnlySpan<char> qn)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
             int start = qn.IndexOf('[') + 1;
@@ -46,33 +45,33 @@ namespace JitExplorer.Engine.Metadata
                     var p = t.Split(',')[0];
                     genericParams.Add(ExtractClassType(p));
                 }
-            }    
+            }
 
             if (genericParams.Count > 0)
             {
                 // fixup
                 int sq = qn.IndexOf('`');
-                qn = qn.Substring(0, sq);
+                qn = qn.Slice(0, sq);
             }
 
             int d = qn.LastIndexOf('.');
 
             if (d > 0)
-            { 
-                string ns = qn.Substring(0, d);
-                string typeName = qn.Substring(d + 1, qn.Length - d - 1);
+            {
+                string ns = qn.Slice(0, d).ToString();
+                string typeName = qn.Slice(d + 1, qn.Length - d - 1).ToString();
 
                 return new ClassInfo(ns, typeName, genericParams);
             }
 
-            return new ClassInfo(string.Empty, qn, genericParams);
+            return new ClassInfo(string.Empty, qn.ToString(), genericParams);
         }
 
         // "Namespace.SomeType"
         // "Namespace.GenericType`1<Int32>"
         // "Namespace.GenericType`2<Int32,System.__Canon>"
         // "Namespace.GenericType`1<Namespace.GenericType`1<Int32>>"
-        private static ClassInfo ExtractArgClassType(string typeStr)
+        private static ClassInfo ExtractArgClassType(ReadOnlySpan<char> typeStr)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
 
@@ -99,20 +98,20 @@ namespace JitExplorer.Engine.Metadata
             {
                 // fixup
                 int sq = typeStr.IndexOf('`');
-                typeStr = typeStr.Substring(0, sq);
+                typeStr = typeStr.Slice(0, sq);
             }
 
             int d = typeStr.LastIndexOf('.');
 
             if (d > 0)
             {
-                string ns = typeStr.Substring(0, d);
-                string typeName = typeStr.Substring(d + 1, typeStr.Length - d - 1);
+                string ns = typeStr.Slice(0, d).ToString();
+                string typeName = typeStr.Slice(d + 1, typeStr.Length - d - 1).ToString();
 
                 return new ClassInfo(ns, typeName, genericParams);
             }
 
-            return new ClassInfo(string.Empty, typeStr, genericParams);
+            return new ClassInfo(string.Empty, typeStr.ToString(), genericParams);
         }
 
         // "System.String[]"
@@ -171,8 +170,9 @@ namespace JitExplorer.Engine.Metadata
         // 1. one
         // 2. two[two]
         // 3. three
-        public static IEnumerable<string> ExtractDelimited(string input, int start, char open, char close)
+        public static IEnumerable<string> ExtractDelimited(ReadOnlySpan<char> input, int start, char open, char close)
         {
+            var list = new List<string>();
             int count = 0;
             int openedAt = -1;
 
@@ -200,12 +200,14 @@ namespace JitExplorer.Engine.Metadata
 
                     if (len > 0)
                     {
-                        yield return input.Substring(openedAt, i - openedAt);
+                        list.Add(input.Slice(openedAt, i - openedAt).ToString());
                     }
 
                     openedAt = -1;
                 }
             }
+
+            return list;
         }
     }
 }

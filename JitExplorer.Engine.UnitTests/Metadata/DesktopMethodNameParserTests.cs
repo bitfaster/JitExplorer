@@ -72,12 +72,16 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             methodInfo.Args.First().Namespace.Should().Be(string.Empty);
         }
 
-        // "Testing.TemplateConcurrentLru`5[
+        // "Testing.TemplateConcurrentLru`5
+        // [
         // [System.Int32, System.Private.CoreLib],
         // [System.__Canon, System.Private.CoreLib],
         // [System.__Canon, System.Private.CoreLib],
-        // - [Testing.LruPolicy`2[[System.Int32, System.Private.CoreLib], [System.__Canon, System.Private.CoreLib]], test.exe],
-        // [Testing.HitCounter, test.exe]]..ctor(Int32, Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>, Testing.HitCounter)"
+        // [Testing.LruPolicy`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]], test.exe],
+        // [Testing.HitCounter, test.exe]
+        // ].
+        // .ctor(Int32, Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>, Testing.HitCounter)";
+
         [Fact]
         public void GenericCtorNestedGeneric()
         {
