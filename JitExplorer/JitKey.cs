@@ -9,18 +9,15 @@ namespace JitExplorer
 {
     public class JitKey : IEquatable<JitKey>
     {
-        public JitKey(string sourceCode, CompilerOptions compilerOptions, JitMode jitMode)
+        public JitKey(string sourceCode, Config config)
         {
             this.SourceCode = sourceCode;
-            this.CompilerOptions = compilerOptions;
-            this.JitMode = jitMode;
+            this.Config = config;
         }
 
         public string SourceCode { get; }
 
-        public CompilerOptions CompilerOptions { get; }
-
-        public JitMode JitMode { get; }
+        public Config Config { get; }
 
         public override bool Equals(object obj)
         {
@@ -31,13 +28,12 @@ namespace JitExplorer
         {
             return other != null &&
                    SourceCode == other.SourceCode &&
-                   EqualityComparer<CompilerOptions>.Default.Equals(CompilerOptions, other.CompilerOptions) &&
-                   JitMode == other.JitMode;
+                   EqualityComparer<Config>.Default.Equals(Config, other.Config);
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(SourceCode, CompilerOptions, JitMode);
+            return HashCode.Combine(SourceCode, Config);
         }
 
         public static bool operator ==(JitKey left, JitKey right)

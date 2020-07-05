@@ -86,16 +86,12 @@ namespace JitExplorer.Engine
 
         private Compilation Compile(string assembylyName, string source, Config config)
         {
-            var options = new CompilerOptions() 
-            { 
-                OutputKind = Microsoft.CodeAnalysis.OutputKind.ConsoleApplication,
-                OptimizationLevel = config.OptimizationLevel,
-                Platform = config.Platform,
-                LanguageVersion = config.LanguageVersion,
-                AllowUnsafe = config.AllowUnsafe,
-            };
+            if (config.CompilerOptions.OutputKind != Microsoft.CodeAnalysis.OutputKind.ConsoleApplication)
+            {
+                throw new ArgumentOutOfRangeException("OutputKind must be ConsoleApplication");
+            }
 
-            Compiler c = new Compiler(options);
+            Compiler c = new Compiler(config.CompilerOptions);
 
             var jitExplSource = @"namespace JitExplorer 
 { 
