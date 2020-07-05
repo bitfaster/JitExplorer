@@ -257,7 +257,7 @@ namespace JitExplorer.Engine
                 var f = new AsmFormat();
                 var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
-                sb.AppendLine($"{method.Name}");
+                sb.AppendLine($"{FormatMethodName(method.Name)}");
 
                 foreach (var element in pretty)
                 {
@@ -288,6 +288,15 @@ namespace JitExplorer.Engine
             {
                 throw new ArgumentException("Invalid exe name");
             }
+        }
+
+        private static string FormatMethodName(string methodName)
+        {
+                return methodName;
+
+
+           // This comes from 
+
         }
     }
 }
