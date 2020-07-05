@@ -40,10 +40,11 @@ namespace JitExplorer.Engine.UnitTests
                 Process.GetCurrentProcess().Id,
                 typeof(DisassembleTests).FullName,
                 "Wrapper",
-                true,
+                false,
                 3,
                 "results.txt",
-                Array.Empty<string>());
+                Array.Empty<string>(),
+                new SourceCodeProvider());
 
             var result = ClrMdDisassembler.AttachAndDisassemble(settings);
 

@@ -108,7 +108,7 @@ namespace JitExplorer.Engine.Disassemble
                 var uniqueSourceCodeLines = new HashSet<Sharp>(new SharpComparer());
                 // for getting C# code we always use the original ILOffsetMap
                 foreach (var map in method.ILOffsetMap.Where(map => map.StartAddress < map.EndAddress && map.ILOffset >= 0).OrderBy(map => map.StartAddress))
-                    foreach (var sharp in SourceCodeProvider.GetSource(method, map))
+                    foreach (var sharp in settings.SourceCodeProvider.GetSource(method, map))
                         uniqueSourceCodeLines.Add(sharp);
 
                 codes.AddRange(uniqueSourceCodeLines);

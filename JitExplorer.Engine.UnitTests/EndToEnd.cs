@@ -145,8 +145,8 @@ namespace JitExplorer.Engine.UnitTests
                 true,
                 3,
                 "results.txt",
-                Array.Empty<string>()
-                );
+                Array.Empty<string>(),
+                new SourceCodeProvider());
 
             return ClrMdDisassembler.AttachAndDisassemble(settings);
         }

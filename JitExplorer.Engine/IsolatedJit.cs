@@ -1,4 +1,5 @@
-﻿using JitExplorer.Engine.Compile;
+﻿using BitFaster.Caching.Lru;
+using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
 using System;
 using System.Collections.Generic;
@@ -16,11 +17,14 @@ namespace JitExplorer.Engine
         public event EventHandler<ProgressEventArgs> Progress;
 
         private readonly string exeName;
+        private readonly string csFileName;
+        private static ClassicLru<string, SourceCodeProvider> sourceCodeProviders = new ClassicLru<string, SourceCodeProvider>(10);
 
         public IsolatedJit(string exeName)
         {
             ValidateExeName(exeName);
             this.exeName = exeName;
+            this.csFileName = "program.cs";
         }
 
         public string CompileJitAndDisassemble(string sourceCode, Config config)
@@ -46,6 +50,7 @@ namespace JitExplorer.Engine
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
+            WriteSourceToDisk(sourceCode);
             WriteExeToDisk(this.exeName, c);
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
@@ -64,7 +69,7 @@ namespace JitExplorer.Engine
                 }
                 
                 this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
-                var result = AttachAndDecompile(p.Id, "Testing.Program", "Main");
+                var result = AttachAndDecompile(p.Id, "Testing.Program", "Main", sourceCode);
 
                 // signal dissassemble complete
                 cpipe.WriteByte(1);
@@ -130,8 +135,13 @@ namespace JitExplorer.Engine
 
             var jitSyntax = c.Parse("jitexpl.cs", jitExplSource);
             // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
-            var syntax = c.Parse("program.cs", source);
+            var syntax = c.Parse(this.csFileName, source);
             return c.Compile(assembylyName, syntax, jitSyntax);
+        }
+
+        private void WriteSourceToDisk(string source)
+        {
+            File.WriteAllText(this.csFileName, source);
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)
@@ -205,7 +215,7 @@ namespace JitExplorer.Engine
             return proc;
         }
 
-        private DisassemblyResult AttachAndDecompile(int processId, string className, string methodName)
+        private DisassemblyResult AttachAndDecompile(int processId, string className, string methodName, string source)
         {
             // filter out the synchronization code
             string[] filtered = {
@@ -218,6 +228,10 @@ namespace JitExplorer.Engine
                 "Interop+Kernel32.ConnectNamedPipe(Microsoft.Win32.SafeHandles.SafePipeHandle, IntPtr)",
             };
 
+            // cache 1 source provider per version of the input source code
+            // (user can dissassemble the same source with different JIT options)
+            var sourceProvider = sourceCodeProviders.GetOrAdd(source, (s) => new SourceCodeProvider());
+
             var settings = new Settings(
                 processId,
                 className,
@@ -225,8 +239,8 @@ namespace JitExplorer.Engine
                 true,
                 3,
                 "results.txt",
-                filtered
-                );
+                filtered,
+                sourceProvider);
 
             return ClrMdDisassembler.AttachAndDisassemble(settings);
         }

@@ -7,11 +7,12 @@ using System.IO;
 
 namespace JitExplorer.Engine.Disassemble
 {
-    internal static class SourceCodeProvider
+    // TODO: this is statically caching all source code! Since we keep updatin program.cs, this doesn't work.
+    public class SourceCodeProvider
     {
-        private static readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
+        private readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
 
-        internal static IEnumerable<Sharp> GetSource(ClrMethod method, ILToNativeMap map)
+        internal IEnumerable<Sharp> GetSource(ClrMethod method, ILToNativeMap map)
         {
             var sourceLocation = method.GetSourceLocation(map.ILOffset);
             if (sourceLocation == null)
@@ -25,7 +26,7 @@ namespace JitExplorer.Engine.Disassemble
 
                 var text = sourceLine + Environment.NewLine
                     + GetSmartPrefix(sourceLine, sourceLocation.ColStart - 1)
-                    + new string('^', sourceLocation.ColEnd - sourceLocation.ColStart);
+                    + new string('^', sourceLocation.ColEnd - sourceLocation.ColStart) + $" (line {sourceLocation.LineNumber})";
 
                 yield return new Sharp
                 {
@@ -37,7 +38,7 @@ namespace JitExplorer.Engine.Disassemble
             }
         }
 
-        private static string ReadSourceLine(string file, int line)
+        private string ReadSourceLine(string file, int line)
         {
             if (!SourceFileCache.TryGetValue(file, out string[] contents))
             {
@@ -169,9 +170,15 @@ namespace JitExplorer.Engine.Disassemble
             PdbReader reader = null;
             if (info != null)
             {
-                if (!s_pdbReaders.TryGetValue(info, out reader))
+                // Use the matching Pdb in the current directory if it exists
+                if (File.Exists(info.FileName))
+                {
+                     reader = new PdbReader(info.FileName);
+                }    
+                else if (!s_pdbReaders.TryGetValue(info, out reader))
                 {
                     SymbolLocator locator = GetSymbolLocator(module);
+
                     string pdbPath = locator.FindPdb(info);
                     if (pdbPath != null)
                     {
