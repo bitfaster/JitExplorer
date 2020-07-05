@@ -85,6 +85,12 @@
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
             </ComboBox>
+            <ToggleButton x:Name="Unsafe"  
+                          Style="{StaticResource MetroToggleButton}" 
+                          ToolTip="Allow unsafe code" 
+                          Click="AllowUnsafe_Click">
+                <fa:ImageAwesome Icon="Bomb" Height="14" Width="14" Foreground="MediumPurple" />
+            </ToggleButton>
 
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,0,10,0" Background="{DynamicResource MahApps.Brushes.Border.Normal}" />
 

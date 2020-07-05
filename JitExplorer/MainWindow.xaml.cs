@@ -164,6 +164,7 @@ namespace JitExplorer
                 Platform = GetPlatform(),
                 OptimizationLevel = GetOptimizationLevel(),
                 JitMode = GetJitMode(),
+                AllowUnsafe = GetAllowUnsafe(),
             };
 
             Task.Run(() => this.JitIt(source, config));
@@ -220,6 +221,11 @@ namespace JitExplorer
             return this.BuildConfig.SelectedIndex == 0 ? OptimizationLevel.Release : OptimizationLevel.Debug;
         }
 
+        private bool GetAllowUnsafe ()
+        {
+            return this.Unsafe.IsChecked.Value;
+        }
+
         private JitMode GetJitMode()
         {
             JitMode jitMode = JitMode.Default;
@@ -247,11 +253,19 @@ namespace JitExplorer
             return jitMode;
         }
 
+
+
         private void JitIt(string source, Config config)
         {
             try
             {
-                var jitKey = new JitKey(source, config.OptimizationLevel, config.Platform, config.JitMode);
+                var compilerOptions = new CompilerOptions()
+                {
+                    OptimizationLevel = config.OptimizationLevel,
+                    Platform = config.Platform,
+                    AllowUnsafe = config.AllowUnsafe,
+                };
+                var jitKey = new JitKey(source, compilerOptions, config.JitMode);
 
                 var result = this.cache.GetOrAdd(jitKey, k => this.isolatedJit.CompileJitAndDisassemble(source, config));
 
@@ -388,6 +402,11 @@ namespace JitExplorer
                 url = url.Replace("&", "^&");
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
             }
+        }
+
+        private void AllowUnsafe_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void Legacy_Click(object sender, RoutedEventArgs e)

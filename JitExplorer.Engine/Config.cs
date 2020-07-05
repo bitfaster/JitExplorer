@@ -15,5 +15,7 @@ namespace JitExplorer.Engine
         public Platform Platform { get; set; }
 
         public JitMode JitMode { get; set; }
+
+        public bool AllowUnsafe { get; set; }
     }
 }

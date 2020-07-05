@@ -92,6 +92,7 @@ namespace JitExplorer.Engine
                 OptimizationLevel = config.OptimizationLevel,
                 Platform = config.Platform,
                 LanguageVersion = config.LanguageVersion,
+                AllowUnsafe = config.AllowUnsafe,
             };
 
             Compiler c = new Compiler(options);
