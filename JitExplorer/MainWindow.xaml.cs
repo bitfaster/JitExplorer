@@ -106,6 +106,7 @@ namespace JitExplorer
             }
         }
 
+        // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // https://www.codeproject.com/Articles/42490/Using-AvalonEdit-WPF-Text-Editor?msg=4395053#xx4395053xx
@@ -123,11 +124,15 @@ namespace JitExplorer
 
                 if (m.Success)
                 {
-                    int targetLine = int.Parse(m.Value);
-                    this.CodeEditor.ScrollTo(targetLine, 0);
-
-                    var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
-                    this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
+                    if (int.TryParse(m.Value, out int targetLine))
+                    {
+                        if (targetLine < this.CodeEditor.Document.LineCount)
+                        {
+                            var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
+                            this.CodeEditor.ScrollTo(targetLine, 0);
+                            this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
+                        }
+                    }
                 }
             }
         }
