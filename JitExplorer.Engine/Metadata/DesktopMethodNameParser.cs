@@ -28,21 +28,21 @@ namespace JitExplorer.Engine.Metadata
         // "Namespace.SomeTypeArray[]"
         // "Namespace.GenericType`1[[Namespace.SomeType, Assembly.Fully.Qualified]]"
         // "Namespace.GenericType`2[[Namespace.SomeType, Assembly.Fully.Qualified],[Namespace.SomeType, Assembly.Fully.Qualified]]"
-        private static ClassInfo ExtractClassType(ReadOnlySpan<char> qn)
+        private static ClassInfo ExtractClassType(ReadOnlySpan<char> classString)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
-            int start = qn.IndexOf('[') + 1;
-            foreach (var t in ExtractDelimited(qn, start, '[', ']'))
+            int start = classString.IndexOf('[') + 1;
+            foreach (var c in ExtractDelimited(classString, start, '[', ']'))
             {
                 // nested generic
-                if (t.IndexOf('`') != -1)
+                if (c.IndexOf('`') != -1)
                 {
-                    genericParams.Add(ExtractClassType(t));
+                    genericParams.Add(ExtractClassType(c));
                 }
                 else
                 {
                     // System.__Canon, System.Private.CoreLib
-                    var p = t.Split(',')[0];
+                    var p = c.Split(',')[0];
                     genericParams.Add(ExtractClassType(p));
                 }
             }
@@ -50,42 +50,42 @@ namespace JitExplorer.Engine.Metadata
             if (genericParams.Count > 0)
             {
                 // fixup
-                int sq = qn.IndexOf('`');
-                qn = qn.Slice(0, sq);
+                int backtick = classString.IndexOf('`');
+                classString = classString.Slice(0, backtick);
             }
 
-            int d = qn.LastIndexOf('.');
+            int dot = classString.LastIndexOf('.');
 
-            if (d > 0)
+            if (dot > 0)
             {
-                string ns = qn.Slice(0, d).ToString();
-                string typeName = qn.Slice(d + 1, qn.Length - d - 1).ToString();
+                string ns = classString.Slice(0, dot).ToString();
+                string typeName = classString.Slice(dot + 1, classString.Length - dot - 1).ToString();
 
                 return new ClassInfo(ns, typeName, genericParams);
             }
 
-            return new ClassInfo(string.Empty, qn.ToString(), genericParams);
+            return new ClassInfo(string.Empty, classString.ToString(), genericParams);
         }
 
         // "Namespace.SomeType"
         // "Namespace.GenericType`1<Int32>"
         // "Namespace.GenericType`2<Int32,System.__Canon>"
         // "Namespace.GenericType`1<Namespace.GenericType`1<Int32>>"
-        private static ClassInfo ExtractArgClassType(ReadOnlySpan<char> typeStr)
+        private static ClassInfo ExtractArgClassType(ReadOnlySpan<char> classString)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
 
-            foreach (var t in ExtractDelimited(typeStr, 0, '<', '>'))
+            foreach (var c in ExtractDelimited(classString, 0, '<', '>'))
             {
                 // nested generic
-                if (t.IndexOf('`') != -1)
+                if (c.IndexOf('`') != -1)
                 {
-                    genericParams.Add(ExtractArgClassType(t));
+                    genericParams.Add(ExtractArgClassType(c));
                 }
                 else
                 {
                     // Int32,System.__Canon
-                    var typeParams = t.Split(',');
+                    var typeParams = c.Split(',');
 
                     foreach (var typeParam in typeParams)
                     {
@@ -97,21 +97,21 @@ namespace JitExplorer.Engine.Metadata
             if (genericParams.Count > 0)
             {
                 // fixup
-                int sq = typeStr.IndexOf('`');
-                typeStr = typeStr.Slice(0, sq);
+                int backtick = classString.IndexOf('`');
+                classString = classString.Slice(0, backtick);
             }
 
-            int d = typeStr.LastIndexOf('.');
+            int dot = classString.LastIndexOf('.');
 
-            if (d > 0)
+            if (dot > 0)
             {
-                string ns = typeStr.Slice(0, d).ToString();
-                string typeName = typeStr.Slice(d + 1, typeStr.Length - d - 1).ToString();
+                string ns = classString.Slice(0, dot).ToString();
+                string typeName = classString.Slice(dot + 1, classString.Length - dot - 1).ToString();
 
                 return new ClassInfo(ns, typeName, genericParams);
             }
 
-            return new ClassInfo(string.Empty, typeStr.ToString(), genericParams);
+            return new ClassInfo(string.Empty, classString.ToString(), genericParams);
         }
 
         // "System.String[]"
@@ -129,12 +129,16 @@ namespace JitExplorer.Engine.Metadata
             }
         }
 
-        // one, two<two, two>, three =>
+        // Possible optimization
+        // https://gist.github.com/LordJZ/92b7decebe52178a445a0b82f63e585a
+        // one, two<two>, three<three, three> =>
         // 1. one
-        // 2. two<two, two>
-        // 3. three
-        public static IEnumerable<string> TokenizeMethodArgs(string input)
+        // 2. two<two>
+        // 3. three<three, three>
+        public static IEnumerable<string> TokenizeMethodArgs(ReadOnlySpan<char> input)
         {
+            var list = new List<string>();
+
             int count = 0;
             int openedAt = 0;
 
@@ -153,17 +157,29 @@ namespace JitExplorer.Engine.Metadata
                 // skip leading spaces
                 if (input[i] == ' ' && count == 0)
                 {
-                    openedAt = i + 1;
+                    // if next chars are !" ByRef"
+                    int s = i;
+                    int e = Math.Min(input.Length - i, i + 6);
+                    var next = input.Slice(s, e);
+
+                    ReadOnlySpan<char> byref = " ByRef";
+
+                    if (!next.Equals(byref, StringComparison.Ordinal))
+                    {
+                        openedAt = i + 1;
+                    }
                 }
 
                 if (input[i] == ',' && count == 0)
                 {
-                    yield return input.Substring(openedAt, i - openedAt);
+                    list.Add(input.Slice(openedAt, i - openedAt).ToString());
                     openedAt = i + 1;
                 }
             }
 
-            yield return input.Substring(openedAt, input.Length - openedAt);
+            list.Add(input.Slice(openedAt, input.Length - openedAt).ToString());
+
+            return list;
         }
 
         // [one], [two[two]], [three] =>

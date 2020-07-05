@@ -10,113 +10,123 @@ namespace JitExplorer.Engine.UnitTests.Metadata
 {
     public class DesktopMethodNameParserTests
     {
-
-        // "Testing.ConcurrentLru`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]]..ctor(Int32)"
-        // "Testing.TemplateConcurrentLru`5[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[Testing.LruPolicy`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]], test.exe],[Testing.HitCounter, test.exe]].TryGet(Int32, System.__Canon ByRef)"
-        // "Testing.TemplateConcurrentLru`5[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[Testing.LruPolicy`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]], test.exe],[Testing.HitCounter, test.exe]]..ctor(Int32, Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>, Testing.HitCounter)"
-        // "System.Collections.Concurrent.ConcurrentDictionary`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]].TryGetValue(Int32, System.__Canon ByRef)"
-        // "System.Collections.Concurrent.ConcurrentQueue`1[[System.__Canon, System.Private.CoreLib]]..ctor()"
-        // "System.Collections.Concurrent.ConcurrentDictionary`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]]..ctor(Int32, Int32, Boolean, System.Collections.Generic.IEqualityComparer`1<Int32>)"
-
-        // "Testing.Program.Main()"  
         [Fact]
         public void MethodNoArgs()
         {
-            string methodName = "Testing.Program.Main()";
+            string methodName = "Namespace.Class.Method()";
 
             var methodInfo = DesktopMethodNameParser.Parse(methodName);
 
-            methodInfo.Type.Namespace.Should().Be("Testing");
-            methodInfo.Type.Name.Should().Be("Program");
-            methodInfo.Name.Should().Be("Main");
+            methodInfo.Name.Should().Be("Method");
+            methodInfo.Type.Namespace.Should().Be("Namespace");
+            methodInfo.Type.Name.Should().Be("Class");
+            
             methodInfo.Args.Should().BeEmpty();
         }
 
-
-        // "Testing.Program.Main(System.String[])"  
         [Fact]
-        public void Method1Arg()
+        public void MethodArrayArg()
         {
-            string methodName = "Testing.Program.Main(System.String[])";
+            string methodName = "Namespace.Class.Method(Namespace2.String[])";
 
             var methodInfo = DesktopMethodNameParser.Parse(methodName);
 
-            methodInfo.Type.Namespace.Should().Be("Testing");
-            methodInfo.Type.Name.Should().Be("Program");
-            methodInfo.Name.Should().Be("Main");
-
+            methodInfo.Name.Should().Be("Method");
+            methodInfo.Type.Namespace.Should().Be("Namespace");
+            methodInfo.Type.Name.Should().Be("Class");
+            
             methodInfo.Args.Should().HaveCount(1);
             methodInfo.Args.First().Name.Should().Be("String[]");
-            methodInfo.Args.First().Namespace.Should().Be("System");
+            methodInfo.Args.First().Namespace.Should().Be("Namespace2");
         }
 
-        // "Testing.ConcurrentLru`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]]..ctor(Int32)"
         [Fact]
-        public void GenericCtorTwo()
+        public void MethodRefArg()
         {
-            string methodName = "Testing.ConcurrentLru`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]]..ctor(Int32)";
+            string methodName = "Namespace.Class.Method(Int32 ByRef)";
 
             var methodInfo = DesktopMethodNameParser.Parse(methodName);
 
-            methodInfo.Type.Namespace.Should().Be("Testing");
-            methodInfo.Type.Name.Should().Be("ConcurrentLru");
-            methodInfo.Type.GenericParameters.Should().HaveCount(2);
+            methodInfo.Name.Should().Be("Method");
+            methodInfo.Type.Namespace.Should().Be("Namespace");
+            methodInfo.Type.Name.Should().Be("Class");
+
+            methodInfo.Args.Should().HaveCount(1);
+            methodInfo.Args.First().Name.Should().Be("Int32 ByRef");
+            methodInfo.Args.First().Namespace.Should().Be(string.Empty);
+        }
+
+        [Fact]
+        public void GenericCtor()
+        {
+            string methodName = "Namespace.GenericType`1[[System.Int32, System.Private.CoreLib]]..ctor(Int32)";
+
+            var methodInfo = DesktopMethodNameParser.Parse(methodName);
+
+            methodInfo.Name.Should().Be("ctor");
+
+            methodInfo.Type.Namespace.Should().Be("Namespace");
+            methodInfo.Type.Name.Should().Be("GenericType");
+
+            methodInfo.Type.GenericParameters.Should().HaveCount(1);
             methodInfo.Type.GenericParameters.First().Name.Should().Be("Int32");
             methodInfo.Type.GenericParameters.First().Namespace.Should().Be("System");
-            methodInfo.Type.GenericParameters.Last().Name.Should().Be("__Canon");
-            methodInfo.Type.GenericParameters.Last().Namespace.Should().Be("System");
-            methodInfo.Name.Should().Be("ctor");
 
             methodInfo.Args.Should().HaveCount(1);
             methodInfo.Args.First().Name.Should().Be("Int32");
             methodInfo.Args.First().Namespace.Should().Be(string.Empty);
         }
 
-        // "Testing.TemplateConcurrentLru`5
-        // [
-        // [System.Int32, System.Private.CoreLib],
-        // [System.__Canon, System.Private.CoreLib],
-        // [System.__Canon, System.Private.CoreLib],
-        // [Testing.LruPolicy`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]], test.exe],
-        // [Testing.HitCounter, test.exe]
-        // ].
-        // .ctor(Int32, Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>, Testing.HitCounter)";
+        [Fact]
+        public void GenericCtorTwo()
+        {
+            string methodName = "Namespace.GenericType`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]]..ctor(Int32)";
+
+            var methodInfo = DesktopMethodNameParser.Parse(methodName);
+
+            methodInfo.Name.Should().Be("ctor");
+
+            methodInfo.Type.Namespace.Should().Be("Namespace");
+            methodInfo.Type.Name.Should().Be("GenericType");
+
+            methodInfo.Type.GenericParameters.Should().HaveCount(2);
+            methodInfo.Type.GenericParameters.First().Name.Should().Be("Int32");
+            methodInfo.Type.GenericParameters.First().Namespace.Should().Be("System");
+            methodInfo.Type.GenericParameters.Last().Name.Should().Be("__Canon");
+            methodInfo.Type.GenericParameters.Last().Namespace.Should().Be("System");
+            
+            methodInfo.Args.Should().HaveCount(1);
+            methodInfo.Args.First().Name.Should().Be("Int32");
+            methodInfo.Args.First().Namespace.Should().Be(string.Empty);
+        }
 
         [Fact]
         public void GenericCtorNestedGeneric()
         {
-            string methodName = "Testing.TemplateConcurrentLru`5[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib],[Testing.LruPolicy`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]], test.exe],[Testing.HitCounter, test.exe]]..ctor(Int32, Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>, Testing.HitCounter)";
+            string methodName = "Namespace.GenericType`5[[System.Int32, System.Private.CoreLib],[Namespace2.NestedGeneric`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]], test.exe],[Namespace3.SomeType, test.exe]]..ctor(Int32, Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>, Testing.HitCounter)";
 
             var methodInfo = DesktopMethodNameParser.Parse(methodName);
 
-            methodInfo.Type.Namespace.Should().Be("Testing");
-            methodInfo.Type.Name.Should().Be("TemplateConcurrentLru");
-            methodInfo.Type.GenericParameters.Should().HaveCount(5);
+            methodInfo.Type.Namespace.Should().Be("Namespace");
+            methodInfo.Type.Name.Should().Be("GenericType");
+            methodInfo.Type.GenericParameters.Should().HaveCount(3);
 
             // 0
             methodInfo.Type.GenericParameters.First().Name.Should().Be("Int32");
             methodInfo.Type.GenericParameters.First().Namespace.Should().Be("System");
 
             // 1
-            methodInfo.Type.GenericParameters.Skip(1).First().Name.Should().Be("__Canon");
-            methodInfo.Type.GenericParameters.Skip(1).First().Namespace.Should().Be("System");
+            methodInfo.Type.GenericParameters.Skip(1).First().Name.Should().Be("NestedGeneric");
+            methodInfo.Type.GenericParameters.Skip(1).First().Namespace.Should().Be("Namespace2");
+            methodInfo.Type.GenericParameters.Skip(1).First().GenericParameters.Should().HaveCount(2);
+            methodInfo.Type.GenericParameters.Skip(1).First().GenericParameters.First().Namespace.Should().Be("System");
+            methodInfo.Type.GenericParameters.Skip(1).First().GenericParameters.First().Name.Should().Be("Int32");
+            methodInfo.Type.GenericParameters.Skip(1).First().GenericParameters.Last().Namespace.Should().Be("System");
+            methodInfo.Type.GenericParameters.Skip(1).First().GenericParameters.Last().Name.Should().Be("__Canon");
 
             // 2
-            methodInfo.Type.GenericParameters.Skip(2).First().Name.Should().Be("__Canon");
-            methodInfo.Type.GenericParameters.Skip(2).First().Namespace.Should().Be("System");
-
-            // 3
-            methodInfo.Type.GenericParameters.Skip(3).First().Name.Should().Be("LruPolicy");
-            methodInfo.Type.GenericParameters.Skip(3).First().Namespace.Should().Be("Testing");
-            methodInfo.Type.GenericParameters.Skip(3).First().GenericParameters.Should().HaveCount(2);
-            methodInfo.Type.GenericParameters.Skip(3).First().GenericParameters.First().Namespace.Should().Be("System");
-            methodInfo.Type.GenericParameters.Skip(3).First().GenericParameters.First().Name.Should().Be("Int32");
-            methodInfo.Type.GenericParameters.Skip(3).First().GenericParameters.Last().Namespace.Should().Be("System");
-            methodInfo.Type.GenericParameters.Skip(3).First().GenericParameters.Last().Name.Should().Be("__Canon");
-
-            // 4
-            methodInfo.Type.GenericParameters.Skip(4).First().Name.Should().Be("HitCounter");
-            methodInfo.Type.GenericParameters.Skip(4).First().Namespace.Should().Be("Testing");
+            methodInfo.Type.GenericParameters.Skip(2).First().Name.Should().Be("SomeType");
+            methodInfo.Type.GenericParameters.Skip(2).First().Namespace.Should().Be("Namespace3");
 
             methodInfo.Name.Should().Be("ctor");
         }
@@ -124,7 +134,7 @@ namespace JitExplorer.Engine.UnitTests.Metadata
         [Fact]
         public void SingleGenericArg()
         {
-            string methodName = "Testing.Foo.ctor(System.Collections.Generic.IEqualityComparer`1<Int32>)";
+            string methodName = "Namespace.Foo.ctor(System.Collections.Generic.IEqualityComparer`1<Int32>)";
 
             var methodInfo = DesktopMethodNameParser.Parse(methodName);
 
@@ -141,19 +151,18 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             gen[0].Namespace.Should().Be(string.Empty);
         }
 
-
         [Fact]
         public void SingleGenericArgWithTwoTypeParams()
         {
-            string methodName = "Testing.Foo.ctor(Testing.LruPolicy`2<Int32,System.__Canon>)";
+            string methodName = "Namespace.Foo.ctor(Namespace2.SomeGeneric`2<Int32,System.__Canon>)";
 
             var methodInfo = DesktopMethodNameParser.Parse(methodName);
 
             var args = methodInfo.Args.ToArray();
             args.Length.Should().Be(1);
 
-            args[0].Name.Should().Be("LruPolicy");
-            args[0].Namespace.Should().Be("Testing");
+            args[0].Name.Should().Be("SomeGeneric");
+            args[0].Namespace.Should().Be("Namespace2");
 
             var gen = args[0].GenericParameters.ToArray();
 
@@ -163,26 +172,6 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             gen[1].Name.Should().Be("__Canon");
             gen[1].Namespace.Should().Be("System");
         }
-
-        //[Fact]
-        //public void GenericArgs()
-        //{
-        //    string methodName = "Testing.Foo.ctor(Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>, Testing.HitCounter)";
-
-        //    var methodInfo = DesktopMethodNameParser.Parse(methodName);
-
-        //    var args = methodInfo.Args.ToArray();
-
-        //    args.Length.Should().Be(4);
-
-        //    args[0].Name.Should().Be("Int32");
-        //    args[0].Namespace.Should().Be(string.Empty);
-
-        //    args[1].Name.Should().Be("IEqualityComparer`1<Int32>");
-        //    args[1].Namespace.Should().Be("System.Collections.Generic");
-        //    args[1].GenericParameters.Should().HaveCount(1);
-        //    args[1].GenericParameters.First().Should().Be("Int32");
-        //}
 
         [Fact]
         public void ExtractTypesNested()
@@ -238,6 +227,19 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             ra[0].Should().Be("one");
             ra[1].Should().Be("two<two, two>");
             ra[2].Should().Be("three");
+        }
+
+        [Fact]
+        public void TokenizeMethodArgsByRef()
+        {
+            string test = "Int32 ByRef";
+
+            var r = DesktopMethodNameParser.TokenizeMethodArgs(test);
+
+            var ra = r.ToArray();
+
+            ra.Length.Should().Be(1);
+            ra[0].Should().Be(test);
         }
     }
 }
