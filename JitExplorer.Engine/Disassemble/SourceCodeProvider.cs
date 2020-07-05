@@ -7,7 +7,7 @@ using System.IO;
 
 namespace JitExplorer.Engine.Disassemble
 {
-    // TODO: this is statically caching all source code!
+    // TODO: this is statically caching all source code! Since we keep updatin program.cs, this doesn't work.
     internal static class SourceCodeProvider
     {
         private static readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();

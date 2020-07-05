@@ -1,5 +1,6 @@
 ﻿using BitFaster.Caching.Lru;
 using ICSharpCode.AvalonEdit.CodeCompletion;
+using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
@@ -17,6 +18,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -85,6 +87,8 @@ namespace JitExplorer
     }
 }";
 
+            this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
+
             // in the constructor:
             this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
             this.CodeEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
@@ -99,6 +103,32 @@ namespace JitExplorer
             else
             {
                 this.Title = "JitExplorer (x86)";
+            }
+        }
+
+        private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            // https://www.codeproject.com/Articles/42490/Using-AvalonEdit-WPF-Text-Editor?msg=4395053#xx4395053xx
+            var t = e.Device.Target as ICSharpCode.AvalonEdit.Editing.TextArea;
+
+            var p = t.Caret.Position;
+            var d = t.Document;
+
+            var textLine = d.GetLineByNumber(p.Line);
+            var str = d.Text.Substring(textLine.Offset, textLine.Length);
+
+            if (str.Contains('^'))
+            {
+                var m = Regex.Match(str, @"((\d+))");
+
+                if (m.Success)
+                {
+                    int targetLine = int.Parse(m.Value);
+                    this.CodeEditor.ScrollTo(targetLine, 0);
+
+                    var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
+                    this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
+                }
             }
         }
 
