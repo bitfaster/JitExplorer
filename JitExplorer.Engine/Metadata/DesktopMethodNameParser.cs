@@ -1,15 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace JitExplorer.Engine.Metadata
 {
-    // Dissassebled method names come from Microsoft.Diagnostics.Runtime.Desktop.DesktopMethod
+    // Parse the dissassebled method names that come from Microsoft.Diagnostics.Runtime.Desktop.DesktopMethod.GetFullSignature()
     public class DesktopMethodNameParser
     {
         // "Testing.Program.Main(System.String[])"
-        // This will enable the combo box stuff - because then we can group by namespace and type
         public static MethodInfo Parse(string methodFullSignature)
         {
             int firstParan = methodFullSignature.IndexOf('(');
@@ -20,7 +18,7 @@ namespace JitExplorer.Engine.Metadata
 
             string qn = stem.Substring(0, d);
 
-            var type = ExtractClassType(qn, 1, '[', ']');
+            var type = ExtractClassType(qn);
             var args = ExtractArgs(methodFullSignature.Substring(firstParan + 1, methodFullSignature.Length - firstParan - 2));
 
             return new MethodInfo(methodName, type, args);
@@ -31,22 +29,22 @@ namespace JitExplorer.Engine.Metadata
         // "System.Int32"
         // "Testing.ConcurrentLru`2[[System.Int32, System.Private.CoreLib],[System.__Canon, System.Private.CoreLib]]."
         // "Int32"	
-        private static ClassInfo ExtractClassType(string qn, int offset, char open, char close)
+        private static ClassInfo ExtractClassType(string qn)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
-            int start = Math.Max(0, qn.IndexOf('[') + offset);
-            foreach (var t in ExtractDelimited(qn, start, open, close))
+            int start = qn.IndexOf('[') + 1;
+            foreach (var t in ExtractDelimited(qn, start, '[', ']'))
             {
                 // nested generic
                 if (t.IndexOf('`') != -1)
                 {
-                    genericParams.Add(ExtractClassType(t, offset, open, close));
+                    genericParams.Add(ExtractClassType(t));
                 }
                 else
                 {
                     // System.__Canon, System.Private.CoreLib
                     var p = t.Split(',')[0];
-                    genericParams.Add(ExtractClassType(p, offset, open, close));
+                    genericParams.Add(ExtractClassType(p));
                 }
             }    
 
@@ -70,7 +68,10 @@ namespace JitExplorer.Engine.Metadata
             return new ClassInfo(string.Empty, qn, genericParams);
         }
 
-        // "Testing.LruPolicy`2<Int32,System.__Canon>"
+        // "Namespace.SomeType"
+        // "Namespace.GenericType`1<Int32>"
+        // "Namespace.GenericType`2<Int32,System.__Canon>"
+        // "Namespace.GenericType`1<Namespace.GenericType`1<Int32>>"
         private static ClassInfo ExtractArgClassType(string typeStr)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
@@ -129,7 +130,10 @@ namespace JitExplorer.Engine.Metadata
             }
         }
 
-        // one, two<two, two>, three
+        // one, two<two, two>, three =>
+        // 1. one
+        // 2. two<two, two>
+        // 3. three
         public static IEnumerable<string> TokenizeMethodArgs(string input)
         {
             int count = 0;
@@ -163,7 +167,10 @@ namespace JitExplorer.Engine.Metadata
             yield return input.Substring(openedAt, input.Length - openedAt);
         }
 
-        // [one], [two[two]], [three]
+        // [one], [two[two]], [three] =>
+        // 1. one
+        // 2. two[two]
+        // 3. three
         public static IEnumerable<string> ExtractDelimited(string input, int start, char open, char close)
         {
             int count = 0;

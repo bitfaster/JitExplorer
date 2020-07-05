@@ -148,7 +148,6 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             var args = methodInfo.Args.ToArray();
             args.Length.Should().Be(1);
 
-            // This is returning __Canon
             args[0].Name.Should().Be("LruPolicy");
             args[0].Namespace.Should().Be("Testing");
 
