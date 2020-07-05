@@ -16,11 +16,13 @@ namespace JitExplorer.Engine
         public event EventHandler<ProgressEventArgs> Progress;
 
         private readonly string exeName;
+        private readonly string csFileName;
 
         public IsolatedJit(string exeName)
         {
             ValidateExeName(exeName);
             this.exeName = exeName;
+            this.csFileName = "program.cs";
         }
 
         public string CompileJitAndDisassemble(string sourceCode, Config config)
@@ -46,6 +48,7 @@ namespace JitExplorer.Engine
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
+            WriteSourceToDisk(sourceCode);
             WriteExeToDisk(this.exeName, c);
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
@@ -130,8 +133,13 @@ namespace JitExplorer.Engine
 
             var jitSyntax = c.Parse("jitexpl.cs", jitExplSource);
             // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
-            var syntax = c.Parse("program.cs", source);
+            var syntax = c.Parse(this.csFileName, source);
             return c.Compile(assembylyName, syntax, jitSyntax);
+        }
+
+        private void WriteSourceToDisk(string source)
+        {
+            File.WriteAllText(this.csFileName, source);
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)

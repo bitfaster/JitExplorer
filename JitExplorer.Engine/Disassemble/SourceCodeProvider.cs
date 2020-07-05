@@ -7,6 +7,7 @@ using System.IO;
 
 namespace JitExplorer.Engine.Disassemble
 {
+    // TODO: this is statically caching all source code!
     internal static class SourceCodeProvider
     {
         private static readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
@@ -25,7 +26,7 @@ namespace JitExplorer.Engine.Disassemble
 
                 var text = sourceLine + Environment.NewLine
                     + GetSmartPrefix(sourceLine, sourceLocation.ColStart - 1)
-                    + new string('^', sourceLocation.ColEnd - sourceLocation.ColStart);
+                    + new string('^', sourceLocation.ColEnd - sourceLocation.ColStart) + $" (line {sourceLocation.LineNumber})";
 
                 yield return new Sharp
                 {
@@ -169,9 +170,14 @@ namespace JitExplorer.Engine.Disassemble
             PdbReader reader = null;
             if (info != null)
             {
-                if (!s_pdbReaders.TryGetValue(info, out reader))
+                if (File.Exists(info.FileName))
+                {
+                    reader = new PdbReader(info.FileName);
+                }    
+                else if (!s_pdbReaders.TryGetValue(info, out reader))
                 {
                     SymbolLocator locator = GetSymbolLocator(module);
+
                     string pdbPath = locator.FindPdb(info);
                     if (pdbPath != null)
                     {
