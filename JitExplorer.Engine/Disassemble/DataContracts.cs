@@ -99,7 +99,7 @@ namespace JitExplorer.Engine.Disassemble
 
     public class Settings
     {
-        public Settings(int processId, string typeName, string methodName, bool printSource, int maxDepth, string resultsPath, IEnumerable<string> filterMethods)
+        public Settings(int processId, string typeName, string methodName, bool printSource, int maxDepth, string resultsPath, IEnumerable<string> filterMethods, SourceCodeProvider sourceCodeProvider)
         {
             ProcessId = processId;
             TypeName = typeName;
@@ -108,6 +108,7 @@ namespace JitExplorer.Engine.Disassemble
             MaxDepth = methodName == DisassemblerConstants.DisassemblerEntryMethodName && maxDepth != int.MaxValue ? maxDepth + 1 : maxDepth;
             ResultsPath = resultsPath;
             FilterMethods = filterMethods;
+            this.SourceCodeProvider = sourceCodeProvider;
         }
 
         internal int ProcessId { get; }
@@ -118,6 +119,8 @@ namespace JitExplorer.Engine.Disassemble
         internal string ResultsPath { get; }
 
         public IEnumerable<string> FilterMethods { get; }
+
+        public SourceCodeProvider SourceCodeProvider { get; }
     }
 
     internal class State

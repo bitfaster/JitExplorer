@@ -8,11 +8,11 @@ using System.IO;
 namespace JitExplorer.Engine.Disassemble
 {
     // TODO: this is statically caching all source code! Since we keep updatin program.cs, this doesn't work.
-    internal static class SourceCodeProvider
+    public class SourceCodeProvider
     {
-        private static readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
+        private readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
 
-        internal static IEnumerable<Sharp> GetSource(ClrMethod method, ILToNativeMap map)
+        internal IEnumerable<Sharp> GetSource(ClrMethod method, ILToNativeMap map)
         {
             var sourceLocation = method.GetSourceLocation(map.ILOffset);
             if (sourceLocation == null)
@@ -38,7 +38,7 @@ namespace JitExplorer.Engine.Disassemble
             }
         }
 
-        private static string ReadSourceLine(string file, int line)
+        private string ReadSourceLine(string file, int line)
         {
             if (!SourceFileCache.TryGetValue(file, out string[] contents))
             {
@@ -170,9 +170,10 @@ namespace JitExplorer.Engine.Disassemble
             PdbReader reader = null;
             if (info != null)
             {
+                // Use the matching Pdb in the current directory if it exists
                 if (File.Exists(info.FileName))
                 {
-                    reader = new PdbReader(info.FileName);
+                     reader = new PdbReader(info.FileName);
                 }    
                 else if (!s_pdbReaders.TryGetValue(info, out reader))
                 {

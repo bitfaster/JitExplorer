@@ -1,4 +1,5 @@
-﻿using JitExplorer.Engine.Compile;
+﻿using BitFaster.Caching.Lru;
+using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace JitExplorer.Engine
 
         private readonly string exeName;
         private readonly string csFileName;
+        private static ClassicLru<string, SourceCodeProvider> sourceCodeProviders = new ClassicLru<string, SourceCodeProvider>(10);
 
         public IsolatedJit(string exeName)
         {
@@ -67,7 +69,7 @@ namespace JitExplorer.Engine
                 }
                 
                 this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
-                var result = AttachAndDecompile(p.Id, "Testing.Program", "Main");
+                var result = AttachAndDecompile(p.Id, "Testing.Program", "Main", sourceCode);
 
                 // signal dissassemble complete
                 cpipe.WriteByte(1);
@@ -213,7 +215,7 @@ namespace JitExplorer.Engine
             return proc;
         }
 
-        private DisassemblyResult AttachAndDecompile(int processId, string className, string methodName)
+        private DisassemblyResult AttachAndDecompile(int processId, string className, string methodName, string source)
         {
             // filter out the synchronization code
             string[] filtered = {
@@ -226,6 +228,10 @@ namespace JitExplorer.Engine
                 "Interop+Kernel32.ConnectNamedPipe(Microsoft.Win32.SafeHandles.SafePipeHandle, IntPtr)",
             };
 
+            // cache 1 source provider per version of the input source code
+            // (user can dissassemble the same source with different JIT options)
+            var sourceProvider = sourceCodeProviders.GetOrAdd(source, (s) => new SourceCodeProvider());
+
             var settings = new Settings(
                 processId,
                 className,
@@ -233,8 +239,8 @@ namespace JitExplorer.Engine
                 true,
                 3,
                 "results.txt",
-                filtered
-                );
+                filtered,
+                sourceProvider);
 
             return ClrMdDisassembler.AttachAndDisassemble(settings);
         }

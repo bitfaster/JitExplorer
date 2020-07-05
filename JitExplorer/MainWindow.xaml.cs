@@ -1,4 +1,5 @@
 ﻿using BitFaster.Caching.Lru;
+using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
@@ -110,6 +111,8 @@ namespace JitExplorer
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             // https://www.codeproject.com/Articles/42490/Using-AvalonEdit-WPF-Text-Editor?msg=4395053#xx4395053xx
+            // https://github.com/icsharpcode/AvalonEdit/blob/master/ICSharpCode.AvalonEdit/Editing/TextArea.cs
+            // https://github.com/aelij/RoslynPad/blob/f9cf2b3f14333d73210aa91329ec162324de2b70/src/RoslynPad.Editor.Shared/CodeTextEditor.cs - see OnMouseHover
             var t = e.Device.Target as ICSharpCode.AvalonEdit.Editing.TextArea;
 
             var p = t.Caret.Position;
