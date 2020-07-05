@@ -70,6 +70,50 @@ namespace JitExplorer.Engine.Metadata
             return new ClassInfo(string.Empty, qn, genericParams);
         }
 
+        // "Testing.LruPolicy`2<Int32,System.__Canon>"
+        private static ClassInfo ExtractArgClassType(string typeStr)
+        {
+            List<ClassInfo> genericParams = new List<ClassInfo>();
+
+            foreach (var t in ExtractDelimited(typeStr, 0, '<', '>'))
+            {
+                // nested generic
+                if (t.IndexOf('`') != -1)
+                {
+                    genericParams.Add(ExtractArgClassType(t));
+                }
+                else
+                {
+                    // Int32,System.__Canon
+                    var typeParams = t.Split(',');
+
+                    foreach (var typeParam in typeParams)
+                    {
+                        genericParams.Add(ExtractArgClassType(typeParam));
+                    }
+                }
+            }
+
+            if (genericParams.Count > 0)
+            {
+                // fixup
+                int sq = typeStr.IndexOf('`');
+                typeStr = typeStr.Substring(0, sq);
+            }
+
+            int d = typeStr.LastIndexOf('.');
+
+            if (d > 0)
+            {
+                string ns = typeStr.Substring(0, d);
+                string typeName = typeStr.Substring(d + 1, typeStr.Length - d - 1);
+
+                return new ClassInfo(ns, typeName, genericParams);
+            }
+
+            return new ClassInfo(string.Empty, typeStr, genericParams);
+        }
+
         // "System.String[]"
         // System.Collections.Generic.IEqualityComparer`1<Int32>
         private static IEnumerable<ClassInfo> ExtractArgs(string argsString)
@@ -81,24 +125,13 @@ namespace JitExplorer.Engine.Metadata
 
             foreach (var arg in TokenizeMethodArgs(argsString))
             {
-                // when ExtractClassType recurses, it does not call tokenize
-                yield return ExtractClassType(arg, 0, '<', '>');
+                yield return ExtractArgClassType(arg);
             }
-
-            //var t = ExtractClassType(argsString);
-
-            //return new[] { t };
         }
-
-        // Int32, System.Collections.Generic.IEqualityComparer`1<Int32>, Testing.LruPolicy`2<Int32,System.__Canon>
-        // can't tokenize based on , because 3rd arg fails
 
         // one, two<two, two>, three
         public static IEnumerable<string> TokenizeMethodArgs(string input)
         {
-            // keep going until we get , or <
-            // keep count of < and ignore , until >
-
             int count = 0;
             int openedAt = 0;
 

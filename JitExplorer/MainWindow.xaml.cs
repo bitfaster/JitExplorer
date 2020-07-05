@@ -253,8 +253,6 @@ namespace JitExplorer
             return jitMode;
         }
 
-
-
         private void JitIt(string source, Config config)
         {
             try

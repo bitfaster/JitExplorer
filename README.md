@@ -17,10 +17,11 @@ The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDa
 - Navigate from asm assembly names to source code via (line x) insertion. If there is a dictionary of methods to line numbers, can build the same map from Asm. So can click c# as well. 
 https://joshvarty.com/2014/07/26/learn-roslyn-now-part-4-csharpsyntaxwalker/
 https://stackoverflow.com/questions/51392704/how-to-use-roslyn-to-determine-line-codes-position-in-a-source-file
+- MVVM
 - Better UI: Asm combos to pick method and type, emit assembly addr nos, choose instr format, depth
 - Double click error to navigate to source
 - UI bugs: fix toggle button style
-- Different TextEditor for error messages with propery highlighting
+- Different TextEditor for error messages with proper highlighting
 - Full code auto complete, like RoslynPad
 - Copy as markdown for C# & Asm
 
