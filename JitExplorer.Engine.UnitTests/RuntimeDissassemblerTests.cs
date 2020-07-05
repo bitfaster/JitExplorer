@@ -8,11 +8,11 @@ using Xunit.Abstractions;
 
 namespace JitExplorer.Engine.UnitTests
 {
-    public class IsolatedJitTests
+    public class RuntimeDissassemblerTests
     {
         private readonly ITestOutputHelper output;
 
-        public IsolatedJitTests(ITestOutputHelper output)
+        public RuntimeDissassemblerTests(ITestOutputHelper output)
         {
             this.output = output;
         }
@@ -22,7 +22,7 @@ namespace JitExplorer.Engine.UnitTests
         {
             string source = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; JitExplorer.Signal.__Jit(); } } }";
 
-            var jit = new IsolatedJit("test2.exe");
+            var jit = new RuntimeDissassembler("test2.exe");
 
             var config = new Config()
             {

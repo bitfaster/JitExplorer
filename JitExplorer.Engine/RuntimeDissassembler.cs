@@ -13,7 +13,7 @@ using System.Threading;
 namespace JitExplorer.Engine
 {
     // Requires source code calls JitExplorer.Signal.__Jit();
-    public class IsolatedJit
+    public class RuntimeDissassembler
     {
         public event EventHandler<ProgressEventArgs> Progress;
 
@@ -21,7 +21,7 @@ namespace JitExplorer.Engine
         private readonly string csFileName;
         private static ClassicLru<string, SourceCodeProvider> sourceCodeProviders = new ClassicLru<string, SourceCodeProvider>(10);
 
-        public IsolatedJit(string exeName)
+        public RuntimeDissassembler(string exeName)
         {
             ValidateExeName(exeName);
             this.exeName = exeName;
