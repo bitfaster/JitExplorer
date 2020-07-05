@@ -24,8 +24,8 @@ namespace JitExplorer.Engine.Disassemble
                 if (sourceLine == null)
                     continue;
 
-                var text = sourceLine + Environment.NewLine
-                    + GetSmartPrefix(sourceLine, sourceLocation.ColStart - 1)
+                var text = ';' + sourceLine + Environment.NewLine
+                    + ';' + GetSmartPrefix(sourceLine, sourceLocation.ColStart - 1)
                     + new string('^', sourceLocation.ColEnd - sourceLocation.ColStart) + $" (line {sourceLocation.LineNumber})";
 
                 yield return new Sharp

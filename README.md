@@ -15,6 +15,7 @@ The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDa
 - Hide program, just show JitExplorer.JitAndDissassemble.This()
 - Better UI: Asm combos to pick method and type, emit assembly addr nos, choose instr format, depth
 - Short names in asm
+- Navigate from asm assembly names to source code via (line x) insertion 
 - Double click error to navigate to source
 - UI bugs: fix toggle button style
 - Different TextEditor for error messages with propery highlighting

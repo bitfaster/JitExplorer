@@ -1,6 +1,7 @@
 ﻿using BitFaster.Caching.Lru;
 using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
+using JitExplorer.Engine.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -257,7 +258,9 @@ namespace JitExplorer.Engine
                 var f = new AsmFormat();
                 var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
-                sb.AppendLine($"{FormatMethodName(method.Name)}");
+                sb.AppendLine($"${MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
+                // TODO: reverse lookup of method into compiled syntax tree/find defn line number, and insert
+                // so that user can navigate there.
 
                 foreach (var element in pretty)
                 {
@@ -288,15 +291,6 @@ namespace JitExplorer.Engine
             {
                 throw new ArgumentException("Invalid exe name");
             }
-        }
-
-        private static string FormatMethodName(string methodName)
-        {
-                return methodName;
-
-
-           // This comes from 
-
         }
     }
 }
