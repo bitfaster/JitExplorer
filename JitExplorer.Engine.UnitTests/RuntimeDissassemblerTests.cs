@@ -36,7 +36,7 @@ namespace JitExplorer.Engine.UnitTests
 
             output.WriteLine(jitOut);
 
-            jitOut.Should().StartWith("Testing.Program.Main(System.String[])");
+            jitOut.Should().StartWith("Program.Main(String[])");
         }
     }
 }
