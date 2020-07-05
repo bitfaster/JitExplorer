@@ -5,6 +5,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
+using JitExplorer.Controls;
 using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
 using MahApps.Metro.Controls;
@@ -17,6 +18,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -104,6 +106,39 @@ namespace JitExplorer
             else
             {
                 this.Title = "JitExplorer (x86)";
+            }
+
+            OnShowLineNumbersChanged(this.AssemblerView, true);
+        }
+
+        static void OnShowLineNumbersChanged(DependencyObject d, bool what)
+        {
+            TextEditor editor = (TextEditor)d;
+            var leftMargins = editor.TextArea.LeftMargins;
+            if (what)
+            {
+                LineNumberMargin lineNumbers = new MemoryAddressMargin();
+                Line line = (Line)DottedLineMargin.Create();
+                leftMargins.Insert(0, lineNumbers);
+                leftMargins.Insert(1, line);
+                var lineNumbersForeground = new Binding("LineNumbersForeground") { Source = editor };
+                line.SetBinding(Line.StrokeProperty, lineNumbersForeground);
+                lineNumbers.SetBinding(Control.ForegroundProperty, lineNumbersForeground);
+            }
+            else
+            {
+                for (int i = 0; i < leftMargins.Count; i++)
+                {
+                    if (leftMargins[i] is LineNumberMargin)
+                    {
+                        leftMargins.RemoveAt(i);
+                        if (i < leftMargins.Count && DottedLineMargin.IsDottedLineMargin(leftMargins[i]))
+                        {
+                            leftMargins.RemoveAt(i);
+                        }
+                        break;
+                    }
+                }
             }
         }
 

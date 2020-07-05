@@ -252,7 +252,8 @@ namespace JitExplorer.Engine
             foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
             {
                 referenceIndex++;
-                var f = new AsmFormat();
+                var f = new AsmFormat(printInstructionAddresses: true);
+
                 var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
                 // Note leading empty hidden unicode char
