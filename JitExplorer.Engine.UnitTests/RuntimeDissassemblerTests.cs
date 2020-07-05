@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using JitExplorer.Engine.Compile;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
@@ -24,12 +25,18 @@ namespace JitExplorer.Engine.UnitTests
 
             var jit = new RuntimeDissassembler("test2.exe");
 
-            var config = new Config()
+            var compilerOptions = new CompilerOptions()
             {
                 Platform = Microsoft.CodeAnalysis.Platform.X64,
                 OptimizationLevel = OptimizationLevel.Release,
-                JitMode = JitMode.Default,
                 LanguageVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default,
+                OutputKind = OutputKind.ConsoleApplication,
+            };
+
+            var config = new Config()
+            {
+                CompilerOptions = compilerOptions,
+                JitMode = JitMode.Default,
             };
 
             string jitOut = jit.CompileJitAndDisassemble(source, config);

@@ -115,25 +115,28 @@ namespace JitExplorer
             // https://github.com/aelij/RoslynPad/blob/f9cf2b3f14333d73210aa91329ec162324de2b70/src/RoslynPad.Editor.Shared/CodeTextEditor.cs - see OnMouseHover
             var t = e.Device.Target as ICSharpCode.AvalonEdit.Editing.TextArea;
 
-            var p = t.Caret.Position;
-            var d = t.Document;
-
-            var textLine = d.GetLineByNumber(p.Line);
-            var str = d.Text.Substring(textLine.Offset, textLine.Length);
-
-            if (str.Contains('^'))
+            if (t != null)
             {
-                var m = Regex.Match(str, @"((\d+))");
+                var p = t.Caret.Position;
+                var d = t.Document;
 
-                if (m.Success)
+                var textLine = d.GetLineByNumber(p.Line);
+                var str = d.Text.Substring(textLine.Offset, textLine.Length);
+
+                if (str.Contains('^'))
                 {
-                    if (int.TryParse(m.Value, out int targetLine))
+                    var m = Regex.Match(str, @"((\d+))");
+
+                    if (m.Success)
                     {
-                        if (targetLine < this.CodeEditor.Document.LineCount)
+                        if (int.TryParse(m.Value, out int targetLine))
                         {
-                            var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
-                            this.CodeEditor.ScrollTo(targetLine, 0);
-                            this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
+                            if (targetLine < this.CodeEditor.Document.LineCount)
+                            {
+                                var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
+                                this.CodeEditor.ScrollTo(targetLine, 0);
+                                this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
+                            }
                         }
                     }
                 }
@@ -158,13 +161,19 @@ namespace JitExplorer
             this.ProgressIcon.Spin = true;
             string source = this.CodeEditor.Text;
 
-            var config = new Config()
+            var compilerOptions = new CompilerOptions()
             {
+                OutputKind = OutputKind.ConsoleApplication,
                 LanguageVersion = GetLanguageVersion(),
                 Platform = GetPlatform(),
                 OptimizationLevel = GetOptimizationLevel(),
-                JitMode = GetJitMode(),
                 AllowUnsafe = GetAllowUnsafe(),
+            };
+
+            var config = new Config()
+            {
+                CompilerOptions = compilerOptions,
+                JitMode = GetJitMode(),
             };
 
             Task.Run(() => this.JitIt(source, config));
@@ -257,17 +266,9 @@ namespace JitExplorer
         {
             try
             {
-                var compilerOptions = new CompilerOptions()
-                {
-                    OptimizationLevel = config.OptimizationLevel,
-                    Platform = config.Platform,
-                    AllowUnsafe = config.AllowUnsafe,
-                };
+                var jitKey = new JitKey(source, config);
 
-                // TODO: collapse jit key and config
-                var jitKey = new JitKey(source, compilerOptions, config.JitMode);
-
-                var result = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(source, config));
+                var result = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
 
                 this.Dispatcher.Invoke(() => this.AssemblerView.Text = result);
             }
