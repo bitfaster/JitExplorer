@@ -13,7 +13,6 @@ The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDa
 - JIT is not consistent in some cases. Attempt to provide some degree of warmup.
 - Auto background jit, without button.
 - Hide program, just show JitExplorer.JitAndDissassemble.This()
-- Short names in asm, show method size in bytes like benchmarkdotnet
 - Navigate from asm assembly names to source code via (line x) insertion. If there is a dictionary of methods to line numbers, can build the same map from Asm. So can click c# as well. 
 https://joshvarty.com/2014/07/26/learn-roslyn-now-part-4-csharpsyntaxwalker/
 https://stackoverflow.com/questions/51392704/how-to-use-roslyn-to-determine-line-codes-position-in-a-source-file

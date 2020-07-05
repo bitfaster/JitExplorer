@@ -249,6 +249,8 @@ namespace JitExplorer.Engine
 
             int referenceIndex = 0;
             int methodIndex = 0;
+
+            
             foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
             {
                 referenceIndex++;
@@ -260,10 +262,21 @@ namespace JitExplorer.Engine
                 // TODO: reverse lookup of method into compiled syntax tree/find defn line number, and insert
                 // so that user can navigate there.
 
+                ulong totalSizeInBytes = 0;
                 foreach (var element in pretty)
                 {
                     sb.AppendLine(element.TextRepresentation);
+
+                    if (element.Source is Asm asm)
+                    {
+                        checked
+                        {
+                            totalSizeInBytes += (uint)asm.Instruction.ByteLength;
+                        }
+                    }
                 }
+
+                sb.AppendLine($"; Total bytes of code {totalSizeInBytes}");
 
                 sb.AppendLine();
             }
