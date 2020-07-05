@@ -258,7 +258,8 @@ namespace JitExplorer.Engine
                 var f = new AsmFormat();
                 var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
-                sb.AppendLine($"${MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
+                // Note leading empty hidden unicode char
+                sb.AppendLine($"‎{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
                 // TODO: reverse lookup of method into compiled syntax tree/find defn line number, and insert
                 // so that user can navigate there.
 

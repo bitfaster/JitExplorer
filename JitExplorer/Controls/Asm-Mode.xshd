@@ -21,14 +21,14 @@
 -->
 <SyntaxDefinition name = "Asm" extensions=".s;.asm" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
-  <Color name = "Function" foreground="#ce9178" exampleText="$global::Program.Main()" />
+  <Color name = "Function" foreground="#4EC9B0" exampleText="$global::Program.Main()" />
   <Color name = "Comment" foreground="#6A9955" exampleText="; comment" />
   <Color name = "NumberLiteral" foreground="#569cd6" exampleText="0987654321" />
   <Color name = "String" foreground="#ce9178" exampleText="&quot;Hello, World!&quot;" />
   <Color name = "Instructions" foreground="#569cd6" exampleText="nop" />
   <Color name = "Math Instructions" foreground="#0080C0" exampleText="fabs" />
   <Color name = "Extended Instructions" foreground="Brown" exampleText="nop" />
-  <Color name = "Registers" foreground="#4EC9B0" exampleText="rax" />
+  <Color name = "Registers" foreground="#ce9178" exampleText="rax" />
   <Color name = "Directives" foreground="#569cd6" fontWeight="bold" exampleText="if" />
   <Color name = "Directive Operands" foreground="#b5cea8" fontWeight="bold" exampleText="addr" />
 	
@@ -1212,8 +1212,9 @@
 		<Span color="Comment" ruleSet="CommentMarkerSet">
 			<Begin>;</Begin>
 		</Span>
+    <!-- Unicode empty char -->
     <Span color="Function">
-      <Begin>\$</Begin>
+      <Begin>‎</Begin>
     </Span>
 		<Rule color = "NumberLiteral" >
 			\b(0[xXhH])?[0 - 9a - fA - F_`]+[h]?  # hex number
