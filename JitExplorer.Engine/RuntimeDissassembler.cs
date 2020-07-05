@@ -1,6 +1,7 @@
 ﻿using BitFaster.Caching.Lru;
 using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
+using JitExplorer.Engine.Metadata;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,7 @@ using System.Threading;
 namespace JitExplorer.Engine
 {
     // Requires source code calls JitExplorer.Signal.__Jit();
-    public class IsolatedJit
+    public class RuntimeDissassembler
     {
         public event EventHandler<ProgressEventArgs> Progress;
 
@@ -20,7 +21,7 @@ namespace JitExplorer.Engine
         private readonly string csFileName;
         private static ClassicLru<string, SourceCodeProvider> sourceCodeProviders = new ClassicLru<string, SourceCodeProvider>(10);
 
-        public IsolatedJit(string exeName)
+        public RuntimeDissassembler(string exeName)
         {
             ValidateExeName(exeName);
             this.exeName = exeName;
@@ -91,6 +92,7 @@ namespace JitExplorer.Engine
                 OptimizationLevel = config.OptimizationLevel,
                 Platform = config.Platform,
                 LanguageVersion = config.LanguageVersion,
+                AllowUnsafe = config.AllowUnsafe,
             };
 
             Compiler c = new Compiler(options);
@@ -257,7 +259,10 @@ namespace JitExplorer.Engine
                 var f = new AsmFormat();
                 var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
-                sb.AppendLine($"{method.Name}");
+                // Note leading empty hidden unicode char
+                sb.AppendLine($"‎{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
+                // TODO: reverse lookup of method into compiled syntax tree/find defn line number, and insert
+                // so that user can navigate there.
 
                 foreach (var element in pretty)
                 {

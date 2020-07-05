@@ -39,7 +39,7 @@ namespace JitExplorer
     /// </summary>
     public partial class MainWindow : MetroWindow 
     {
-        private readonly IsolatedJit isolatedJit;
+        private readonly RuntimeDissassembler dissassembler;
         private readonly RoslynCodeCompletion codeCompletion;
         private readonly ClassicLru<JitKey, string> cache = new ClassicLru<JitKey, string>(100);
 
@@ -72,8 +72,8 @@ namespace JitExplorer
 
             InitializeComponent();
 
-            this.isolatedJit = new IsolatedJit("test.exe");
-            this.isolatedJit.Progress += IsolatedJit_Progress;
+            this.dissassembler = new RuntimeDissassembler("test.exe");
+            this.dissassembler.Progress += IsolatedJit_Progress;
 
             this.CodeEditor.Text = @"namespace Testing
 {
@@ -164,6 +164,7 @@ namespace JitExplorer
                 Platform = GetPlatform(),
                 OptimizationLevel = GetOptimizationLevel(),
                 JitMode = GetJitMode(),
+                AllowUnsafe = GetAllowUnsafe(),
             };
 
             Task.Run(() => this.JitIt(source, config));
@@ -220,6 +221,11 @@ namespace JitExplorer
             return this.BuildConfig.SelectedIndex == 0 ? OptimizationLevel.Release : OptimizationLevel.Debug;
         }
 
+        private bool GetAllowUnsafe ()
+        {
+            return this.Unsafe.IsChecked.Value;
+        }
+
         private JitMode GetJitMode()
         {
             JitMode jitMode = JitMode.Default;
@@ -251,9 +257,17 @@ namespace JitExplorer
         {
             try
             {
-                var jitKey = new JitKey(source, config.OptimizationLevel, config.Platform, config.JitMode);
+                var compilerOptions = new CompilerOptions()
+                {
+                    OptimizationLevel = config.OptimizationLevel,
+                    Platform = config.Platform,
+                    AllowUnsafe = config.AllowUnsafe,
+                };
 
-                var result = this.cache.GetOrAdd(jitKey, k => this.isolatedJit.CompileJitAndDisassemble(source, config));
+                // TODO: collapse jit key and config
+                var jitKey = new JitKey(source, compilerOptions, config.JitMode);
+
+                var result = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(source, config));
 
                 this.Dispatcher.Invoke(() => this.AssemblerView.Text = result);
             }
@@ -388,6 +402,11 @@ namespace JitExplorer
                 url = url.Replace("&", "^&");
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
             }
+        }
+
+        private void AllowUnsafe_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void Legacy_Click(object sender, RoutedEventArgs e)

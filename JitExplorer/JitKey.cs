@@ -1,4 +1,5 @@
 ﻿using JitExplorer.Engine;
+using JitExplorer.Engine.Compile;
 using Microsoft.CodeAnalysis;
 using System;
 using System.Collections.Generic;
@@ -8,19 +9,16 @@ namespace JitExplorer
 {
     public class JitKey : IEquatable<JitKey>
     {
-        public JitKey(string sourceCode, OptimizationLevel optimizationLevel, Platform platform, JitMode jitMode)
+        public JitKey(string sourceCode, CompilerOptions compilerOptions, JitMode jitMode)
         {
             this.SourceCode = sourceCode;
-            this.OptimizationLevel = optimizationLevel;
-            this.Platform = platform;
+            this.CompilerOptions = compilerOptions;
             this.JitMode = jitMode;
         }
 
         public string SourceCode { get; }
 
-        public OptimizationLevel OptimizationLevel { get; }
-
-        public Platform Platform { get; }
+        public CompilerOptions CompilerOptions { get; }
 
         public JitMode JitMode { get; }
 
@@ -33,14 +31,13 @@ namespace JitExplorer
         {
             return other != null &&
                    SourceCode == other.SourceCode &&
-                   OptimizationLevel == other.OptimizationLevel &&
-                   Platform == other.Platform &&
+                   EqualityComparer<CompilerOptions>.Default.Equals(CompilerOptions, other.CompilerOptions) &&
                    JitMode == other.JitMode;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(SourceCode, OptimizationLevel, Platform, JitMode);
+            return HashCode.Combine(SourceCode, CompilerOptions, JitMode);
         }
 
         public static bool operator ==(JitKey left, JitKey right)
