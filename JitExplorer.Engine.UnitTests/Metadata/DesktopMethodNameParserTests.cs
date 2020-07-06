@@ -36,7 +36,8 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             methodInfo.Type.Name.Should().Be("Class");
             
             methodInfo.Args.Should().HaveCount(1);
-            methodInfo.Args.First().Name.Should().Be("String[]");
+            methodInfo.Args.First().Name.Should().Be("String");
+            methodInfo.Args.First().IsArray.Should().BeTrue();
             methodInfo.Args.First().Namespace.Should().Be("Namespace2");
         }
 

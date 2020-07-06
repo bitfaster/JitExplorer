@@ -82,11 +82,12 @@ namespace JitExplorer.Engine.Metadata
         }
 
         // "Namespace.SomeType"
+        // "Namespace.SomeType[]"
         // "Namespace.GenericType`1<Int32>"
         // "Namespace.GenericType`2<Int32,System.__Canon>"
         // "Namespace.GenericType`1<Namespace.GenericType`1<Int32>>"
         // "Node<Int32,Int32>[]"
-        private static ClassInfo ExtractArgClassType(ReadOnlySpan<char> classString)
+        public static ClassInfo ExtractArgClassType(ReadOnlySpan<char> classString)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
 
@@ -122,6 +123,11 @@ namespace JitExplorer.Engine.Metadata
                 }
 
                 classString = classString.Slice(0, backtick);
+            }
+            else if (isArray)
+            {
+                // we are going to mark as IsArray, so chop the chars off
+                classString = classString.Slice(0, classString.Length - 2);
             }
 
             int dot = classString.LastIndexOf('.');
