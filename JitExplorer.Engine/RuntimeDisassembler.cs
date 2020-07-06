@@ -2,6 +2,8 @@
 using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
 using JitExplorer.Engine.Metadata;
+using Polly;
+using Polly.Retry;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,6 +11,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace JitExplorer.Engine
 {
@@ -32,7 +35,7 @@ namespace JitExplorer.Engine
         {
             if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
             {
-                return new Dissassembly("Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();", new Dictionary<int, string>());
+                return new Dissassembly(false, "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();", new Dictionary<int, string>());
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
@@ -47,7 +50,7 @@ namespace JitExplorer.Engine
                     sb.AppendLine(e.ToString());
                 }
 
-                return new Dissassembly(sb.ToString(), new Dictionary<int, string>());
+                return new Dissassembly(false, sb.ToString(), new Dictionary<int, string>());
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
@@ -137,27 +140,46 @@ namespace JitExplorer.Engine
             return c.Compile(assembylyName, syntax, jitSyntax);
         }
 
+        private const int maxRetryAttempts = 3;
+
+        private static readonly Task CompletedTask = Task.FromResult(false);
+
+        private AsyncRetryPolicy retryPolicy = Policy
+                .Handle<IOException>()
+                .WaitAndRetryAsync(maxRetryAttempts, i => TimeSpan.FromMilliseconds(50));
+
         private void WriteSourceToDisk(string source)
         {
-            File.WriteAllText(this.csFileName, source);
+            this.retryPolicy.ExecuteAsync(() => { File.WriteAllText(this.csFileName, source); return CompletedTask; } );
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)
         {
-            using (var fs = File.OpenWrite(path))
+            this.retryPolicy.ExecuteAsync(() => 
             {
-                compilation.Assembly.WriteTo(fs);
-            }
+                using (var fs = File.OpenWrite(path))
+                {
+                    compilation.Assembly.WriteTo(fs);
+                }
+
+                return CompletedTask;
+            });
 
             if (compilation.Pdb != Stream.Null)
             {
-                string pdbPath = Path.ChangeExtension(path, ".pdb");
-
-                using (var fs = File.OpenWrite(pdbPath))
+                this.retryPolicy.ExecuteAsync(() =>
                 {
-                    compilation.Pdb.WriteTo(fs);
-                }
+                    string pdbPath = Path.ChangeExtension(path, ".pdb");
+
+                    using (var fs = File.OpenWrite(pdbPath))
+                    {
+                        compilation.Pdb.WriteTo(fs);
+                    }
+
+                    return CompletedTask;
+                });
             }
+
 
             string json = @"
 {
@@ -177,7 +199,12 @@ namespace JitExplorer.Engine
 
             if (!File.Exists(settingsFileName))
             {
-                File.WriteAllText(settingsFileName, json);
+                this.retryPolicy.ExecuteAsync(() =>
+                {
+                    File.WriteAllText(settingsFileName, json);
+
+                    return CompletedTask;
+                });
             }
         }
 

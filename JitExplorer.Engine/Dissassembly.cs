@@ -6,11 +6,14 @@ namespace JitExplorer.Engine
 {
     public class Dissassembly
     {
-        public Dissassembly(string text, Dictionary<int, string> lineAddresses)
+        public Dissassembly(bool isSuccess, string text, Dictionary<int, string> lineAddresses)
         {
+            this.IsSuccess = isSuccess;
             this.Text = text;
             this.LineAddresses = lineAddresses;
         }
+
+        public bool IsSuccess { get; }
 
         public Dictionary<int, string> LineAddresses { get; }
 
