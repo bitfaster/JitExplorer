@@ -101,11 +101,15 @@ namespace JitExplorer
 
             if (IntPtr.Size == 8)
             { 
-                this.Title = "JitExplorer (x64)"; 
+                this.Title = "JitExplorer (x64)";
+                var i = (ComboBoxItem)this.Platform.Items[1];
+                i.IsEnabled = false;
             }
             else
             {
                 this.Title = "JitExplorer (x86)";
+                var i = (ComboBoxItem)this.Platform.Items[0];
+                i.IsEnabled = false;
             }
         }
 
