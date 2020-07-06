@@ -1227,7 +1227,7 @@
       [a-fA-F0-9]{12} # HEX
     </Rule>
 		<Rule color = "NumberLiteral" >
-      (?&lt;=,|\+)[0-9]+
+      (?&lt;=,|\+)[0-9A-F]+
       #\b(0[xXhH])?[0 - 9a - fA - F_`]+[h]?  # hex number
       #|
       #(   \b\d+(\.[0-9]+)?   #number with optional floating point
