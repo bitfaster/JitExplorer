@@ -13,6 +13,27 @@ namespace JitExplorer.Controls
 {
     public class AssemblyTextEditor : TextEditor
     {
+        //public AssemblyTextEditor() : base(new TextArea())
+        //{
+        //    var sp = this.Document.ServiceProvider;
+
+        //    this.Document.ServiceProvider = sp;
+
+        //    //this.DocumentChanged
+        //    //this.OnDocumentChanged(null)
+        //}
+
+        protected override void OnDocumentChanged(EventArgs e)
+        {
+            base.OnDocumentChanged(e);
+
+            var sp = this.Document.ServiceProvider;
+
+            var wrapped = new ServiceProviderWrapper(sp, new LineAddressResolver());
+
+            this.Document.ServiceProvider = wrapped;
+        }
+
         public static readonly DependencyProperty ShowMemoryAddressesProperty =
             DependencyProperty.Register("ShowMemoryAddresses", typeof(bool), typeof(TextEditor),
                                         new FrameworkPropertyMetadata(Boxes.False, OnShowMemoryAddressesChanged));
@@ -51,6 +72,28 @@ namespace JitExplorer.Controls
                         break;
                     }
                 }
+            }
+        }
+
+        public class ServiceProviderWrapper : IServiceProvider
+        {
+            private readonly IServiceProvider wrapped;
+            private readonly LineAddressResolver lineAddressResolver;
+
+            public ServiceProviderWrapper(IServiceProvider wrapped, LineAddressResolver lineAddressResolver)
+            {
+                this.wrapped = wrapped;
+                this.lineAddressResolver = lineAddressResolver;
+            }
+
+            public object GetService(Type serviceType)
+            {
+                if (serviceType == typeof(LineAddressResolver))
+                {
+                    return this.lineAddressResolver;
+                }
+
+                return this.wrapped.GetService(serviceType);
             }
         }
     }
