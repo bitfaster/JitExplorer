@@ -279,6 +279,7 @@ namespace JitExplorer.Engine
                 }
 
                 builder.AddLine($"; Total bytes of code {totalSizeInBytes}");
+                builder.AddLine();
             }
 
             foreach (var withProblems in result.Methods
