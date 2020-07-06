@@ -249,7 +249,7 @@ namespace JitExplorer.Engine
 
             int referenceIndex = 0;
             int methodIndex = 0;
-            //int line = 0;
+
             foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
             {
                 referenceIndex++;
@@ -257,22 +257,17 @@ namespace JitExplorer.Engine
 
                 var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
-                // Note leading empty hidden unicode char
-                //sb.AppendLine($"‎{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
-               // addresses.Add(line++, string.Empty);
+                // Note leading empty hidden unicode char for syntax highlighting
                 builder.AddLine($"‎{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
+
                 // TODO: reverse lookup of method into compiled syntax tree/find defn line number, and insert
                 // so that user can navigate there.
 
                 foreach (var element in pretty)
                 {
-                    //sb.AppendLine(element.TextRepresentation);
-                    //addresses.Add(line++, element.Address);
                     builder.AddLine(element.TextRepresentation, element.Address);
                 }
 
-                //sb.AppendLine();
-                //addresses.Add(line++, string.Empty);
                 builder.AddLine();
             }
 
@@ -280,14 +275,10 @@ namespace JitExplorer.Engine
             .Where(method => !string.IsNullOrEmpty(method.Problem))
             .GroupBy(method => method.Problem))
             {
-                //sb.AppendLine(withProblems.Key);
-                //addresses.Add(line++, string.Empty);
                 builder.AddLine(withProblems.Key);
 
                 foreach (var withProblem in withProblems)
                 {
-                    //sb.AppendLine(withProblem.Name);
-                    //addresses.Add(line++, string.Empty);
                     builder.AddLine(withProblem.Name);
                 }
             }

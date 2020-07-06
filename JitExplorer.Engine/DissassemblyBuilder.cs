@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using static JitExplorer.Engine.Disassemble.DisassemblyPrettifier;
 
 namespace JitExplorer.Engine
 {
@@ -25,10 +24,10 @@ namespace JitExplorer.Engine
         {
             sb.AppendLine(text);
             addresses.Add(lineNo++, address);
-            AddText(text);
+            HandleMultiline(text);
         }
 
-        private void AddText(string text)
+        private void HandleMultiline(string text)
         {
             int count = 0, n = 0;
 
