@@ -13,7 +13,7 @@ using System.Threading;
 namespace JitExplorer.Engine
 {
     // Requires source code calls JitExplorer.Signal.__Jit();
-    public class RuntimeDissassembler
+    public class RuntimeDisassembler
     {
         public event EventHandler<ProgressEventArgs> Progress;
 
@@ -21,7 +21,7 @@ namespace JitExplorer.Engine
         private readonly string csFileName;
         private static ClassicLru<string, SourceCodeProvider> sourceCodeProviders = new ClassicLru<string, SourceCodeProvider>(10);
 
-        public RuntimeDissassembler(string exeName)
+        public RuntimeDisassembler(string exeName)
         {
             ValidateExeName(exeName);
             this.exeName = exeName;
@@ -240,7 +240,9 @@ namespace JitExplorer.Engine
                 filtered,
                 sourceProvider);
 
-            return ClrMdDisassembler.AttachAndDisassemble(settings);
+            var dissassembler = new ClrMdDisassembler();
+
+            return dissassembler.AttachAndDisassemble(settings);
         }
 
         private static Dissassembly FormatResult(DisassemblyResult result)
@@ -286,11 +288,11 @@ namespace JitExplorer.Engine
             .Where(method => !string.IsNullOrEmpty(method.Problem))
             .GroupBy(method => method.Problem))
             {
-                builder.AddLine(withProblems.Key);
+                builder.AddLine($";{withProblems.Key}");
 
                 foreach (var withProblem in withProblems)
                 {
-                    builder.AddLine(withProblem.Name);
+                    builder.AddLine($";{withProblem.Name}");
                 }
             }
 

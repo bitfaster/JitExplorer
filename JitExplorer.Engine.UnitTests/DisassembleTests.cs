@@ -46,7 +46,8 @@ namespace JitExplorer.Engine.UnitTests
                 Array.Empty<string>(),
                 new SourceCodeProvider());
 
-            var result = ClrMdDisassembler.AttachAndDisassemble(settings);
+            var disassembler = new ClrMdDisassembler();
+            var result = disassembler.AttachAndDisassemble(settings);
 
             // From
             // \src\BenchmarkDotNet\Disassemblers\Exporters\HtmlDisassemblyExporter.cs
