@@ -6,13 +6,13 @@ C# source code is compiled to an executable using [Roslyn](https://github.com/do
 
 The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDasm) is that it supports dissassembly of generic methods:
 
-![image](https://user-images.githubusercontent.com/12851828/86552967-4cf02a80-befe-11ea-85f9-acabab89cd3b.png)
+![image](https://user-images.githubusercontent.com/12851828/86569925-01e90e00-bf24-11ea-864e-f1458d678e9d.png)
 
 # TODO:
 
 - JIT is not consistent in some cases. Attempt to provide some degree of configurable warmup.
 - Auto background jit, without button.
-- Hide program part somehow, so it seems more natural
+- Hide program part somehow, so it seems more natural. Or automatically insert the jit signal code via roslyn.
 - Navigate from asm assembly names to source code via (line x) insertion. If there is a dictionary of methods to line numbers, can build the same map from Asm. So can click c# as well. 
 https://joshvarty.com/2014/07/26/learn-roslyn-now-part-4-csharpsyntaxwalker/
 https://stackoverflow.com/questions/51392704/how-to-use-roslyn-to-determine-line-codes-position-in-a-source-file
