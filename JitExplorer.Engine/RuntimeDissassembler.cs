@@ -278,9 +278,7 @@ namespace JitExplorer.Engine
                     }
                 }
 
-                sb.AppendLine($"; Total bytes of code {totalSizeInBytes}");
-
-                builder.AddLine();
+                builder.AddLine($"; Total bytes of code {totalSizeInBytes}");
             }
 
             foreach (var withProblems in result.Methods
