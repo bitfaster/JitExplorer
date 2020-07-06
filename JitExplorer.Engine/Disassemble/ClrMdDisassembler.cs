@@ -1,4 +1,5 @@
 ﻿using Iced.Intel;
+using JitExplorer.Engine.Metadata;
 using Microsoft.Diagnostics.Runtime;
 using Microsoft.Diagnostics.Runtime.Interop;
 using System;
@@ -7,9 +8,16 @@ using System.Linq;
 
 namespace JitExplorer.Engine.Disassemble
 {
-    public static class ClrMdDisassembler
+    public class ClrMdDisassembler
     {
-        public static DisassemblyResult AttachAndDisassemble(Settings settings)
+        private readonly ISymbolNameProvider nameProvider;
+
+        public ClrMdDisassembler()
+        {
+            this.nameProvider = new CompactSymbolNameProvider();
+        }
+
+        public DisassemblyResult AttachAndDisassemble(Settings settings)
         {
             using (var dataTarget = DataTarget.AttachToProcess(
                 settings.ProcessId,
@@ -67,7 +75,7 @@ namespace JitExplorer.Engine.Disassemble
             control?.Execute(DEBUG_OUTCTL.NOT_LOGGED, ".reload", DEBUG_EXECUTE.NOT_LOGGED);
         }
 
-        private static DisassembledMethod[] Disassemble(Settings settings, State state)
+        private DisassembledMethod[] Disassemble(Settings settings, State state)
         {
             var result = new List<DisassembledMethod>();
 
@@ -85,7 +93,7 @@ namespace JitExplorer.Engine.Disassemble
             return result.ToArray();
         }
 
-        private static DisassembledMethod DisassembleMethod(MethodInfo methodInfo, State state, Settings settings)
+        private DisassembledMethod DisassembleMethod(MethodInfo methodInfo, State state, Settings settings)
         {
             var method = methodInfo.Method;
 
@@ -131,7 +139,7 @@ namespace JitExplorer.Engine.Disassemble
             };
         }
 
-        private static IEnumerable<Asm> Decode(ulong startAddress, uint size, State state, int depth, ClrMethod currentMethod)
+        private IEnumerable<Asm> Decode(ulong startAddress, uint size, State state, int depth, ClrMethod currentMethod)
         {
             byte[] code = new byte[size];
             if (!state.Runtime.DataTarget.ReadProcessMemory(startAddress, code, code.Length, out int bytesRead) || bytesRead == 0)
@@ -155,7 +163,7 @@ namespace JitExplorer.Engine.Disassemble
             }
         }
 
-        private static void TryTranslateAddressToName(Instruction instruction, State state, int depth, ClrMethod currentMethod)
+        private void TryTranslateAddressToName(Instruction instruction, State state, int depth, ClrMethod currentMethod)
         {
             var runtime = state.Runtime;
 
@@ -175,14 +183,14 @@ namespace JitExplorer.Engine.Disassemble
             var methodTableName = runtime.GetMethodTableName(address);
             if (!string.IsNullOrEmpty(methodTableName))
             {
-                state.AddressToNameMapping.Add(address, $"MT_{methodTableName}");
+                state.AddressToNameMapping.Add(address, $"MT_{this.nameProvider.TranslateMethodTable(methodTableName)}");
                 return;
             }
 
             var methodDescriptor = runtime.GetMethodByHandle(address);
             if (!(methodDescriptor is null))
             {
-                state.AddressToNameMapping.Add(address, $"MD_{methodDescriptor.GetFullSignature()}");
+                state.AddressToNameMapping.Add(address, $"MD_{this.nameProvider.TranslateSignature(methodDescriptor.GetFullSignature())}");
                 return;
             }
 
@@ -205,6 +213,8 @@ namespace JitExplorer.Engine.Disassemble
             var methodName = method.GetFullSignature();
             if (!methodName.Any(c => c == '.')) // the method name does not contain namespace and type name
                 methodName = $"{method.Type.Name}.{method.GetFullSignature()}";
+
+            methodName = this.nameProvider.TranslateSignature(methodName);
             state.AddressToNameMapping.Add(address, methodName);
         }
 

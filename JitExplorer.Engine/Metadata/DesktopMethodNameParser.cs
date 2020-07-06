@@ -28,7 +28,7 @@ namespace JitExplorer.Engine.Metadata
         // "Namespace.SomeTypeArray[]"
         // "Namespace.GenericType`1[[Namespace.SomeType, Assembly.Fully.Qualified]]"
         // "Namespace.GenericType`2[[Namespace.SomeType, Assembly.Fully.Qualified],[Namespace.SomeType, Assembly.Fully.Qualified]]"
-        private static ClassInfo ExtractClassType(ReadOnlySpan<char> classString)
+        public static ClassInfo ExtractClassType(ReadOnlySpan<char> classString)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
             int start = classString.IndexOf('[') + 1;

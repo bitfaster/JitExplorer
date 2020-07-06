@@ -41,7 +41,7 @@ namespace JitExplorer
     /// </summary>
     public partial class MainWindow : MetroWindow 
     {
-        private readonly RuntimeDissassembler dissassembler;
+        private readonly RuntimeDisassembler dissassembler;
         private readonly RoslynCodeCompletion codeCompletion;
         private readonly ClassicLru<JitKey, Dissassembly> cache = new ClassicLru<JitKey, Dissassembly>(100);
 
@@ -74,7 +74,7 @@ namespace JitExplorer
 
             InitializeComponent();
 
-            this.dissassembler = new RuntimeDissassembler("test.exe");
+            this.dissassembler = new RuntimeDisassembler("test.exe");
             this.dissassembler.Progress += IsolatedJit_Progress;
 
             this.CodeEditor.Text = @"namespace Testing

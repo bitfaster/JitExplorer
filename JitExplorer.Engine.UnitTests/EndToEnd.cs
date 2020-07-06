@@ -148,7 +148,8 @@ namespace JitExplorer.Engine.UnitTests
                 Array.Empty<string>(),
                 new SourceCodeProvider());
 
-            return ClrMdDisassembler.AttachAndDisassemble(settings);
+            var disassembler = new ClrMdDisassembler();
+            return disassembler.AttachAndDisassemble(settings);
         }
     }
 }

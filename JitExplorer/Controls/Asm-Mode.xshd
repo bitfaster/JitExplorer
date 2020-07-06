@@ -34,6 +34,8 @@
 	
 	<RuleSet ignoreCase = "false" >
 		<Keywords color="Instructions">
+      <Word>vzeroupper</Word>
+      <Word>vmovdqu</Word>
 			<Word>aaa</Word>
 			<Word>aad</Word>
 			<Word>aam</Word>
