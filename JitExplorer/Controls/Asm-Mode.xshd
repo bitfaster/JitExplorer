@@ -21,6 +21,8 @@
 -->
 <SyntaxDefinition name = "Asm" extensions=".s;.asm" xmlns="http://icsharpcode.net/sharpdevelop/syntaxdefinition/2008">
 
+  <Color name = "Label" foreground="#4EC9B0" exampleText="M02_L00" />
+  <Color name = "Address" foreground="Gray" exampleText="7FFED9540020" />
   <Color name = "Function" foreground="#4EC9B0" exampleText="$global::Program.Main()" />
   <Color name = "Comment" foreground="#6A9955" exampleText="; comment" />
   <Color name = "NumberLiteral" foreground="#569cd6" exampleText="0987654321" />
@@ -1218,14 +1220,21 @@
     <Span color="Function">
       <Begin>‎</Begin>
     </Span>
+    <Rule color ="Label">
+      (?&lt;![A-Z])[0-9A-Z]{3}_[0-9A-Z]{3}
+    </Rule>
+    <Rule color ="Address" >
+      [a-fA-F0-9]{12} # HEX
+    </Rule>
 		<Rule color = "NumberLiteral" >
-			\b(0[xXhH])?[0 - 9a - fA - F_`]+[h]?  # hex number
-			|
-			(   \b\d+(\.[0-9]+)?   #number with optional floating point
-			|	\.[0-9]+           #or just starting with floating point
-			)
-			([eE][+-]?[0 - 9]+)? # optional exponent
-		</Rule>
+      (?&lt;=,|\+)[0-9]+
+      #\b(0[xXhH])?[0 - 9a - fA - F_`]+[h]?  # hex number
+      #|
+      #(   \b\d+(\.[0-9]+)?   #number with optional floating point
+      #|	\.[0-9]+           #or just starting with floating point
+      #)
+      #([eE][+-]?[0 - 9]+)? # optional exponent
+    </Rule>
 	</RuleSet>
 	<RuleSet name = "CommentMarkerSet" ignoreCase="false">
 		<Keywords foreground = "#FFFF0000" fontWeight="bold">
