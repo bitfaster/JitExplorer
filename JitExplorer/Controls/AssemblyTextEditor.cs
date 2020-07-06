@@ -8,20 +8,19 @@ using System.Windows.Data;
 using System.Windows.Controls;
 using System.Windows;
 using ICSharpCode.AvalonEdit.Utils;
+using ICSharpCode.AvalonEdit.Highlighting;
 
 namespace JitExplorer.Controls
 {
     public class AssemblyTextEditor : TextEditor
     {
-        //public AssemblyTextEditor() : base(new TextArea())
-        //{
-        //    var sp = this.Document.ServiceProvider;
-
-        //    this.Document.ServiceProvider = sp;
-
-        //    //this.DocumentChanged
-        //    //this.OnDocumentChanged(null)
-        //}
+        public AssemblyTextEditor() : base(new TextArea())
+        {
+            this.IsReadOnly = true;
+            this.WordWrap = true;
+            this.ShowLineNumbers = false;
+            this.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("Asm");
+        }
 
         protected override void OnDocumentChanged(EventArgs e)
         {

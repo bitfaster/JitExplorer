@@ -149,10 +149,6 @@
             <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
                                Style="{StaticResource TextEditorStyle}"
                                Grid.Column="2"
-                               IsReadOnly="True"
-                               ShowLineNumbers="False"
-                               SyntaxHighlighting="Asm"
-                               WordWrap="True"
                                MinWidth="5">
             </jitcontrols:AssemblyTextEditor>
         </Grid>
