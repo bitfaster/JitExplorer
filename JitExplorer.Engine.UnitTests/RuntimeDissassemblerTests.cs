@@ -39,7 +39,7 @@ namespace JitExplorer.Engine.UnitTests
                 JitMode = JitMode.Default,
             };
 
-            string jitOut = jit.CompileJitAndDisassemble(source, config);
+            string jitOut = jit.CompileJitAndDisassemble(source, config).Text;
 
             output.WriteLine(jitOut);
 

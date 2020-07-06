@@ -57,7 +57,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="avalonedit:TextEditor" >
+    <Style TargetType="avalonedit:TextEditor" x:Key="TextEditorStyle" >
         <Setter Property="FontFamily" Value="Consolas" />
         <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Background}" />
         <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Foreground}" />

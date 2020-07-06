@@ -43,7 +43,7 @@ namespace JitExplorer
     {
         private readonly RuntimeDissassembler dissassembler;
         private readonly RoslynCodeCompletion codeCompletion;
-        private readonly ClassicLru<JitKey, string> cache = new ClassicLru<JitKey, string>(100);
+        private readonly ClassicLru<JitKey, Dissassembly> cache = new ClassicLru<JitKey, Dissassembly>(100);
 
         public MainWindow()
         {
@@ -106,39 +106,6 @@ namespace JitExplorer
             else
             {
                 this.Title = "JitExplorer (x86)";
-            }
-
-            OnShowLineNumbersChanged(this.AssemblerView, true);
-        }
-
-        static void OnShowLineNumbersChanged(DependencyObject d, bool what)
-        {
-            TextEditor editor = (TextEditor)d;
-            var leftMargins = editor.TextArea.LeftMargins;
-            if (what)
-            {
-                LineNumberMargin lineNumbers = new MemoryAddressMargin();
-                Line line = (Line)DottedLineMargin.Create();
-                leftMargins.Insert(0, lineNumbers);
-                leftMargins.Insert(1, line);
-                var lineNumbersForeground = new Binding("LineNumbersForeground") { Source = editor };
-                line.SetBinding(Line.StrokeProperty, lineNumbersForeground);
-                lineNumbers.SetBinding(Control.ForegroundProperty, lineNumbersForeground);
-            }
-            else
-            {
-                for (int i = 0; i < leftMargins.Count; i++)
-                {
-                    if (leftMargins[i] is LineNumberMargin)
-                    {
-                        leftMargins.RemoveAt(i);
-                        if (i < leftMargins.Count && DottedLineMargin.IsDottedLineMargin(leftMargins[i]))
-                        {
-                            leftMargins.RemoveAt(i);
-                        }
-                        break;
-                    }
-                }
             }
         }
 
@@ -305,7 +272,9 @@ namespace JitExplorer
 
                 var result = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
 
-                this.Dispatcher.Invoke(() => this.AssemblerView.Text = result);
+                this.Dispatcher.Invoke(
+                    () => 
+                    this.AssemblerView.Update(result.Text, new LineAddressResolver(result.LineAddresses)));
             }
             catch (Exception ex)
             {
@@ -399,6 +368,11 @@ namespace JitExplorer
             this.CodeEditor.ShowLineNumbers = !this.CodeEditor.ShowLineNumbers;
         }
 
+        private void ShowMemoryAddressesHandler(object sender, RoutedEventArgs e)
+        {
+            this.AssemblerView.ShowMemoryAddresses = !this.AssemblerView.ShowMemoryAddresses;
+        }
+
         private void UndoHandler(object sender, RoutedEventArgs e)
         {
             this.CodeEditor.Undo();
@@ -462,5 +436,7 @@ namespace JitExplorer
                 this.Legacy.IsChecked = false;
             }
         }
+
+
     }
 }

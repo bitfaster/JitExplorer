@@ -11,12 +11,16 @@ namespace JitExplorer.Engine.Disassemble
         public class Element
         {
             public string TextRepresentation { get; }
+
             public SourceCode Source { get; }
 
-            public Element(string textRepresentation, SourceCode source)
+            public string Address { get; }
+
+            public Element(string textRepresentation, SourceCode source, string address)
             {
                 TextRepresentation = textRepresentation;
                 Source = source;
+                this.Address = address;
             }
         }
 
@@ -24,20 +28,18 @@ namespace JitExplorer.Engine.Disassemble
         {
             public string Id { get; }
 
-            public Reference(string textRepresentation, string id, SourceCode source) : base(textRepresentation, source) => Id = id;
+            public Reference(string textRepresentation, string id, SourceCode source) : base(textRepresentation, source, string.Empty) => Id = id;
         }
 
         public class Label : Element
         {
             public string Id { get; }
 
-            public Label(string label) : base(label, null) => Id = label;
+            public Label(string label) : base(label, null, string.Empty) => Id = label;
         }
 
         public static IReadOnlyList<Element> Prettify(DisassembledMethod method, DisassemblyResult disassemblyResult, string labelPrefix, AsmFormat asmFormat)
         {
-            
-
             var asmInstructions = method.Maps.SelectMany(map => map.SourceCodes.OfType<Asm>()).ToArray();
 
             // first of all, we search of referenced addresses (jump|calls)
@@ -62,11 +64,11 @@ namespace JitExplorer.Engine.Disassemble
                 {
                     if (instruction is Sharp sharp)
                     {
-                        prettified.Add(new Element(sharp.Text, sharp));
+                        prettified.Add(new Element(sharp.Text, sharp, string.Empty));
                     }
                     else if (instruction is MonoCode mono)
                     {
-                        prettified.Add(new Element(mono.Text, mono));
+                        prettified.Add(new Element(mono.Text, mono, string.Empty));
                     }
                     else if (instruction is Asm asm)
                     {
@@ -88,12 +90,16 @@ namespace JitExplorer.Engine.Disassemble
                             // call to a known method
                             if (disassemblyResult.AddressToNameMapping.ContainsKey(referencedAddress))
                             {
-                                prettified.Add(new Element(InstructionFormatter.Format(asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), asm));
+                                prettified.Add(new Element(InstructionFormatter.Format(asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), 
+                                    asm,
+                                    InstructionFormatter.FormatAddress(asm.Instruction, formatterWithGlobalSymbols, disassemblyResult.PointerSize)));
                                 continue;
                             }
                         }
 
-                        prettified.Add(new Element(InstructionFormatter.Format(asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), asm));
+                        prettified.Add(new Element(InstructionFormatter.Format(asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), 
+                            asm,
+                           InstructionFormatter.FormatAddress(asm.Instruction, formatterWithGlobalSymbols, disassemblyResult.PointerSize)));
                     }
                 }
 

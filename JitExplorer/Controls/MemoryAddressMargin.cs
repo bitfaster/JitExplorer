@@ -17,26 +17,23 @@ namespace JitExplorer.Controls
 	// https://github.com/icsharpcode/AvalonEdit/blob/28b887f78c821c7fede1d4fc461bde64f5f21bd1/ICSharpCode.AvalonEdit/Editing/LineNumberMargin.cs
 	public class MemoryAddressMargin : LineNumberMargin
 	{
-		// TODO: how does it determine width?
-
 		/// <inheritdoc/>
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			TextView textView = this.TextView;
+
+			var addressResolver = (ILineAddressResolver)textView.Document.ServiceProvider.GetService(typeof(ILineAddressResolver));
+
 			Size renderSize = this.RenderSize;
 			if (textView != null && textView.VisualLinesValid)
 			{
 				var foreground = (Brush)GetValue(Control.ForegroundProperty);
 				foreach (VisualLine line in textView.VisualLines)
 				{
-					//int lineNumber = line.FirstDocumentLine.LineNumber;
-					
-					// TODO: get addresses from the assembly
-					int lineNumber = 1;
 					FormattedText text = TextFormatterFactory.CreateFormattedText(
 						this,
 						//lineNumber.ToString(CultureInfo.CurrentCulture),
-						"7FFED9580410",
+						addressResolver.GetAddress(line.FirstDocumentLine.LineNumber),
 						typeface, emSize, foreground
 					);
 					double y = line.GetTextLineVisualYPosition(line.TextLines[0], VisualYPosition.TextTop);

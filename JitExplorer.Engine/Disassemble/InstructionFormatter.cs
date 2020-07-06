@@ -23,12 +23,17 @@ namespace JitExplorer.Engine.Disassemble
 
         private static void FormatInstructionPointer(Instruction instruction, Formatter formatter, uint pointerSize, StringBuilderFormatterOutput output)
         {
+            output.Write(FormatAddress(instruction, formatter, pointerSize), FormatterOutputTextKind.Text);
+            output.Write(" ", FormatterOutputTextKind.Text);
+        }
+
+        public static string FormatAddress(Instruction instruction, Formatter formatter, uint pointerSize)
+        {
             string ipFormat = formatter.Options.LeadingZeroes
                 ? pointerSize == 4 ? "X8" : "X16"
                 : "X";
 
-            output.Write(instruction.IP.ToString(ipFormat), FormatterOutputTextKind.Text);
-            output.Write(" ", FormatterOutputTextKind.Text);
+            return instruction.IP.ToString(ipFormat);
         }
     }
 }
