@@ -36,7 +36,8 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             methodInfo.Type.Name.Should().Be("Class");
             
             methodInfo.Args.Should().HaveCount(1);
-            methodInfo.Args.First().Name.Should().Be("String[]");
+            methodInfo.Args.First().Name.Should().Be("String");
+            methodInfo.Args.First().IsArray.Should().BeTrue();
             methodInfo.Args.First().Namespace.Should().Be("Namespace2");
         }
 
@@ -129,6 +130,29 @@ namespace JitExplorer.Engine.UnitTests.Metadata
             methodInfo.Type.GenericParameters.Skip(2).First().Namespace.Should().Be("Namespace3");
 
             methodInfo.Name.Should().Be("ctor");
+        }
+
+        [Fact]
+        public void NestedTypeTypeName()
+        {
+            string methodName = "System.Collections.Concurrent.ConcurrentDictionary`2+Tables[[System.Int32, System.Private.CoreLib],[System.Int32, System.Private.CoreLib]]..ctor(Node<Int32,Int32>[], System.Object[], Int32[])";
+
+            var methodInfo = DesktopMethodNameParser.Parse(methodName);
+
+            methodInfo.Type.Name.Should().Be("ConcurrentDictionary+Tables");
+        }
+
+        // We should be able to reconstruct Node<Int32,Int32>[]
+        [Fact]
+        public void NestedTypeGenericArrayArg()
+        {
+            string methodName = "System.Collections.Concurrent.ConcurrentDictionary`2+Tables[[System.Int32, System.Private.CoreLib],[System.Int32, System.Private.CoreLib]]..ctor(Node<Int32,Int32>[], System.Object[], Int32[])";
+
+            var methodInfo = DesktopMethodNameParser.Parse(methodName);
+
+            var args = methodInfo.Args.ToArray();
+            args[0].Name.Should().Be("Node");
+            args[0].IsArray.Should().BeTrue();
         }
 
         [Fact]

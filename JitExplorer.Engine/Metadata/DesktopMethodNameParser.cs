@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace JitExplorer.Engine.Metadata
@@ -22,6 +23,8 @@ namespace JitExplorer.Engine.Metadata
 
             return new MethodInfo(methodName, type, args);
         }
+
+        private static readonly string plusChar = "+";
 
         // "SomeType"	
         // "Namespace.SomeType"
@@ -49,9 +52,20 @@ namespace JitExplorer.Engine.Metadata
 
             if (genericParams.Count > 0)
             {
+                ReadOnlySpan<char> nested = ReadOnlySpan<char>.Empty;
+                int plus = classString.IndexOf('+');
+                if (plus != -1 && plus < start)
+                {
+                    // this is a nested class
+                    nested = classString.Slice(plus + 1, start - plus - 2);
+                    nested = plusChar.AsSpan().Concat(nested);
+                }
+
                 // fixup
                 int backtick = classString.IndexOf('`');
                 classString = classString.Slice(0, backtick);
+
+                classString = classString.Concat(nested);
             }
 
             int dot = classString.LastIndexOf('.');
@@ -68,10 +82,12 @@ namespace JitExplorer.Engine.Metadata
         }
 
         // "Namespace.SomeType"
+        // "Namespace.SomeType[]"
         // "Namespace.GenericType`1<Int32>"
         // "Namespace.GenericType`2<Int32,System.__Canon>"
         // "Namespace.GenericType`1<Namespace.GenericType`1<Int32>>"
-        private static ClassInfo ExtractArgClassType(ReadOnlySpan<char> classString)
+        // "Node<Int32,Int32>[]"
+        public static ClassInfo ExtractArgClassType(ReadOnlySpan<char> classString)
         {
             List<ClassInfo> genericParams = new List<ClassInfo>();
 
@@ -94,11 +110,24 @@ namespace JitExplorer.Engine.Metadata
                 }
             }
 
+            bool isArray = classString[classString.Length - 2] == '[' && classString[classString.Length - 1] == ']';
+
             if (genericParams.Count > 0)
             {
                 // fixup
                 int backtick = classString.IndexOf('`');
+
+                if (backtick == -1)
+                {
+                    backtick = classString.IndexOf('<');
+                }
+
                 classString = classString.Slice(0, backtick);
+            }
+            else if (isArray)
+            {
+                // we are going to mark as IsArray, so chop the chars off
+                classString = classString.Slice(0, classString.Length - 2);
             }
 
             int dot = classString.LastIndexOf('.');
@@ -108,10 +137,10 @@ namespace JitExplorer.Engine.Metadata
                 string ns = classString.Slice(0, dot).ToString();
                 string typeName = classString.Slice(dot + 1, classString.Length - dot - 1).ToString();
 
-                return new ClassInfo(ns, typeName, genericParams);
+                return new ClassInfo(ns, typeName, isArray, genericParams);
             }
 
-            return new ClassInfo(string.Empty, classString.ToString(), genericParams);
+            return new ClassInfo(string.Empty, classString.ToString(), isArray, genericParams);
         }
 
         // "System.String[]"

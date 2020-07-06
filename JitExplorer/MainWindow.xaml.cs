@@ -101,11 +101,16 @@ namespace JitExplorer
 
             if (IntPtr.Size == 8)
             { 
-                this.Title = "JitExplorer (x64)"; 
+                this.Title = "JitExplorer (x64)";
+                var i = (ComboBoxItem)this.Platform.Items[1];
+                i.IsEnabled = false;
             }
             else
             {
                 this.Title = "JitExplorer (x86)";
+                this.Platform.SelectedIndex = 1;
+                var i = (ComboBoxItem)this.Platform.Items[0];
+                i.IsEnabled = false;
             }
         }
 
@@ -300,6 +305,7 @@ namespace JitExplorer
             {
                 var text = await File.ReadAllTextAsync(d.FileName);
                 this.CodeEditor.Text = text;
+                this.AssemblerView.Text = string.Empty;
             }
         }
 
