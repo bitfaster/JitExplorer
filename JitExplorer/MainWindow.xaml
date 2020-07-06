@@ -63,7 +63,7 @@
 
         <!-- Toolbar -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,15">
-            <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}">
+            <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" FontSize="10">
                 <ComboBoxItem IsSelected="True">C# (Default)</ComboBoxItem>
                 <ComboBoxItem>C# 1</ComboBoxItem>
                 <ComboBoxItem>C# 2</ComboBoxItem>
