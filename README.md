@@ -10,7 +10,6 @@ The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDa
 
 # TODO:
 
-- Bug: make build fail, edit the code (so build still fails), the rebuild. object disposed.
 - JIT is not consistent in some cases. Attempt to provide some degree of configurable warmup.
 - Auto background jit, without button.
 - Hide program part somehow, so it seems more natural
