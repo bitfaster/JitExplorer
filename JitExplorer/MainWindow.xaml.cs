@@ -107,39 +107,6 @@ namespace JitExplorer
             {
                 this.Title = "JitExplorer (x86)";
             }
-
-            OnShowLineNumbersChanged(this.AssemblerView, true);
-        }
-
-        static void OnShowLineNumbersChanged(DependencyObject d, bool what)
-        {
-            TextEditor editor = (TextEditor)d;
-            var leftMargins = editor.TextArea.LeftMargins;
-            if (what)
-            {
-                LineNumberMargin lineNumbers = new MemoryAddressMargin();
-                Line line = (Line)DottedLineMargin.Create();
-                leftMargins.Insert(0, lineNumbers);
-                leftMargins.Insert(1, line);
-                var lineNumbersForeground = new Binding("LineNumbersForeground") { Source = editor };
-                line.SetBinding(Line.StrokeProperty, lineNumbersForeground);
-                lineNumbers.SetBinding(Control.ForegroundProperty, lineNumbersForeground);
-            }
-            else
-            {
-                for (int i = 0; i < leftMargins.Count; i++)
-                {
-                    if (leftMargins[i] is LineNumberMargin)
-                    {
-                        leftMargins.RemoveAt(i);
-                        if (i < leftMargins.Count && DottedLineMargin.IsDottedLineMargin(leftMargins[i]))
-                        {
-                            leftMargins.RemoveAt(i);
-                        }
-                        break;
-                    }
-                }
-            }
         }
 
         // Scroll to line
@@ -399,6 +366,11 @@ namespace JitExplorer
             this.CodeEditor.ShowLineNumbers = !this.CodeEditor.ShowLineNumbers;
         }
 
+        private void ShowMemoryAddressesHandler(object sender, RoutedEventArgs e)
+        {
+            this.AssemblerView.ShowMemoryAddresses = !this.AssemblerView.ShowMemoryAddresses;
+        }
+
         private void UndoHandler(object sender, RoutedEventArgs e)
         {
             this.CodeEditor.Undo();
@@ -462,5 +434,7 @@ namespace JitExplorer
                 this.Legacy.IsChecked = false;
             }
         }
+
+
     }
 }

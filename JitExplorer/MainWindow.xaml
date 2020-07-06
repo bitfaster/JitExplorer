@@ -7,8 +7,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
-        xmlns:local="clr-namespace:JitExplorer"
-        mc:Ignorable="d"
+        xmlns:local="clr-namespace:JitExplorer" 
+                 xmlns:jitcontrols="clr-namespace:JitExplorer.Controls"
+                 mc:Ignorable="d"
         Title="JitExplorer" TitleCharacterCasing="Normal" TitleForeground="{DynamicResource MahApps.Brushes.SemiTransparent}"
         Height="450" Width="800" 
         BorderThickness="0.5" BorderBrush="DarkOrange">
@@ -53,6 +54,7 @@
             </MenuItem>
             <MenuItem Header="_View" HorizontalContentAlignment="Left">
                 <MenuItem Header="LineNumbers" IsCheckable="True" IsChecked="True" Click="ShowLineNumbersHandler"/>
+                <MenuItem Header="MemoryAddresses" IsCheckable="True" Click="ShowMemoryAddressesHandler"/>
             </MenuItem>
             <MenuItem Header="_Help" HorizontalContentAlignment="Left">
                 <MenuItem Header="About" Click="AboutHandler"/>
@@ -137,20 +139,22 @@
                 <ColumnDefinition ></ColumnDefinition>
             </Grid.ColumnDefinitions>
             <avalonedit:TextEditor x:Name="CodeEditor"
+                               Style="{StaticResource TextEditorStyle}"
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
                                ShowLineNumbers="True"
                                MinWidth="5">
             </avalonedit:TextEditor>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
-            <avalonedit:TextEditor Name="AssemblerView" 
+            <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
+                               Style="{StaticResource TextEditorStyle}"
                                Grid.Column="2"
                                IsReadOnly="True"
                                ShowLineNumbers="False"
                                SyntaxHighlighting="Asm"
                                WordWrap="True"
                                MinWidth="5">
-            </avalonedit:TextEditor>
+            </jitcontrols:AssemblyTextEditor>
         </Grid>
 
         <!-- Status bar -->
