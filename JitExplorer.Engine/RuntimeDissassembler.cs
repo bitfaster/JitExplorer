@@ -28,11 +28,11 @@ namespace JitExplorer.Engine
             this.csFileName = "program.cs";
         }
 
-        public string CompileJitAndDisassemble(string sourceCode, Config config)
+        public Dissassembly CompileJitAndDisassemble(string sourceCode, Config config)
         {
             if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
             {
-                return "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();";
+                return new Dissassembly("Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();", new Dictionary<int, string>());
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
@@ -47,7 +47,7 @@ namespace JitExplorer.Engine
                     sb.AppendLine(e.ToString());
                 }
 
-                return sb.ToString();
+                return new Dissassembly(sb.ToString(), new Dictionary<int, string>());
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
@@ -243,45 +243,56 @@ namespace JitExplorer.Engine
             return ClrMdDisassembler.AttachAndDisassemble(settings);
         }
 
-        private static string FormatResult(DisassemblyResult result)
+        private static Dissassembly FormatResult(DisassemblyResult result)
         {
-            StringBuilder sb = new StringBuilder();
+            var builder = new DissassemblyBuilder();
 
             int referenceIndex = 0;
             int methodIndex = 0;
+            //int line = 0;
             foreach (var method in result.Methods.Where(method => string.IsNullOrEmpty(method.Problem)))
             {
                 referenceIndex++;
-                var f = new AsmFormat(printInstructionAddresses: true);
+                var f = new AsmFormat(printInstructionAddresses: false);
 
                 var pretty = DisassemblyPrettifier.Prettify(method, result, $"M{methodIndex++:00}", f);
 
                 // Note leading empty hidden unicode char
-                sb.AppendLine($"‎{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
+                //sb.AppendLine($"‎{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
+               // addresses.Add(line++, string.Empty);
+                builder.AddLine($"‎{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(method.Name))}");
                 // TODO: reverse lookup of method into compiled syntax tree/find defn line number, and insert
                 // so that user can navigate there.
 
                 foreach (var element in pretty)
                 {
-                    sb.AppendLine(element.TextRepresentation);
+                    //sb.AppendLine(element.TextRepresentation);
+                    //addresses.Add(line++, element.Address);
+                    builder.AddLine(element.TextRepresentation, element.Address);
                 }
 
-                sb.AppendLine();
+                //sb.AppendLine();
+                //addresses.Add(line++, string.Empty);
+                builder.AddLine();
             }
 
             foreach (var withProblems in result.Methods
             .Where(method => !string.IsNullOrEmpty(method.Problem))
             .GroupBy(method => method.Problem))
             {
-                sb.AppendLine(withProblems.Key);
+                //sb.AppendLine(withProblems.Key);
+                //addresses.Add(line++, string.Empty);
+                builder.AddLine(withProblems.Key);
 
                 foreach (var withProblem in withProblems)
                 {
-                    sb.AppendLine(withProblem.Name);
+                    //sb.AppendLine(withProblem.Name);
+                    //addresses.Add(line++, string.Empty);
+                    builder.AddLine(withProblem.Name);
                 }
             }
 
-            return sb.ToString();
+            return builder.Build();
         }
 
         private static void ValidateExeName(string exeName)

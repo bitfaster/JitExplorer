@@ -17,18 +17,12 @@ namespace JitExplorer.Controls
 	// https://github.com/icsharpcode/AvalonEdit/blob/28b887f78c821c7fede1d4fc461bde64f5f21bd1/ICSharpCode.AvalonEdit/Editing/LineNumberMargin.cs
 	public class MemoryAddressMargin : LineNumberMargin
 	{
-
-
 		/// <inheritdoc/>
 		protected override void OnRender(DrawingContext drawingContext)
 		{
 			TextView textView = this.TextView;
 
-			// TODO: how to get actual addresses?
-			// how would we register types in the service provider in the document?
-			var lar = (LineAddressResolver)textView.Document.ServiceProvider.GetService(typeof(LineAddressResolver));
-			// it is settable on TextDocument:
-			// https://github.com/icsharpcode/AvalonEdit/blob/28b887f78c821c7fede1d4fc461bde64f5f21bd1/ICSharpCode.AvalonEdit/Document/TextDocument.cs
+			var addressResolver = (ILineAddressResolver)textView.Document.ServiceProvider.GetService(typeof(ILineAddressResolver));
 
 			Size renderSize = this.RenderSize;
 			if (textView != null && textView.VisualLinesValid)
@@ -36,14 +30,10 @@ namespace JitExplorer.Controls
 				var foreground = (Brush)GetValue(Control.ForegroundProperty);
 				foreach (VisualLine line in textView.VisualLines)
 				{
-					//int lineNumber = line.FirstDocumentLine.LineNumber;
-					
-					// TODO: get addresses from the assembly
-
 					FormattedText text = TextFormatterFactory.CreateFormattedText(
 						this,
 						//lineNumber.ToString(CultureInfo.CurrentCulture),
-						lar.GetAddress(line.FirstDocumentLine.LineNumber),
+						addressResolver.GetAddress(line.FirstDocumentLine.LineNumber),
 						typeface, emSize, foreground
 					);
 					double y = line.GetTextLineVisualYPosition(line.TextLines[0], VisualYPosition.TextTop);

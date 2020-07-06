@@ -43,7 +43,7 @@ namespace JitExplorer
     {
         private readonly RuntimeDissassembler dissassembler;
         private readonly RoslynCodeCompletion codeCompletion;
-        private readonly ClassicLru<JitKey, string> cache = new ClassicLru<JitKey, string>(100);
+        private readonly ClassicLru<JitKey, Dissassembly> cache = new ClassicLru<JitKey, Dissassembly>(100);
 
         public MainWindow()
         {
@@ -272,7 +272,9 @@ namespace JitExplorer
 
                 var result = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
 
-                this.Dispatcher.Invoke(() => this.AssemblerView.Text = result);
+                this.Dispatcher.Invoke(
+                    () => 
+                    this.AssemblerView.Update(result.Text, new LineAddressResolver(result.LineAddresses)));
             }
             catch (Exception ex)
             {

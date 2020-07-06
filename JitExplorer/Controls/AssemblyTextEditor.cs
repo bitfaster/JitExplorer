@@ -14,6 +14,8 @@ namespace JitExplorer.Controls
 {
     public class AssemblyTextEditor : TextEditor
     {
+        private ILineAddressResolver lineAddressResolver = new EmptyAddressResolver();
+
         public AssemblyTextEditor() : base(new TextArea())
         {
             this.IsReadOnly = true;
@@ -22,14 +24,23 @@ namespace JitExplorer.Controls
             this.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("Asm");
         }
 
+        public void Update(string text, ILineAddressResolver addressResolver)
+        {
+            this.lineAddressResolver = addressResolver;
+            this.Text = text;
+            this.HookAddressResolver();
+        }
+
         protected override void OnDocumentChanged(EventArgs e)
         {
             base.OnDocumentChanged(e);
+            this.HookAddressResolver();
+        }
 
+        private void HookAddressResolver()
+        {
             var sp = this.Document.ServiceProvider;
-
-            var wrapped = new ServiceProviderWrapper(sp, new LineAddressResolver());
-
+            var wrapped = new ServiceProviderWrapper(sp, this.lineAddressResolver);
             this.Document.ServiceProvider = wrapped;
         }
 
@@ -77,9 +88,9 @@ namespace JitExplorer.Controls
         public class ServiceProviderWrapper : IServiceProvider
         {
             private readonly IServiceProvider wrapped;
-            private readonly LineAddressResolver lineAddressResolver;
+            private readonly ILineAddressResolver lineAddressResolver;
 
-            public ServiceProviderWrapper(IServiceProvider wrapped, LineAddressResolver lineAddressResolver)
+            public ServiceProviderWrapper(IServiceProvider wrapped, ILineAddressResolver lineAddressResolver)
             {
                 this.wrapped = wrapped;
                 this.lineAddressResolver = lineAddressResolver;
@@ -87,7 +98,7 @@ namespace JitExplorer.Controls
 
             public object GetService(Type serviceType)
             {
-                if (serviceType == typeof(LineAddressResolver))
+                if (serviceType == typeof(ILineAddressResolver))
                 {
                     return this.lineAddressResolver;
                 }

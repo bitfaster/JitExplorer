@@ -4,15 +4,42 @@ using System.Text;
 
 namespace JitExplorer.Controls
 {
-    public class LineAddressResolver
+    public interface ILineAddressResolver
+    {
+        string GetAddress(int line);
+    }
+
+    public class EmptyAddressResolver : ILineAddressResolver
     {
         public string GetAddress(int line)
         {
-            var linestr = line.ToString();
+            return string.Empty;
+        }
+    }
 
-            var addr = "7FFED9580410";
+    public class LineAddressResolver : ILineAddressResolver
+    {
+        private readonly Dictionary<int, string> lineAddresses;
 
-            return addr.Substring(0, addr.Length - linestr.Length) + linestr;
+        public LineAddressResolver(Dictionary<int, string> lineAddresses)
+        {
+            this.lineAddresses = lineAddresses;
+        }
+
+        public string GetAddress(int line)
+        {
+            if (this.lineAddresses.TryGetValue(line, out var a))
+            {
+                return a;
+            }
+
+            return string.Empty;
+
+            //var linestr = line.ToString();
+
+            //var addr = "7FFED9580410";
+
+            //return addr.Substring(0, addr.Length - linestr.Length) + linestr;
         }
     }
 }
