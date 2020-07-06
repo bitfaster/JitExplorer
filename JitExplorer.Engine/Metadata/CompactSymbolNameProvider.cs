@@ -15,7 +15,7 @@ namespace JitExplorer.Engine.Metadata
             return classInfo.CompactName();
         }
 
-         public string TranslateSignature(string methodSignature)
+        public string TranslateSignature(string methodSignature)
         {
             try
             {
