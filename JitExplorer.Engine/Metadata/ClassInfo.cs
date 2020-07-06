@@ -16,14 +16,23 @@ namespace JitExplorer.Engine.Metadata
         }
 
         public ClassInfo(string @namespace, string name, IEnumerable<ClassInfo> genericParams)
+            : this(@namespace, name, false, genericParams)
+        {
+        }
+
+        public ClassInfo(string @namespace, string name, bool isArray, IEnumerable<ClassInfo> genericParams)
         {
             this.Namespace = @namespace;
             this.Name = name;
+            this.IsArray = isArray;
             this.GenericParameters = genericParams;
         }
 
         public string Namespace { get; }
+
         public string Name { get; }
+
+        public bool IsArray { get; }
 
         public IEnumerable<ClassInfo> GenericParameters { get; }
 
@@ -44,8 +53,18 @@ namespace JitExplorer.Engine.Metadata
                 sb.Remove(sb.Length - 2, 2);
                 sb.Append(">");
 
+                if (IsArray)
+                {
+                    sb.Append("[]");
+                }
+
                 return sb.ToString();
             }
+
+            if (IsArray)
+            {
+                return $"{Name}[]";
+            }    
 
             return $"{Name}";
         }

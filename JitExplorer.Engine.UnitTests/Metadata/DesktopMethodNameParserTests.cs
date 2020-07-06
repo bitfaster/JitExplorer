@@ -132,6 +132,29 @@ namespace JitExplorer.Engine.UnitTests.Metadata
         }
 
         [Fact]
+        public void NestedTypeTypeName()
+        {
+            string methodName = "System.Collections.Concurrent.ConcurrentDictionary`2+Tables[[System.Int32, System.Private.CoreLib],[System.Int32, System.Private.CoreLib]]..ctor(Node<Int32,Int32>[], System.Object[], Int32[])";
+
+            var methodInfo = DesktopMethodNameParser.Parse(methodName);
+
+            methodInfo.Type.Name.Should().Be("ConcurrentDictionary+Tables");
+        }
+
+        // We should be able to reconstruct Node<Int32,Int32>[]
+        [Fact]
+        public void NestedTypeGenericArrayArg()
+        {
+            string methodName = "System.Collections.Concurrent.ConcurrentDictionary`2+Tables[[System.Int32, System.Private.CoreLib],[System.Int32, System.Private.CoreLib]]..ctor(Node<Int32,Int32>[], System.Object[], Int32[])";
+
+            var methodInfo = DesktopMethodNameParser.Parse(methodName);
+
+            var args = methodInfo.Args.ToArray();
+            args[0].Name.Should().Be("Node");
+            args[0].IsArray.Should().BeTrue();
+        }
+
+        [Fact]
         public void SingleGenericArg()
         {
             string methodName = "Namespace.Foo.ctor(System.Collections.Generic.IEqualityComparer`1<Int32>)";

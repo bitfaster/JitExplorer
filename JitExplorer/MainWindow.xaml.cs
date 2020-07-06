@@ -300,6 +300,7 @@ namespace JitExplorer
             {
                 var text = await File.ReadAllTextAsync(d.FileName);
                 this.CodeEditor.Text = text;
+                this.AssemblerView.Text = string.Empty;
             }
         }
 
