@@ -6,7 +6,7 @@ C# source code is compiled to an executable using [Roslyn](https://github.com/do
 
 The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDasm) is that it supports dissassembly of generic methods:
 
-![image](https://user-images.githubusercontent.com/12851828/86521372-c3106680-be04-11ea-90bd-81aead515b07.png)
+![image](https://user-images.githubusercontent.com/12851828/86548694-2d530500-bef2-11ea-8e61-d8ab3e7974c9.png)
 
 # TODO:
 
@@ -17,7 +17,7 @@ The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDa
 https://joshvarty.com/2014/07/26/learn-roslyn-now-part-4-csharpsyntaxwalker/
 https://stackoverflow.com/questions/51392704/how-to-use-roslyn-to-determine-line-codes-position-in-a-source-file
 - MVVM
-- Better UI: Asm combos to pick method and type, emit assembly addr nos, choose instr format, depth
+- Better UI: Asm combos to pick method and type, choose instr format, depth
 - Double click error to navigate to source
 - UI bugs: fix toggle button style
 - Different TextEditor for error messages with proper highlighting
