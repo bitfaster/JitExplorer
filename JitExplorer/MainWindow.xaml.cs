@@ -108,6 +108,7 @@ namespace JitExplorer
             else
             {
                 this.Title = "JitExplorer (x86)";
+                this.Platform.SelectedIndex = 1;
                 var i = (ComboBoxItem)this.Platform.Items[0];
                 i.IsEnabled = false;
             }
