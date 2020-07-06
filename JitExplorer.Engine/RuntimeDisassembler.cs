@@ -292,7 +292,7 @@ namespace JitExplorer.Engine
 
                 foreach (var withProblem in withProblems)
                 {
-                    builder.AddLine($";{withProblem.Name}");
+                    builder.AddLine($";{MethodNameFormatter.Short(DesktopMethodNameParser.Parse(withProblem.Name))}");
                 }
             }
 

@@ -6,7 +6,7 @@ C# source code is compiled to an executable using [Roslyn](https://github.com/do
 
 The advantage of this approach vs using [JitDasm](https://github.com/0xd4d/JitDasm) is that it supports dissassembly of generic methods:
 
-![image](https://user-images.githubusercontent.com/12851828/86548694-2d530500-bef2-11ea-8e61-d8ab3e7974c9.png)
+![image](https://user-images.githubusercontent.com/12851828/86552967-4cf02a80-befe-11ea-85f9-acabab89cd3b.png)
 
 # TODO:
 
