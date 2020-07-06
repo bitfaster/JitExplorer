@@ -9,6 +9,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Features" Version="3.6.0" />
     <PackageReference Include="Iced" Version="1.4.0" />
     <PackageReference Include="Microsoft.Diagnostics.Runtime" Version="1.1.126102" />
+    <PackageReference Include="Polly" Version="7.2.1" />
   </ItemGroup>
 
 </Project>

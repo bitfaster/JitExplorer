@@ -45,5 +45,37 @@ namespace JitExplorer.Engine.UnitTests
 
             jitOut.Should().StartWith("Program.Main(String[])");
         }
+
+        [Fact]
+        public void BuildFailBuildIsWorking()
+        {
+            string badSource = "asdsad";
+
+            var jit = new RuntimeDisassembler("test2.exe");
+
+            var compilerOptions = new CompilerOptions()
+            {
+                Platform = Microsoft.CodeAnalysis.Platform.X64,
+                OptimizationLevel = OptimizationLevel.Release,
+                LanguageVersion = Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default,
+                OutputKind = OutputKind.ConsoleApplication,
+            };
+
+            var config = new Config()
+            {
+                CompilerOptions = compilerOptions,
+                JitMode = JitMode.Default,
+            };
+
+            var result = jit.CompileJitAndDisassemble(badSource, config);
+            result.IsSuccess.Should().BeFalse();
+
+            result = jit.CompileJitAndDisassemble(badSource, config);
+            result.IsSuccess.Should().BeFalse();
+
+            string goodSource = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; JitExplorer.Signal.__Jit(); } } }";
+            result = jit.CompileJitAndDisassemble(goodSource, config);
+            result.IsSuccess.Should().BeTrue();
+        }
     }
 }

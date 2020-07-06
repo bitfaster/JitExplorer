@@ -52,7 +52,7 @@ namespace JitExplorer.Engine
 
         public Dissassembly Build()
         {
-            return new Dissassembly(sb.ToString(), addresses);
+            return new Dissassembly(true, sb.ToString(), addresses);
         }
     }
 }
