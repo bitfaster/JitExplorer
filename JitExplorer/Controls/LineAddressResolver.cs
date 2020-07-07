@@ -34,12 +34,6 @@ namespace JitExplorer.Controls
             }
 
             return string.Empty;
-
-            //var linestr = line.ToString();
-
-            //var addr = "7FFED9580410";
-
-            //return addr.Substring(0, addr.Length - linestr.Length) + linestr;
         }
     }
 }

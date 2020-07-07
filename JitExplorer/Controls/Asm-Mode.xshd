@@ -1221,6 +1221,7 @@
       <Begin>‎</Begin>
     </Span>
     <Rule color ="Label">
+      # DisassemblyPrettifier controls format as M00_L00
       (?&lt;![A-Z])[0-9A-Z]{3}_[0-9A-Z]{3}
     </Rule>
     <Rule color ="Address" >

@@ -16,11 +16,14 @@ namespace JitExplorer.Engine.Disassemble
 
             public string Address { get; }
 
-            public Element(string textRepresentation, SourceCode source, string address)
+            public int LineNo { get; }
+
+            public Element(string textRepresentation, SourceCode source, string address, int lineNo)
             {
                 TextRepresentation = textRepresentation;
                 Source = source;
                 this.Address = address;
+                this.LineNo = lineNo;
             }
         }
 
@@ -28,14 +31,14 @@ namespace JitExplorer.Engine.Disassemble
         {
             public string Id { get; }
 
-            public Reference(string textRepresentation, string id, SourceCode source) : base(textRepresentation, source, string.Empty) => Id = id;
+            public Reference(string textRepresentation, string id, SourceCode source) : base(textRepresentation, source, string.Empty, -1) => Id = id;
         }
 
         public class Label : Element
         {
             public string Id { get; }
 
-            public Label(string label) : base(label, null, string.Empty) => Id = label;
+            public Label(string label) : base(label, null, string.Empty, -1) => Id = label;
         }
 
         public static IReadOnlyList<Element> Prettify(DisassembledMethod method, DisassemblyResult disassemblyResult, string labelPrefix, AsmFormat asmFormat)
@@ -64,11 +67,11 @@ namespace JitExplorer.Engine.Disassemble
                 {
                     if (instruction is Sharp sharp)
                     {
-                        prettified.Add(new Element(sharp.Text, sharp, string.Empty));
+                        prettified.Add(new Element(sharp.Text, sharp, string.Empty, sharp.LineNumber));
                     }
                     else if (instruction is MonoCode mono)
                     {
-                        prettified.Add(new Element(mono.Text, mono, string.Empty));
+                        prettified.Add(new Element(mono.Text, mono, string.Empty, 0));
                     }
                     else if (instruction is Asm asm)
                     {
@@ -90,16 +93,22 @@ namespace JitExplorer.Engine.Disassemble
                             // call to a known method
                             if (disassemblyResult.AddressToNameMapping.ContainsKey(referencedAddress))
                             {
-                                prettified.Add(new Element(InstructionFormatter.Format(asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), 
+                                prettified.Add(new Element(
+                                    InstructionFormatter.Format(
+                                        asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), 
                                     asm,
-                                    InstructionFormatter.FormatAddress(asm.Instruction, formatterWithGlobalSymbols, disassemblyResult.PointerSize)));
+                                    InstructionFormatter.FormatAddress(asm.Instruction, formatterWithGlobalSymbols, disassemblyResult.PointerSize), 
+                                    0));
                                 continue;
                             }
                         }
 
-                        prettified.Add(new Element(InstructionFormatter.Format(asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), 
+                        prettified.Add(new Element(
+                            InstructionFormatter.Format(
+                                asm.Instruction, formatterWithGlobalSymbols, asmFormat.PrintInstructionAddresses, disassemblyResult.PointerSize), 
                             asm,
-                           InstructionFormatter.FormatAddress(asm.Instruction, formatterWithGlobalSymbols, disassemblyResult.PointerSize)));
+                           InstructionFormatter.FormatAddress(asm.Instruction, formatterWithGlobalSymbols, disassemblyResult.PointerSize),
+                           0));
                     }
                 }
 

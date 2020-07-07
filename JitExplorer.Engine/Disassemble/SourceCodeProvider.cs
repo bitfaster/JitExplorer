@@ -7,7 +7,6 @@ using System.IO;
 
 namespace JitExplorer.Engine.Disassemble
 {
-    // TODO: this is statically caching all source code! Since we keep updatin program.cs, this doesn't work.
     public class SourceCodeProvider
     {
         private readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
@@ -24,9 +23,9 @@ namespace JitExplorer.Engine.Disassemble
                 if (sourceLine == null)
                     continue;
 
-                var text = ';' + sourceLine + Environment.NewLine
-                    + ';' + GetSmartPrefix(sourceLine, sourceLocation.ColStart - 1)
-                    + new string('^', sourceLocation.ColEnd - sourceLocation.ColStart) + $" (line {sourceLocation.LineNumber})";
+                var text = ';' + sourceLine;// + Environment.NewLine
+               //     + ';' + GetSmartPrefix(sourceLine, sourceLocation.ColStart - 1)
+               //     + new string('^', sourceLocation.ColEnd - sourceLocation.ColStart) + $" (line {sourceLocation.LineNumber})";
 
                 yield return new Sharp
                 {
