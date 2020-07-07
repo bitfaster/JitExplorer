@@ -62,7 +62,7 @@ namespace JitExplorer.Engine
 
             int n = 0;
 
-            if (text != "")
+            if (text != string.Empty)
             {
                 while ((n = text.IndexOf(Environment.NewLine, n, StringComparison.InvariantCulture)) != -1)
                 {
