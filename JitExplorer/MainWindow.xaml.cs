@@ -45,33 +45,10 @@ namespace JitExplorer
         private readonly RoslynCodeCompletion codeCompletion;
         private readonly ClassicLru<JitKey, Dissassembly> cache = new ClassicLru<JitKey, Dissassembly>(100);
 
+        private Dissassembly dissassembly;
+
         public MainWindow()
         {
-            HighlightingManager.Instance.RegisterHighlighting(
-                "Asm", new string[] { ".s", ".asm" },
-                delegate {
-                    using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.Asm-Mode.xshd"))
-                    {
-                        using (XmlTextReader reader = new XmlTextReader(s))
-                        {
-                            return HighlightingLoader.Load(reader, HighlightingManager.Instance);
-                        }
-                    }
-                });
-
-            HighlightingManager.Instance.RegisterHighlighting(
-                "C#", new string[] { ".cs" },
-                delegate
-                {
-                    using (Stream s = typeof(MainWindow).Assembly.GetManifestResourceStream("JitExplorer.Controls.CSharp-Mode.xshd"))
-                    {
-                        using (XmlTextReader reader = new XmlTextReader(s))
-                        {
-                            return HighlightingLoader.Load(reader, HighlightingManager.Instance);
-                        }
-                    }
-                });
-
             InitializeComponent();
 
             this.dissassembler = new RuntimeDisassembler("test.exe");
@@ -129,6 +106,21 @@ namespace JitExplorer
 
                 var textLine = d.GetLineByNumber(p.Line);
                 var str = d.Text.Substring(textLine.Offset, textLine.Length);
+
+                if (this.dissassembly != null)
+                {
+                    if (this.dissassembly.AsmToSourceLineIndex.TryGetValue(p.Line, out var targetLine))
+                    {
+                        if (targetLine < this.CodeEditor.Document.LineCount)
+                        {
+                            var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
+                            this.CodeEditor.ScrollTo(targetLine, 0);
+                            this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
+                        }
+                    }
+
+                    return;
+                }
 
                 if (str.Contains('^'))
                 {
@@ -275,11 +267,11 @@ namespace JitExplorer
             {
                 var jitKey = new JitKey(source, config);
 
-                var result = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+                this.dissassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
 
                 this.Dispatcher.Invoke(
                     () => 
-                    this.AssemblerView.Update(result.Text, new LineAddressResolver(result.LineAddresses)));
+                    this.AssemblerView.Update(this.dissassembly.Text, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));
             }
             catch (Exception ex)
             {
@@ -442,7 +434,5 @@ namespace JitExplorer
                 this.Legacy.IsChecked = false;
             }
         }
-
-
     }
 }

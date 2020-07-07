@@ -15,19 +15,19 @@ namespace JitExplorer.Engine.UnitTests
 
             b.AddLine();
             b.AddLine("line2");
-            b.AddLine("line3", "03");
-            b.AddLine("line4" + Environment.NewLine + "stillline4", "04");
-            b.AddLine("line6", "06");
+            b.AddLine("line3", "03", 0);
+            b.AddLine("line4" + Environment.NewLine + "stillline4", "04", 0);
+            b.AddLine("line6", "06", 0);
 
             var r = b.Build();
 
             string address;
-            r.LineAddresses.TryGetValue(1, out address).Should().BeFalse();
-            r.LineAddresses.TryGetValue(2, out address).Should().BeFalse();
-            r.LineAddresses[3].Should().Be("03");
-            r.LineAddresses[4].Should().Be("04");
-            r.LineAddresses.TryGetValue(5, out address).Should().BeFalse();
-            r.LineAddresses[6].Should().Be("06");
+            r.AsmLineAddressIndex.TryGetValue(1, out address).Should().BeFalse();
+            r.AsmLineAddressIndex.TryGetValue(2, out address).Should().BeFalse();
+            r.AsmLineAddressIndex[3].Should().Be("03");
+            r.AsmLineAddressIndex[4].Should().Be("04");
+            r.AsmLineAddressIndex.TryGetValue(5, out address).Should().BeFalse();
+            r.AsmLineAddressIndex[6].Should().Be("06");
         }
     }
 }

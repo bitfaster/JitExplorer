@@ -35,7 +35,7 @@ namespace JitExplorer.Engine
         {
             if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
             {
-                return new Dissassembly(false, "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();", new Dictionary<int, string>());
+                return new Dissassembly( "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();");
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
@@ -50,7 +50,7 @@ namespace JitExplorer.Engine
                     sb.AppendLine(e.ToString());
                 }
 
-                return new Dissassembly(false, sb.ToString(), new Dictionary<int, string>());
+                return new Dissassembly(sb.ToString());
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
@@ -296,7 +296,7 @@ namespace JitExplorer.Engine
                 ulong totalSizeInBytes = 0;
                 foreach (var element in pretty)
                 {
-                    builder.AddLine(element.TextRepresentation, element.Address);
+                    builder.AddLine(element.TextRepresentation, element.Address, element.LineNo);
 
                     if (element.Source is Asm asm)
                     {

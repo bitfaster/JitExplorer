@@ -9,6 +9,7 @@ namespace JitExplorer.Engine
         private int lineNo = 1;
         private StringBuilder sb = new StringBuilder();
         private Dictionary<int, string> addresses = new Dictionary<int, string>();
+        private Dictionary<int, int> sourceIndex = new Dictionary<int, int>();
 
         public void AddLine()
         {
@@ -21,9 +22,15 @@ namespace JitExplorer.Engine
             HandleMultiline(text);
         }
 
-        public void AddLine(string text, string address)
+        public void AddLine(string text, string address, int sourceLine)
         {
             addresses.Add(lineNo, address);
+
+            if (sourceLine != 0)
+            {
+                sourceIndex[lineNo] = sourceLine;
+            }
+
             HandleMultiline(text);
         }
 
@@ -46,7 +53,7 @@ namespace JitExplorer.Engine
 
         public Dissassembly Build()
         {
-            return new Dissassembly(true, sb.ToString(), addresses);
+            return new Dissassembly(sb.ToString(), addresses, sourceIndex);
         }
     }
 }
