@@ -130,7 +130,6 @@ namespace JitExplorer.Engine.Disassemble
                 ? codes.GroupBy(code => code.InstructionPointer).OrderBy(group => group.Key).Select(group => new Map() { SourceCodes = group.ToArray() }).ToArray()
                 : new[] { new Map() { SourceCodes = codes.ToArray() } };
 
-            // IsStatic, IsVirtual, IsCtor
             return new DisassembledMethod
             {
                 Maps = maps,

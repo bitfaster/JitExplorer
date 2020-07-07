@@ -280,6 +280,9 @@ namespace JitExplorer
 
                 this.dissassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
 
+                // Free some memory?
+                // System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
+
                 this.Dispatcher.Invoke(
                     () => 
                     this.AssemblerView.Update(this.dissassembly.Text, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));

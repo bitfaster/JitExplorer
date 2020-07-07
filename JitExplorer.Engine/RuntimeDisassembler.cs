@@ -2,6 +2,7 @@
 using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
 using JitExplorer.Engine.Metadata;
+using JitExplorer.Engine.Walk;
 using Polly;
 using Polly.Retry;
 using System;
@@ -137,6 +138,11 @@ namespace JitExplorer.Engine
             var jitSyntax = c.Parse("jitexpl.cs", jitExplSource);
             // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
             var syntax = c.Parse(this.csFileName, source);
+
+            var walker = new CustomWalker();
+            walker.Visit(syntax.SyntaxTree.GetRoot());
+
+
             return c.Compile(assembylyName, syntax, jitSyntax);
         }
 
