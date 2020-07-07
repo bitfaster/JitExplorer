@@ -119,6 +119,17 @@ namespace JitExplorer
                         }
                     }
 
+                    if (this.dissassembly.AsmLineToAsmLineIndex.TryGetValue(p.Line, out targetLine))
+                    {
+                        if (targetLine < this.AssemblerView.Document.LineCount)
+                        {
+                            var ceLine = this.AssemblerView.TextArea.Document.GetLineByNumber(targetLine);
+                            this.AssemblerView.ScrollTo(targetLine, 0);
+                            this.AssemblerView.TextArea.Selection = Selection.Create(this.AssemblerView.TextArea, ceLine.Offset, ceLine.EndOffset);
+                        }
+                    }
+
+                    e.Handled = true;
                     return;
                 }
 

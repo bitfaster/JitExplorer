@@ -296,7 +296,26 @@ namespace JitExplorer.Engine
                 ulong totalSizeInBytes = 0;
                 foreach (var element in pretty)
                 {
-                    builder.AddLine(element.TextRepresentation, element.Address, element.LineNo);
+                    switch (element)
+                    {
+                        case DisassemblyPrettifier.Reference reference:
+                            // reference ID = label
+                            builder.AddReference(element.TextRepresentation, reference.Id);
+                            break;
+                        case DisassemblyPrettifier.Label label:
+                            builder.AddLabel(label.Id);
+                            break;
+                        default:
+                            if (element.Source is Sharp)
+                            {
+                                builder.AddLine(element.TextRepresentation, element.Address, element.LineNo);
+                            }    
+                            else
+                            {
+                                builder.AddLine(element.TextRepresentation, element.Address, 0);
+                            }
+                            break;
+                    } 
 
                     if (element.Source is Asm asm)
                     {
