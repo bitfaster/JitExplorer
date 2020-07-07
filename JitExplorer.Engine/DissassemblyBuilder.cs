@@ -12,40 +12,34 @@ namespace JitExplorer.Engine
 
         public void AddLine()
         {
-            this.AddLine(string.Empty, string.Empty);
+            sb.AppendLine(string.Empty);
+            lineNo++;
         }
 
         public void AddLine(string text)
         {
-            this.AddLine(text, string.Empty);
+            HandleMultiline(text);
         }
 
         public void AddLine(string text, string address)
         {
-            sb.AppendLine(text);
-            addresses.Add(lineNo++, address);
+            addresses.Add(lineNo, address);
             HandleMultiline(text);
         }
 
         private void HandleMultiline(string text)
         {
-            int count = 0, n = 0;
+            sb.AppendLine(text);
+            lineNo++;
 
-            var newLine = Environment.NewLine;
+            int n = 0;
+
             if (text != "")
             {
-                while ((n = text.IndexOf(newLine, n, StringComparison.InvariantCulture)) != -1)
+                while ((n = text.IndexOf(Environment.NewLine, n, StringComparison.InvariantCulture)) != -1)
                 {
-                    n += newLine.Length;
-                    ++count;
-                }
-            }
-
-            if (count > 0)
-            {
-                for (int i = 0; i < count; i++)
-                {
-                    addresses.Add(lineNo++, string.Empty);
+                    n += Environment.NewLine.Length;
+                    lineNo++;
                 }
             }
         }
