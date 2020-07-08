@@ -54,15 +54,19 @@ namespace JitExplorer
             this.dissassembler = new RuntimeDisassembler("test.exe");
             this.dissassembler.Progress += IsolatedJit_Progress;
 
-            this.CodeEditor.Text = @"namespace Testing
+            this.CodeEditor.Text = @"namespace JitExplorer
 {
     using System;
 
-    public class Program
+    public class Test
     {
-        public static void Main(string[] args)
+        [Jit.This]
+        public static void Execute()
         {
-            JitExplorer.Signal.__Jit();
+            for (int i = 0; i < 100; i++)
+            {
+                i = i * 3;
+            }
         }
     }
 }";

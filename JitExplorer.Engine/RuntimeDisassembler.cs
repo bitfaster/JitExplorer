@@ -3,6 +3,7 @@ using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
 using JitExplorer.Engine.Metadata;
 using JitExplorer.Engine.Walk;
+using Microsoft.CodeAnalysis.Completion;
 using Polly;
 using Polly.Retry;
 using System;
@@ -35,10 +36,10 @@ namespace JitExplorer.Engine
 
         public Dissassembly CompileJitAndDisassemble(string sourceCode, Config config)
         {
-            if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
-            {
-                return new Dissassembly( "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();");
-            }
+            //if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
+            //{
+            //    return new Dissassembly( "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();");
+            //}
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
             using var c = Compile(this.exeName, sourceCode, config);
@@ -76,7 +77,7 @@ namespace JitExplorer.Engine
                 }
                 
                 this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
-                var result = AttachAndDecompile(p.Id, "Testing.Program", "Main", sourceCode);
+                var result = AttachAndDecompile(p.Id, "Jit.Program", "Main", sourceCode);
 
                 // signal dissassemble complete
                 cpipe.WriteByte(1);
@@ -112,40 +113,63 @@ namespace JitExplorer.Engine
             }
         } 
     } 
-}";
+}
+namespace Jit
+{
+    using System;
+    public class This : Attribute {}
+
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+             replaceme
+             JitExplorer.Signal.__Jit();
+        }
+    }
+}
+";
 
             // DebuggableAttribute:
             // https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.debuggableattribute.-ctor?view=netcore-3.1#System_Diagnostics_DebuggableAttribute__ctor_System_Diagnostics_DebuggableAttribute_DebuggingModes_
 
             // This seems to result in DotPeek reporting assembly framework as .NET core instead of 4.8.
             // But it still shows the .dll as debug, even with correct DebuggableAttribute.
-//            var assemblyInfo = @"
-//using System.Diagnostics;
-//using System.Reflection;
-//using System.Runtime.CompilerServices;
-//using System.Runtime.Versioning;
+            //            var assemblyInfo = @"
+            //using System.Diagnostics;
+            //using System.Reflection;
+            //using System.Runtime.CompilerServices;
+            //using System.Runtime.Versioning;
 
-//[assembly: CompilationRelaxations(8)]
-//[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
-//[assembly: Debuggable(false, false)]
-//[assembly: TargetFramework("".NETCoreApp,Version=v3.1"", FrameworkDisplayName = """")]
-//[assembly: AssemblyCompany(""Test"")]
-//[assembly: AssemblyConfiguration(""Release"")]
-//[assembly: AssemblyFileVersion(""1.0.0.0"")]
-//[assembly: AssemblyInformationalVersion(""1.0.0"")]
-//[assembly: AssemblyProduct(""Test"")]
-//[assembly: AssemblyTitle(""Test"")]
-//[assembly: AssemblyVersion(""1.0.0.0"")]";
+            //[assembly: CompilationRelaxations(8)]
+            //[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
+            //[assembly: Debuggable(false, false)]
+            //[assembly: TargetFramework("".NETCoreApp,Version=v3.1"", FrameworkDisplayName = """")]
+            //[assembly: AssemblyCompany(""Test"")]
+            //[assembly: AssemblyConfiguration(""Release"")]
+            //[assembly: AssemblyFileVersion(""1.0.0.0"")]
+            //[assembly: AssemblyInformationalVersion(""1.0.0"")]
+            //[assembly: AssemblyProduct(""Test"")]
+            //[assembly: AssemblyTitle(""Test"")]
+            //[assembly: AssemblyVersion(""1.0.0.0"")]";
 
-            var jitSyntax = c.Parse("jitexpl.cs", jitExplSource);
-            // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
+
             var syntax = c.Parse(this.csFileName, source);
-
-            var walker = new CustomWalker();
+            var walker = new ExtractMarkedMethod();
             walker.Visit(syntax.SyntaxTree.GetRoot());
 
+            if (walker.Success)
+            {
+                var jitSyntax = c.Parse("jitexpl.cs", jitExplSource.Replace("replaceme", walker.Method));
+                // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
 
-            return c.Compile(assemblyName, syntax, jitSyntax);
+                return c.Compile(assemblyName, syntax, jitSyntax);
+            }
+
+            // TODO insert attrib errors
+            return new Compilation(new MemoryStream(), new MemoryStream(), Array.Empty<CompileDiagnostic>());
+           
         }
 
         private const int maxRetryAttempts = 3;
@@ -272,6 +296,7 @@ namespace JitExplorer.Engine
                 "System.IO.Pipes.PipeStream.ReadByte()",
                 "System.IO.Pipes.PipeStream.Dispose(Boolean)",
                 "Interop+Kernel32.ConnectNamedPipe(Microsoft.Win32.SafeHandles.SafePipeHandle, IntPtr)",
+                //"Jit.Program.Main(System.String[])",
             };
 
             // cache 1 source provider per version of the input source code
