@@ -100,11 +100,19 @@ namespace JitExplorer.Engine
         {
             // this is more compact than the roslyn equiv:
             // http://roslynquoter.azurewebsites.net/
-            var jitExplSource = @"namespace JitExplorer 
+            var jitExplSource = @"namespace __Dasm
 { 
-    public static class Signal 
-    { 
-        public static void __Jit() 
+    using System;
+
+    public class Program
+    {
+        public static void Main(string[] args)
+        {
+             methodCallSite;
+             Signal();
+        }
+
+        public static void Signal() 
         { 
             using (var sPipe = new System.IO.Pipes.NamedPipeServerStream(""JitExplorer.Pipe"", System.IO.Pipes.PipeDirection.InOut))
             {
@@ -112,21 +120,6 @@ namespace JitExplorer.Engine
                 sPipe.ReadByte(); // wait for signal that code is dissassembled
             }
         } 
-    } 
-}
-namespace Jit
-{
-    using System;
-    public class This : Attribute {}
-
-
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-             methodCallSite;
-             JitExplorer.Signal.__Jit();
-        }
     }
 }
 ";

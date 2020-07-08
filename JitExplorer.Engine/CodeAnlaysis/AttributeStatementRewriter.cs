@@ -10,8 +10,6 @@ namespace JitExplorer.Engine.CodeAnlaysis
 {
     public class AttributeStatementRewriter : CSharpSyntaxRewriter
     {
-        private readonly string attributeToReplace;
-
         private readonly string left;
         private readonly string right;
 
@@ -21,8 +19,6 @@ namespace JitExplorer.Engine.CodeAnlaysis
 
             this.left = tokens[0];
             this.right = tokens[1];
-
-            this.attributeToReplace = attributeToReplace;
         }
 
         public override SyntaxNode VisitAttribute(AttributeSyntax node)
