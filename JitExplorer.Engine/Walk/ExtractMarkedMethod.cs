@@ -1,26 +1,40 @@
 ﻿
+using JitExplorer.Engine.Disassemble;
+using JitExplorer.Engine.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace JitExplorer.Engine.Walk
 {
     public class ExtractMarkedMethod : CSharpSyntaxWalker
     {
+        public static string[] DefaultError = { "A public static method must be marked with the attribute [Jit.This]" };
+
         private bool wasFound = false;
 
-        private string method = string.Empty;
+        private Metadata.MethodInfo methodInfo;
 
         private List<string> errors = new List<string>();
 
         public bool Success => this.wasFound && this.errors.Count == 0;
 
-        public string Method => this.method;
+        public Metadata.MethodInfo Method => this.methodInfo;
 
-        public IEnumerable<string> Errors => this.errors;
+        public IEnumerable<string> Errors
+        { 
+            get 
+            {
+                if (this.wasFound)
+                {
+                    return this.errors;
+                }
+                return this.errors.Concat(DefaultError);
+            } 
+        }
 
         public override void VisitAttribute(AttributeSyntax node)
         {
@@ -45,7 +59,10 @@ namespace JitExplorer.Engine.Walk
                         {
                             string nameSpace = (namespaceSyntax.Name as IdentifierNameSyntax).Identifier.ValueText;
 
-                            this.method = $"{nameSpace}.{className}.{name}();";
+
+                            var classInfo = new ClassInfo(nameSpace, className);
+                            this.methodInfo = new Metadata.MethodInfo(name, classInfo, Array.Empty<ClassInfo>());
+
                             this.wasFound = true;
                         }
                     }

@@ -17,7 +17,6 @@ using System.Threading.Tasks;
 
 namespace JitExplorer.Engine
 {
-    // Requires source code calls JitExplorer.Signal.__Jit();
     public class RuntimeDisassembler
     {
         public event EventHandler<ProgressEventArgs> Progress;
@@ -36,70 +35,68 @@ namespace JitExplorer.Engine
 
         public Dissassembly CompileJitAndDisassemble(string sourceCode, Config config)
         {
-            //if (!sourceCode.Contains("JitExplorer.Signal.__Jit();"))
-            //{
-            //    return new Dissassembly( "Please include this method call to trigger JIT: JitExplorer.Signal.__Jit();");
-            //}
-
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
-            using var c = Compile(this.exeName, sourceCode, config);
-
-            if (!c.Succeeded)
+            (ExtractMarkedMethod userMethod, Compilation compilation) = Compile(this.exeName, sourceCode, config);
+            using (compilation)
             {
-                StringBuilder sb = new StringBuilder();
-
-                foreach (var e in c.Diagnostics)
+                if (!compilation.Succeeded || !userMethod.Success)
                 {
-                    sb.AppendLine(e.ToString());
+                    StringBuilder sb = new StringBuilder();
+
+                    foreach (var e in compilation.Diagnostics)
+                    {
+                        sb.AppendLine(e.ToString());
+                    }
+
+                    foreach (var e in userMethod.Errors)
+                    {
+                        sb.AppendLine(e.ToString());
+                    }
+
+                    return new Dissassembly(sb.ToString());
                 }
 
-                return new Dissassembly(sb.ToString());
-            }
+                this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
+                MkDir();
+                WriteSourceToDisk(sourceCode);
+                WriteExeToDisk(this.exeName, compilation);
 
-            this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
-            MkDir();
-            WriteSourceToDisk(sourceCode);
-            WriteExeToDisk(this.exeName, c);
-
-            this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
-            using (var p = Execute(this.exeName, config))
-            {
-                using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "JitExplorer.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
-                
-                try
+                this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Jitting..." });
+                using (var p = Execute(this.exeName, config))
                 {
-                    cpipe.Connect(3000);
-                }
-                catch
-                {
-                    p.Kill();
-                    throw;
-                }
-                
-                this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
-                var result = AttachAndDecompile(p.Id, "Jit.Program", "Main", sourceCode);
+                    using var cpipe = new System.IO.Pipes.NamedPipeClientStream(".", "JitExplorer.Pipe", System.IO.Pipes.PipeDirection.InOut, System.IO.Pipes.PipeOptions.None);
 
-                // signal dissassemble complete
-                cpipe.WriteByte(1);
+                    try
+                    {
+                        cpipe.Connect(3000);
+                    }
+                    catch
+                    {
+                        p.Kill();
+                        throw;
+                    }
 
-                if (!p.WaitForExit(1000))
-                {
-                    p.Kill();
+                    this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Dissassembling..." });
+
+                    var result = AttachAndDecompile(p.Id, userMethod.Method.Type.QualifedName, userMethod.Method.Name, sourceCode);
+
+                    // signal dissassemble complete
+                    cpipe.WriteByte(1);
+
+                    if (!p.WaitForExit(1000))
+                    {
+                        p.Kill();
+                    }
+
+                    return FormatResult(result);
                 }
-
-                return FormatResult(result);
             }
         }
 
-        private Compilation Compile(string assemblyName, string source, Config config)
+        private static string GetSourceCode(string methodCallSite)
         {
-            if (config.CompilerOptions.OutputKind != Microsoft.CodeAnalysis.OutputKind.ConsoleApplication)
-            {
-                throw new ArgumentOutOfRangeException("OutputKind must be ConsoleApplication");
-            }
-
-            Compiler c = new Compiler(config.CompilerOptions);
-
+            // this is more compact than the roslyn equiv:
+            // http://roslynquoter.azurewebsites.net/
             var jitExplSource = @"namespace JitExplorer 
 { 
     public static class Signal 
@@ -124,12 +121,21 @@ namespace Jit
     {
         public static void Main(string[] args)
         {
-             replaceme
+             methodCallSite;
              JitExplorer.Signal.__Jit();
         }
     }
 }
 ";
+            return jitExplSource.Replace("methodCallSite", methodCallSite);
+        }
+
+        private (ExtractMarkedMethod, Compilation) Compile(string assemblyName, string source, Config config)
+        {
+            if (config.CompilerOptions.OutputKind != Microsoft.CodeAnalysis.OutputKind.ConsoleApplication)
+            {
+                throw new ArgumentOutOfRangeException("OutputKind must be ConsoleApplication");
+            }
 
             // DebuggableAttribute:
             // https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.debuggableattribute.-ctor?view=netcore-3.1#System_Diagnostics_DebuggableAttribute__ctor_System_Diagnostics_DebuggableAttribute_DebuggingModes_
@@ -154,22 +160,20 @@ namespace Jit
             //[assembly: AssemblyTitle(""Test"")]
             //[assembly: AssemblyVersion(""1.0.0.0"")]";
 
-
+            Compiler c = new Compiler(config.CompilerOptions);
             var syntax = c.Parse(this.csFileName, source);
-            var walker = new ExtractMarkedMethod();
-            walker.Visit(syntax.SyntaxTree.GetRoot());
+            var methodExtractor = new ExtractMarkedMethod();
+            methodExtractor.Visit(syntax.SyntaxTree.GetRoot());
 
-            if (walker.Success)
+            if (methodExtractor.Success)
             {
-                var jitSyntax = c.Parse("jitexpl.cs", jitExplSource.Replace("replaceme", walker.Method));
+                var jitSyntax = c.Parse("jitexpl.cs", GetSourceCode(methodExtractor.Method.ToCallSite()));
                 // var assSyntax = c.CreateSyntaxTree("assemblyinfo.cs", assemblyInfo);
 
-                return c.Compile(assemblyName, syntax, jitSyntax);
+                return (methodExtractor, c.Compile(assemblyName, syntax, jitSyntax));
             }
 
-            // TODO insert attrib errors
-            return new Compilation(new MemoryStream(), new MemoryStream(), Array.Empty<CompileDiagnostic>());
-           
+            return (methodExtractor, new Compilation(new MemoryStream(), new MemoryStream(), Array.Empty<CompileDiagnostic>()));
         }
 
         private const int maxRetryAttempts = 3;
@@ -224,7 +228,6 @@ namespace Jit
                     return CompletedTask;
                 });
             }
-
 
             string json = @"
 {
@@ -287,20 +290,9 @@ namespace Jit
 
         private DisassemblyResult AttachAndDecompile(int processId, string className, string methodName, string source)
         {
-            // filter out the synchronization code
-            string[] filtered = {
-                "JitExplorer.Signal.__Jit()",
-                "System.IO.Pipes.NamedPipeServerStream..ctor(System.String, System.IO.Pipes.PipeDirection, Int32, System.IO.Pipes.PipeTransmissionMode, System.IO.Pipes.PipeOptions, Int32, Int32, System.IO.HandleInheritability)",
-                "System.IO.Pipes.NamedPipeServerStream..ctor(System.String, System.IO.Pipes.PipeDirection)",
-                "System.IO.Pipes.NamedPipeServerStream.WaitForConnection()",
-                "System.IO.Pipes.PipeStream.ReadByte()",
-                "System.IO.Pipes.PipeStream.Dispose(Boolean)",
-                "Interop+Kernel32.ConnectNamedPipe(Microsoft.Win32.SafeHandles.SafePipeHandle, IntPtr)",
-                //"Jit.Program.Main(System.String[])",
-            };
-
             // cache 1 source provider per version of the input source code
             // (user can dissassemble the same source with different JIT options)
+            // TODO: Key here should include compile options, but not jit options
             var sourceProvider = sourceCodeProviders.GetOrAdd(source, (s) => new SourceCodeProvider());
 
             var settings = new Settings(
@@ -310,7 +302,7 @@ namespace Jit
                 true,
                 3,
                 "results.txt",
-                filtered,
+                Array.Empty<string>(),
                 sourceProvider);
 
             var dissassembler = new ClrMdDisassembler();

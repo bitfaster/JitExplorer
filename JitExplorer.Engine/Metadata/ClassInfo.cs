@@ -32,6 +32,8 @@ namespace JitExplorer.Engine.Metadata
 
         public string Name { get; }
 
+        public string QualifedName => $"{Namespace}.{Name}";
+
         public bool IsArray { get; }
 
         public IEnumerable<ClassInfo> GenericParameters { get; }
