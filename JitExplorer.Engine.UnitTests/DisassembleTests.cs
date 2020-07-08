@@ -44,7 +44,7 @@ namespace JitExplorer.Engine.UnitTests
                 3,
                 "results.txt",
                 Array.Empty<string>(),
-                new SourceCodeProvider());
+                new SourceCodeProvider("Workspace"));
 
             var disassembler = new ClrMdDisassembler();
             var result = disassembler.AttachAndDisassemble(settings);
