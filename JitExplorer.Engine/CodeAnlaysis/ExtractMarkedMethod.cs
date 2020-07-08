@@ -73,7 +73,7 @@ namespace JitExplorer.Engine.CodeAnlaysis
                 }
                 else
                 {
-                    CreateError(node.Parent.Parent, "");
+                    CreateError(node.Parent.Parent, $"The attribute [{this.attributeName}] must be used to decorate a method.");
                 }
             }
 
