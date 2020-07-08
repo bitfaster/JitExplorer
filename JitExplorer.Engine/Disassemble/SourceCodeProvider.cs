@@ -9,18 +9,19 @@ namespace JitExplorer.Engine.Disassemble
 {
     public class SourceCodeProvider
     {
-        // TODO: plumb this in end to end
         private readonly string directory;
         private readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
+        private readonly ClrSourceExtensions ext;
 
         public SourceCodeProvider(string directory)
         {
             this.directory = directory;
+            this.ext = new ClrSourceExtensions(this.directory);
         }
 
         internal IEnumerable<Sharp> GetSource(ClrMethod method, ILToNativeMap map)
         {
-            var sourceLocation = method.GetSourceLocation(map.ILOffset);
+            var sourceLocation = this.ext.GetSourceLocation(method, map.ILOffset);
             if (sourceLocation == null)
                 yield break;
 
@@ -91,14 +92,21 @@ namespace JitExplorer.Engine.Disassemble
         public int ColEnd;
     }
 
-    internal static class ClrSourceExtensions
+    internal class ClrSourceExtensions
     {
         // TODO Not sure we want this to be a shared dictionary, especially without
         //      any synchronization. Probably want to put this hanging off the Context
         //      somewhere, or inside SymbolCache.
         private static readonly Dictionary<PdbInfo, PdbReader> s_pdbReaders = new Dictionary<PdbInfo, PdbReader>();
 
-        internal static SourceLocation GetSourceLocation(this ClrMethod method, int ilOffset)
+        private readonly string directory;
+
+        public ClrSourceExtensions(string directory)
+        {
+            this.directory = directory;
+        }
+
+        internal SourceLocation GetSourceLocation(ClrMethod method, int ilOffset)
         {
             PdbReader reader = GetReaderForMethod(method);
             if (reader == null)
@@ -108,7 +116,7 @@ namespace JitExplorer.Engine.Disassemble
             return FindNearestLine(function, ilOffset);
         }
 
-        internal static SourceLocation GetSourceLocation(this ClrStackFrame frame)
+        internal SourceLocation GetSourceLocation(ClrStackFrame frame)
         {
             PdbReader reader = GetReaderForMethod(frame.Method);
             if (reader == null)
@@ -170,7 +178,7 @@ namespace JitExplorer.Engine.Disassemble
             return last;
         }
 
-        private static PdbReader GetReaderForMethod(ClrMethod method)
+        private PdbReader GetReaderForMethod(ClrMethod method)
         {
             ClrModule module = method?.Type?.Module;
             PdbInfo info = module?.Pdb;
@@ -179,7 +187,7 @@ namespace JitExplorer.Engine.Disassemble
             if (info != null)
             {
                 // Use the matching Pdb in the current directory if it exists
-                var path = Path.Combine("Workspace", info.FileName);
+                var path = Path.Combine(directory, info.FileName);
                 if (File.Exists(path))
                 {
                      reader = new PdbReader(path);
@@ -188,7 +196,7 @@ namespace JitExplorer.Engine.Disassemble
                 {
                     SymbolLocator locator = GetSymbolLocator(module);
 
-                    string pdbPath = Path.Combine("Workspace", locator.FindPdb(info));
+                    string pdbPath = Path.Combine(directory, locator.FindPdb(info));
                     if (pdbPath != null)
                     {
                         try
