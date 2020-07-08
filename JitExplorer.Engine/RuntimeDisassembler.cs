@@ -21,6 +21,7 @@ namespace JitExplorer.Engine
     {
         public event EventHandler<ProgressEventArgs> Progress;
 
+        private const string directory = "Workspace";
         private readonly string exeName;
         private readonly string csFileName;
         private static ClassicLru<string, SourceCodeProvider> sourceCodeProviders = new ClassicLru<string, SourceCodeProvider>(10);
@@ -55,6 +56,7 @@ namespace JitExplorer.Engine
             }
 
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
+            MkDir();
             WriteSourceToDisk(sourceCode);
             WriteExeToDisk(this.exeName, c);
 
@@ -88,7 +90,7 @@ namespace JitExplorer.Engine
             }
         }
 
-        private Compilation Compile(string assembylyName, string source, Config config)
+        private Compilation Compile(string assemblyName, string source, Config config)
         {
             if (config.CompilerOptions.OutputKind != Microsoft.CodeAnalysis.OutputKind.ConsoleApplication)
             {
@@ -143,7 +145,7 @@ namespace JitExplorer.Engine
             walker.Visit(syntax.SyntaxTree.GetRoot());
 
 
-            return c.Compile(assembylyName, syntax, jitSyntax);
+            return c.Compile(assemblyName, syntax, jitSyntax);
         }
 
         private const int maxRetryAttempts = 3;
@@ -156,14 +158,27 @@ namespace JitExplorer.Engine
 
         private void WriteSourceToDisk(string source)
         {
-            this.retryPolicy.ExecuteAsync(() => { File.WriteAllText(this.csFileName, source); return CompletedTask; } );
+            this.retryPolicy.ExecuteAsync(() => { File.WriteAllText(WkPath(this.csFileName), source); return CompletedTask; } );
+        }
+
+        private string WkPath(string path)
+        {
+            return Path.Combine(directory, path);
+        }
+
+        private void MkDir()
+        {
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
         }
 
         private void WriteExeToDisk(string path, Compilation compilation)
         {
             this.retryPolicy.ExecuteAsync(() => 
             {
-                using (var fs = File.OpenWrite(path))
+                using (var fs = File.OpenWrite(WkPath(path)))
                 {
                     compilation.Assembly.WriteTo(fs);
                 }
@@ -175,7 +190,7 @@ namespace JitExplorer.Engine
             {
                 this.retryPolicy.ExecuteAsync(() =>
                 {
-                    string pdbPath = Path.ChangeExtension(path, ".pdb");
+                    string pdbPath = WkPath(Path.ChangeExtension(path, ".pdb"));
 
                     using (var fs = File.OpenWrite(pdbPath))
                     {
@@ -201,7 +216,7 @@ namespace JitExplorer.Engine
  }";
 
             // "test.runtimeconfig.json"
-            var settingsFileName = Path.ChangeExtension(path, ".runtimeconfig.json");
+            var settingsFileName = WkPath(Path.ChangeExtension(path, ".runtimeconfig.json"));
 
             if (!File.Exists(settingsFileName))
             {
@@ -222,7 +237,7 @@ namespace JitExplorer.Engine
                 StartInfo = new ProcessStartInfo
                 {
                     FileName = "dotnet",
-                    Arguments = path,
+                    Arguments = WkPath(path),
                     CreateNoWindow = true,
                     UseShellExecute = false,
                     RedirectStandardOutput = true
