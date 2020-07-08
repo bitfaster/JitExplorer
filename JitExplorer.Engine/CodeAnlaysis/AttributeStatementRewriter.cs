@@ -9,12 +9,18 @@ namespace JitExplorer.Engine.CodeAnlaysis
 {
     public class AttributeStatementRewriter : CSharpSyntaxRewriter
     {
+        private readonly string attributeToReplace;
+        public AttributeStatementRewriter(string attributeToReplace)
+        {
+            this.attributeToReplace = attributeToReplace;
+        }
+
         // http://roslynquoter.azurewebsites.net/
         // replace [Jit.This] with 
         // [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public override SyntaxNode VisitAttributeList(AttributeListSyntax node)
         {
-            if (node.Parent is MethodDeclarationSyntax && node.ToString() == "[Jit.This]")
+            if (node.Parent is MethodDeclarationSyntax && node.ToString() == $"[{this.attributeToReplace}]")
             {
                 return SyntaxFactory.AttributeList(
                                 SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(

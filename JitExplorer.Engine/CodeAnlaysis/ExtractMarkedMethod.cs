@@ -6,12 +6,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace JitExplorer.Engine.CodeAnlaysis
 {
     public class ExtractMarkedMethod : CSharpSyntaxWalker
     {
-        public static string[] DefaultError = { "A public static method must be marked with the attribute [Jit.This]" };
+        private readonly string attributeName;
+
+        public ExtractMarkedMethod(string attributeName)
+        {
+            this.attributeName = attributeName;
+        }
 
         private bool wasFound = false;
 
@@ -31,17 +37,17 @@ namespace JitExplorer.Engine.CodeAnlaysis
                 {
                     return this.errors;
                 }
-                return this.errors.Concat(DefaultError);
+                return this.errors.Concat(new[] { $"A public static method must be marked with the attribute [{this.attributeName}]." });
             } 
         }
 
         public override void VisitAttribute(AttributeSyntax node)
         {
-            if (node.Name.ToString() == "Jit.This")
+            if (node.Name.ToString() == this.attributeName)
             {
                 if (this.wasFound)
                 {
-                    CreateError(node, "The attribute [Jit.This] cannot be used to decorate multiple methods.");
+                    CreateError(node, $"The attribute [{this.attributeName}] cannot be used to decorate multiple methods.");
                 }
 
                 if (node.Parent.Parent is MethodDeclarationSyntax methodSyntax)
@@ -78,17 +84,17 @@ namespace JitExplorer.Engine.CodeAnlaysis
         {
             if (methodSyntax.ParameterList.Parameters.Any())
             {
-                CreateError(methodSyntax, "The method decorated with [Jit.This] cannot have parameters.");
+                CreateError(methodSyntax, $"The method decorated with [{this.attributeName}] cannot have parameters.");
             }
 
             if (!methodSyntax.Modifiers.Any(SyntaxKind.PublicKeyword))
             {
-                CreateError(methodSyntax, "The method decorated with [Jit.This] must be a public method.");
+                CreateError(methodSyntax, $"The method decorated with [{this.attributeName}] must be a public method.");
             }
 
             if (!methodSyntax.Modifiers.Any(SyntaxKind.StaticKeyword))
             {
-                CreateError(methodSyntax, "The method decorated with [Jit.This] must be a static method.");
+                CreateError(methodSyntax, $"The method decorated with [{this.attributeName}] must be a static method.");
             }
         }
 

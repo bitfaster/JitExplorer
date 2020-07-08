@@ -18,7 +18,7 @@ namespace JitExplorer.Engine.UnitTests
             this.output = output;
         }
 
-        private string correctSource = "namespace JitExplorer { public class Test { [Jit.This] public static void Execute() { int i = 0; } } }";
+        private string correctSource = "namespace JitExplorer { public class Test { ["+ RuntimeDisassembler.AttributeName + "] public static void Execute() { int i = 0; } } }";
 
         [Fact]
         public void SimpleProgramProducesDissassembledOutput()

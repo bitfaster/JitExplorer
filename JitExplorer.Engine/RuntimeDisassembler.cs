@@ -19,6 +19,8 @@ namespace JitExplorer.Engine
 {
     public class RuntimeDisassembler
     {
+        public const string AttributeName = "Jit.This";
+
         public event EventHandler<ProgressEventArgs> Progress;
 
         private const string directory = "Workspace";
@@ -162,13 +164,13 @@ namespace Jit
 
             Compiler c = new Compiler(config.CompilerOptions);
             var syntax = c.Parse(this.csFileName, source);
-            var methodExtractor = new ExtractMarkedMethod();
+            var methodExtractor = new ExtractMarkedMethod(AttributeName);
             var node = syntax.SyntaxTree.GetRoot();
             methodExtractor.Visit(node);
 
-            var rewrite = new AttributeStatementRewriter();
+            // don't ever inline the entry point
+            var rewrite = new AttributeStatementRewriter(AttributeName);
             var rewritten = rewrite.Visit(syntax.SyntaxTree.GetRoot());
-
             syntax = new ParsedTree(rewritten.SyntaxTree, syntax.EmbeddedText);
 
             if (methodExtractor.Success)

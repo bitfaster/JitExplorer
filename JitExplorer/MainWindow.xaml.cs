@@ -60,7 +60,7 @@ namespace JitExplorer
 
     public class Test
     {
-        [Jit.This]
+        [" + RuntimeDisassembler.AttributeName + @"]
         public static void Execute()
         {
             for (int i = 0; i < 100; i++)
