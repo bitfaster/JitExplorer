@@ -11,28 +11,32 @@ namespace JitExplorer.Engine.CodeAnlaysis
     public class AttributeStatementRewriter : CSharpSyntaxRewriter
     {
         private readonly string attributeToReplace;
+
+        private readonly string left;
+        private readonly string right;
+
         public AttributeStatementRewriter(string attributeToReplace)
         {
+            var tokens = attributeToReplace.Split('.');
+
+            this.left = tokens[0];
+            this.right = tokens[1];
+
             this.attributeToReplace = attributeToReplace;
         }
 
-        // http://roslynquoter.azurewebsites.net/
-        // replace [Jit.This] with 
-        // [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
-        public override SyntaxNode VisitAttributeList(AttributeListSyntax node)
+        public override SyntaxNode VisitAttribute(AttributeSyntax node)
         {
-            if (node.Parent is MethodDeclarationSyntax && node.ToString() == $"[{this.attributeToReplace}]")
+            if (node.Name is QualifiedNameSyntax qn)
             {
-                // preserve trivia, else pdb line indexing will be screwed up
-                var leadingWhiteSpace = node.GetLeadingTrivia().Where(t =>
-                    t.Kind() == SyntaxKind.WhitespaceTrivia).ToSyntaxTriviaList();
+                if (qn.Left is IdentifierNameSyntax lid && lid.Identifier.Text == left
+                    && qn.Right is IdentifierNameSyntax rid && rid.Identifier.Text == right)
+                {
+                    // important to preserve whitespace else source line indexing becomes wrong
+                    var trailingTrivia = node.GetTrailingTrivia().Where(t =>
+                        t.Kind() == SyntaxKind.WhitespaceTrivia || t.Kind() == SyntaxKind.EndOfLineTrivia).ToSyntaxTriviaList();
 
-                var endingWhitespcae = node.GetTrailingTrivia().Where(t =>
-                    t.Kind() == SyntaxKind.WhitespaceTrivia || t.Kind() == SyntaxKind.EndOfLineTrivia).ToSyntaxTriviaList();
-
-                return SyntaxFactory.AttributeList(
-                                SyntaxFactory.SingletonSeparatedList<AttributeSyntax>(
-                                    SyntaxFactory.Attribute(
+                    return SyntaxFactory.Attribute(
                                         SyntaxFactory.QualifiedName(
                                             SyntaxFactory.QualifiedName(
                                                 SyntaxFactory.QualifiedName(
@@ -56,12 +60,12 @@ namespace JitExplorer.Engine.CodeAnlaysis
                                                                     SyntaxFactory.IdentifierName("Runtime")),
                                                                 SyntaxFactory.IdentifierName("CompilerServices")),
                                                             SyntaxFactory.IdentifierName("MethodImplOptions")),
-                                                        SyntaxFactory.IdentifierName("NoInlining"))))))))
-                    .WithLeadingTrivia(leadingWhiteSpace)
-                    .WithTrailingTrivia(endingWhitespcae);
+                                                        SyntaxFactory.IdentifierName("NoInlining"))))))
+                                    .WithTrailingTrivia(trailingTrivia);
+                }    
             }
 
-            return base.VisitAttributeList(node);
+            return base.VisitAttribute(node);
         }
     }
 }

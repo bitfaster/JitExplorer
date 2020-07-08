@@ -169,12 +169,11 @@ namespace Jit
             var node = syntax.SyntaxTree.GetRoot();
             methodExtractor.Visit(node);
 
-            // don't ever inline the entry point
+            // don't ever inline the entry point (note, trivia is important for source line indexing to work)
             var rewrite = new AttributeStatementRewriter(AttributeName);
             var rewritten = rewrite.Visit(syntax.SyntaxTree.GetRoot()) as CSharpSyntaxNode;
 
             // preserve source path after re-write, else cannot make source links
-            // TODO: preserve trivia - this is why we end up with empty ; lines in the ASM
             var rewrittenWithPath = CSharpSyntaxTree.Create(rewritten, null, syntax.SyntaxTree.FilePath, syntax.SyntaxTree.Encoding, syntax.SyntaxTree.DiagnosticOptions);
             syntax = new ParsedTree(rewrittenWithPath, syntax.EmbeddedText);
 
