@@ -174,6 +174,7 @@ namespace Jit
             var rewritten = rewrite.Visit(syntax.SyntaxTree.GetRoot()) as CSharpSyntaxNode;
 
             // preserve source path after re-write, else cannot make source links
+            // TODO: preserve trivia - this is why we end up with empty ; lines in the ASM
             var rewrittenWithPath = CSharpSyntaxTree.Create(rewritten, null, syntax.SyntaxTree.FilePath, syntax.SyntaxTree.Encoding, syntax.SyntaxTree.DiagnosticOptions);
             syntax = new ParsedTree(rewrittenWithPath, syntax.EmbeddedText);
 
