@@ -4,6 +4,7 @@ using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
 using JitExplorer.Engine.Metadata;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Polly;
 using Polly.Retry;
 using System;
@@ -170,8 +171,11 @@ namespace Jit
 
             // don't ever inline the entry point
             var rewrite = new AttributeStatementRewriter(AttributeName);
-            var rewritten = rewrite.Visit(syntax.SyntaxTree.GetRoot());
-            syntax = new ParsedTree(rewritten.SyntaxTree, syntax.EmbeddedText);
+            var rewritten = rewrite.Visit(syntax.SyntaxTree.GetRoot()) as CSharpSyntaxNode;
+
+            // preserve source path after re-write, else cannot make source links
+            var rewrittenWithPath = CSharpSyntaxTree.Create(rewritten, null, syntax.SyntaxTree.FilePath, syntax.SyntaxTree.Encoding, syntax.SyntaxTree.DiagnosticOptions);
+            syntax = new ParsedTree(rewrittenWithPath, syntax.EmbeddedText);
 
             if (methodExtractor.Success)
             {
@@ -301,7 +305,7 @@ namespace Jit
             // cache 1 source provider per version of the input source code
             // (user can dissassemble the same source with different JIT options)
             // TODO: Key here should include compile options, but not jit options
-            var sourceProvider = sourceCodeProviders.GetOrAdd(source, (s) => new SourceCodeProvider());
+            var sourceProvider = sourceCodeProviders.GetOrAdd(source, (s) => new SourceCodeProvider(directory));
 
             var settings = new Settings(
                 processId,

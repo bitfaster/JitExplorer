@@ -9,7 +9,14 @@ namespace JitExplorer.Engine.Disassemble
 {
     public class SourceCodeProvider
     {
+        // TODO: plumb this in end to end
+        private readonly string directory;
         private readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
+
+        public SourceCodeProvider(string directory)
+        {
+            this.directory = directory;
+        }
 
         internal IEnumerable<Sharp> GetSource(ClrMethod method, ILToNativeMap map)
         {
@@ -41,11 +48,13 @@ namespace JitExplorer.Engine.Disassemble
         {
             if (!SourceFileCache.TryGetValue(file, out string[] contents))
             {
+                var path = Path.Combine(this.directory, file);
+
                 // sometimes the symbols report some disk location from MS CI machine like "E:\A\_work\308\s\src\mscorlib\shared\System\Random.cs" for .NET Core 2.0
-                if (!File.Exists(file))
+                if (!File.Exists(path))
                     return null;
 
-                contents = File.ReadAllLines(file);
+                contents = File.ReadAllLines(path);
                 SourceFileCache.Add(file, contents);
             }
 
@@ -170,15 +179,16 @@ namespace JitExplorer.Engine.Disassemble
             if (info != null)
             {
                 // Use the matching Pdb in the current directory if it exists
-                if (File.Exists(info.FileName))
+                var path = Path.Combine("Workspace", info.FileName);
+                if (File.Exists(path))
                 {
-                     reader = new PdbReader(info.FileName);
+                     reader = new PdbReader(path);
                 }    
                 else if (!s_pdbReaders.TryGetValue(info, out reader))
                 {
                     SymbolLocator locator = GetSymbolLocator(module);
 
-                    string pdbPath = locator.FindPdb(info);
+                    string pdbPath = Path.Combine("Workspace", locator.FindPdb(info));
                     if (pdbPath != null)
                     {
                         try
