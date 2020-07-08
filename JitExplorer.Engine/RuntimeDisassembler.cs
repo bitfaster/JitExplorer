@@ -1,9 +1,9 @@
 ﻿using BitFaster.Caching.Lru;
+using JitExplorer.Engine.CodeAnlaysis;
 using JitExplorer.Engine.Compile;
 using JitExplorer.Engine.Disassemble;
 using JitExplorer.Engine.Metadata;
-using JitExplorer.Engine.Walk;
-using Microsoft.CodeAnalysis.Completion;
+using Microsoft.CodeAnalysis;
 using Polly;
 using Polly.Retry;
 using System;
@@ -36,7 +36,7 @@ namespace JitExplorer.Engine
         public Dissassembly CompileJitAndDisassemble(string sourceCode, Config config)
         {
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
-            (ExtractMarkedMethod userMethod, Compilation compilation) = Compile(this.exeName, sourceCode, config);
+            (ExtractMarkedMethod userMethod, Compile.Compilation compilation) = Compile(this.exeName, sourceCode, config);
             using (compilation)
             {
                 if (!compilation.Succeeded || !userMethod.Success)
@@ -130,7 +130,7 @@ namespace Jit
             return jitExplSource.Replace("methodCallSite", methodCallSite);
         }
 
-        private (ExtractMarkedMethod, Compilation) Compile(string assemblyName, string source, Config config)
+        private (ExtractMarkedMethod, Compile.Compilation) Compile(string assemblyName, string source, Config config)
         {
             if (config.CompilerOptions.OutputKind != Microsoft.CodeAnalysis.OutputKind.ConsoleApplication)
             {
@@ -163,7 +163,13 @@ namespace Jit
             Compiler c = new Compiler(config.CompilerOptions);
             var syntax = c.Parse(this.csFileName, source);
             var methodExtractor = new ExtractMarkedMethod();
-            methodExtractor.Visit(syntax.SyntaxTree.GetRoot());
+            var node = syntax.SyntaxTree.GetRoot();
+            methodExtractor.Visit(node);
+
+            var rewrite = new AttributeStatementRewriter();
+            var rewritten = rewrite.Visit(syntax.SyntaxTree.GetRoot());
+
+            syntax = new ParsedTree(rewritten.SyntaxTree, syntax.EmbeddedText);
 
             if (methodExtractor.Success)
             {
@@ -173,7 +179,7 @@ namespace Jit
                 return (methodExtractor, c.Compile(assemblyName, syntax, jitSyntax));
             }
 
-            return (methodExtractor, new Compilation(new MemoryStream(), new MemoryStream(), Array.Empty<CompileDiagnostic>()));
+            return (methodExtractor, new Compile.Compilation(new MemoryStream(), new MemoryStream(), Array.Empty<CompileDiagnostic>()));
         }
 
         private const int maxRetryAttempts = 3;
@@ -202,7 +208,7 @@ namespace Jit
             }
         }
 
-        private void WriteExeToDisk(string path, Compilation compilation)
+        private void WriteExeToDisk(string path, Compile.Compilation compilation)
         {
             this.retryPolicy.ExecuteAsync(() => 
             {

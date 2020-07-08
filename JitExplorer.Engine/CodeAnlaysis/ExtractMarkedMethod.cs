@@ -1,5 +1,4 @@
 ﻿
-using JitExplorer.Engine.Disassemble;
 using JitExplorer.Engine.Metadata;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -8,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace JitExplorer.Engine.Walk
+namespace JitExplorer.Engine.CodeAnlaysis
 {
     public class ExtractMarkedMethod : CSharpSyntaxWalker
     {
@@ -58,7 +57,6 @@ namespace JitExplorer.Engine.Walk
                         if (classSyntax.Parent is NamespaceDeclarationSyntax namespaceSyntax)
                         {
                             string nameSpace = (namespaceSyntax.Name as IdentifierNameSyntax).Identifier.ValueText;
-
 
                             var classInfo = new ClassInfo(nameSpace, className);
                             this.methodInfo = new Metadata.MethodInfo(name, classInfo, Array.Empty<ClassInfo>());
