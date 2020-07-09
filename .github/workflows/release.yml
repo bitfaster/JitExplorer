@@ -26,16 +26,15 @@ jobs:
     - name: Install dependencies
       run: dotnet restore
     - name: Build
-      run: |
-        tag=$(git describe --tags --abbrev=0)
-        release_name="App-$tag-${{ matrix.target }}"
-        dotnet publish JitExplorer/JitExplorer.csproj --framework netcoreapp3.1 --runtime "${{ matrix.target }}" -c Release -o "$release_name"
-        7z a -tzip "${release_name}.zip" "./${release_name}/*"
-        rm -r "$release_name"
-
-    - name: Publish
-      uses: softprops/action-gh-release@v1
-      with:
-        files: "App*"
+      run: dotnet build --configuration Release --no-restore
+    - name: Zip the Build
+      run: zip -r ${{ secrets.ReleaseZipName }} ./JitExplorer/bin/Release/netcoreapp3.1/ 
+    - name: Upload Release Asset
+      uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+        asset_path: ./${{ secrets.ReleaseZipName }}.zip
+        asset_name: ${{ secrets.ReleaseZipName }}.zip
+        asset_content_type: application/zip
