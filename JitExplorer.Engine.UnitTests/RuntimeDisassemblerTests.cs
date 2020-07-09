@@ -18,11 +18,11 @@ namespace JitExplorer.Engine.UnitTests
             this.output = output;
         }
 
+        private string correctSource = "namespace JitExplorer { public class Test { ["+ RuntimeDisassembler.AttributeName + "] public static void Execute() { int i = 0; } } }";
+
         [Fact]
         public void SimpleProgramProducesDissassembledOutput()
         {
-            string source = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; JitExplorer.Signal.__Jit(); } } }";
-
             var jit = new RuntimeDisassembler("test2.exe");
 
             var compilerOptions = new CompilerOptions()
@@ -39,11 +39,11 @@ namespace JitExplorer.Engine.UnitTests
                 JitMode = JitMode.Default,
             };
 
-            string jitOut = jit.CompileJitAndDisassemble(source, config).Text;
+            string jitOut = jit.CompileJitAndDisassemble(correctSource, config).Text;
 
             output.WriteLine(jitOut);
 
-            jitOut.Should().StartWith("Program.Main(String[])");
+            jitOut.Should().StartWith("Test.Execute()");
         }
 
         [Fact]
@@ -73,8 +73,7 @@ namespace JitExplorer.Engine.UnitTests
             result = jit.CompileJitAndDisassemble(badSource, config);
             result.IsSuccess.Should().BeFalse();
 
-            string goodSource = "namespace Testing { public class Program { public static void Main(string[] args) { int i = 0; JitExplorer.Signal.__Jit(); } } }";
-            result = jit.CompileJitAndDisassemble(goodSource, config);
+            result = jit.CompileJitAndDisassemble(correctSource, config);
             result.IsSuccess.Should().BeTrue();
         }
     }

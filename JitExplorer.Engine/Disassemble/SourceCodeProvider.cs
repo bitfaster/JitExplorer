@@ -9,11 +9,19 @@ namespace JitExplorer.Engine.Disassemble
 {
     public class SourceCodeProvider
     {
+        private readonly string directory;
         private readonly Dictionary<string, string[]> SourceFileCache = new Dictionary<string, string[]>();
+        private readonly ClrSourceExtensions ext;
+
+        public SourceCodeProvider(string directory)
+        {
+            this.directory = directory;
+            this.ext = new ClrSourceExtensions(this.directory);
+        }
 
         internal IEnumerable<Sharp> GetSource(ClrMethod method, ILToNativeMap map)
         {
-            var sourceLocation = method.GetSourceLocation(map.ILOffset);
+            var sourceLocation = this.ext.GetSourceLocation(method, map.ILOffset);
             if (sourceLocation == null)
                 yield break;
 
@@ -41,11 +49,13 @@ namespace JitExplorer.Engine.Disassemble
         {
             if (!SourceFileCache.TryGetValue(file, out string[] contents))
             {
+                var path = Path.Combine(this.directory, file);
+
                 // sometimes the symbols report some disk location from MS CI machine like "E:\A\_work\308\s\src\mscorlib\shared\System\Random.cs" for .NET Core 2.0
-                if (!File.Exists(file))
+                if (!File.Exists(path))
                     return null;
 
-                contents = File.ReadAllLines(file);
+                contents = File.ReadAllLines(path);
                 SourceFileCache.Add(file, contents);
             }
 
@@ -82,14 +92,21 @@ namespace JitExplorer.Engine.Disassemble
         public int ColEnd;
     }
 
-    internal static class ClrSourceExtensions
+    internal class ClrSourceExtensions
     {
         // TODO Not sure we want this to be a shared dictionary, especially without
         //      any synchronization. Probably want to put this hanging off the Context
         //      somewhere, or inside SymbolCache.
         private static readonly Dictionary<PdbInfo, PdbReader> s_pdbReaders = new Dictionary<PdbInfo, PdbReader>();
 
-        internal static SourceLocation GetSourceLocation(this ClrMethod method, int ilOffset)
+        private readonly string directory;
+
+        public ClrSourceExtensions(string directory)
+        {
+            this.directory = directory;
+        }
+
+        internal SourceLocation GetSourceLocation(ClrMethod method, int ilOffset)
         {
             PdbReader reader = GetReaderForMethod(method);
             if (reader == null)
@@ -99,7 +116,7 @@ namespace JitExplorer.Engine.Disassemble
             return FindNearestLine(function, ilOffset);
         }
 
-        internal static SourceLocation GetSourceLocation(this ClrStackFrame frame)
+        internal SourceLocation GetSourceLocation(ClrStackFrame frame)
         {
             PdbReader reader = GetReaderForMethod(frame.Method);
             if (reader == null)
@@ -161,7 +178,7 @@ namespace JitExplorer.Engine.Disassemble
             return last;
         }
 
-        private static PdbReader GetReaderForMethod(ClrMethod method)
+        private PdbReader GetReaderForMethod(ClrMethod method)
         {
             ClrModule module = method?.Type?.Module;
             PdbInfo info = module?.Pdb;
@@ -170,15 +187,16 @@ namespace JitExplorer.Engine.Disassemble
             if (info != null)
             {
                 // Use the matching Pdb in the current directory if it exists
-                if (File.Exists(info.FileName))
+                var path = Path.Combine(directory, info.FileName);
+                if (File.Exists(path))
                 {
-                     reader = new PdbReader(info.FileName);
+                     reader = new PdbReader(path);
                 }    
                 else if (!s_pdbReaders.TryGetValue(info, out reader))
                 {
                     SymbolLocator locator = GetSymbolLocator(module);
 
-                    string pdbPath = locator.FindPdb(info);
+                    string pdbPath = Path.Combine(directory, locator.FindPdb(info));
                     if (pdbPath != null)
                     {
                         try

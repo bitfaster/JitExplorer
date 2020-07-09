@@ -54,20 +54,26 @@ namespace JitExplorer
             this.dissassembler = new RuntimeDisassembler("test.exe");
             this.dissassembler.Progress += IsolatedJit_Progress;
 
-            this.CodeEditor.Text = @"namespace Testing
+            this.CodeEditor.Text = @"namespace JitExplorer
 {
     using System;
 
-    public class Program
+    public class Test
     {
-        public static void Main(string[] args)
+        [" + RuntimeDisassembler.AttributeName + @"]
+        public static void Execute()
         {
-            JitExplorer.Signal.__Jit();
+            for (int i = 0; i < 100; i++)
+            {
+                i = i * 3;
+            }
         }
     }
 }";
 
             this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
+
+            this.Loaded += a_Loaded;
 
             // in the constructor:
             this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
@@ -91,6 +97,14 @@ namespace JitExplorer
             }
         }
 
+        void a_Loaded(object sender, EventArgs e)
+        {
+            var s = (Window)sender;
+            Matrix m = PresentationSource.FromVisual(s).CompositionTarget.TransformToDevice;
+            double dpiFactor = 1 / m.M11;
+            this.BorderThickness = new Thickness(dpiFactor);
+        }
+    
         // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -279,6 +293,9 @@ namespace JitExplorer
                 var jitKey = new JitKey(source, config);
 
                 this.dissassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+
+                // Free some memory?
+                // System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
 
                 this.Dispatcher.Invoke(
                     () => 
