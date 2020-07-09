@@ -20,7 +20,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Name Asset
-      run: release_name="JitExplorer-$tag-${{ matrix.target }}"
+      run: |
+          # Define some variables for things we need
+          tag=$(git describe --tags --abbrev=0)
+          release_name="App-$tag-${{ matrix.target }}"
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
