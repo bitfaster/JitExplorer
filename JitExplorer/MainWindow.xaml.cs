@@ -73,6 +73,8 @@ namespace JitExplorer
 
             this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
 
+            this.Loaded += a_Loaded;
+
             // in the constructor:
             this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
             this.CodeEditor.TextArea.TextEntered += textEditor_TextArea_TextEntered;
@@ -95,6 +97,14 @@ namespace JitExplorer
             }
         }
 
+        void a_Loaded(object sender, EventArgs e)
+        {
+            var s = (Window)sender;
+            Matrix m = PresentationSource.FromVisual(s).CompositionTarget.TransformToDevice;
+            double dpiFactor = 1 / m.M11;
+            this.BorderThickness = new Thickness(dpiFactor);
+        }
+    
         // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

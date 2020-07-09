@@ -13,7 +13,7 @@
         SizeToContent="Width" 
         Topmost="True"
         Height="100"
-        BorderThickness="0.5" BorderBrush="DarkOrange">
+        BorderThickness="0.5" BorderBrush="DarkOrange" SnapsToDevicePixels="True">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -22,9 +22,6 @@
         </ResourceDictionary>
     </Window.Resources>
     <Border CornerRadius="8" Margin="15">
-
-
-
         <TextBlock FontSize="40"       
                    Foreground="White"
                    Margin="10"

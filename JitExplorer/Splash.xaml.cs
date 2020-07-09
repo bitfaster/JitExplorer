@@ -22,6 +22,17 @@ namespace JitExplorer
         public Splash()
         {
             InitializeComponent();
+            this.Loaded += a_Loaded;
+        }
+
+        void a_Loaded(object sender, EventArgs e)
+        {
+            var s = (Window)sender;
+
+            Matrix m = PresentationSource.FromVisual(s).CompositionTarget.TransformToDevice;
+            double dpiFactor = 1 / m.M11;
+
+            this.BorderThickness = new Thickness(dpiFactor);
         }
     }
 }
