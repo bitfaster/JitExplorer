@@ -27,9 +27,11 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --configuration Release --no-restore
-    - name: Zip the Build
+    - name: Zip
       shell: pwsh
-      run: Compress-Archive -Path JitExplorer\bin\Release\netcoreapp3.1\* -DestinationPath C:\builtfiles\JitExplorer-win64.zip
+      run: |
+        New-Item -ItemType Directory -Path C:\builtfiles -Force > $null
+        Compress-Archive -Path JitExplorer\bin\Release\netcoreapp3.1\* -DestinationPath C:\builtfiles\JitExplorer-win64.zip
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
