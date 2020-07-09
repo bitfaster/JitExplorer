@@ -19,12 +19,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Name Asset
-      shell: bash
-      run: |
-          # Define some variables for things we need
-          tag=$(git describe --tags --abbrev=0)
-          release_name="App-$tag-${{ matrix.target }}"
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -34,10 +28,11 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Zip the Build
-      run: 7z a -tzip ${{ secrets.ReleaseZipName }} ./JitExplorer/bin/Release/netcoreapp3.1/
+      shell: pwsh
+      run: Compress-Archive -Path JitExplorer\bin\Release\netcoreapp3.1\* -DestinationPath C:\builtfiles\JitExplorer-win64.zip
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: JitExplorer*
+        files: C:\builtfiles\JitExplorer-win64.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
