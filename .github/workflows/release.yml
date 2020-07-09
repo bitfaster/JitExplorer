@@ -28,7 +28,7 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
     - name: Zip the Build
-      run: zip -r ${{ secrets.ReleaseZipName }} ./JitExplorer/bin/Release/netcoreapp3.1/ 
+      run: 7z a -tzip ${{ secrets.ReleaseZipName }} ./JitExplorer/bin/Release/netcoreapp3.1/
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
