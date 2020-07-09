@@ -32,6 +32,6 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        files: "*.zip"
+        files: ./JitExplorer/bin/Release/netcoreapp3.1/.zip
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
