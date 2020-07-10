@@ -143,14 +143,22 @@
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
                                ShowLineNumbers="True"
-                               MinWidth="5">
-            </avalonedit:TextEditor>
+                               MinWidth="5"/>
+
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
-            <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
+            <TabControl Grid.Column="2" Name="OutputTab">
+                <jitcontrols:PermanentTabItem x:Name="AsmTab" Header="Asm" Style="{DynamicResource MahApps.Styles.TabItem.VisualStudio}">
+                    <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
                                Style="{StaticResource TextEditorStyle}"
-                               Grid.Column="2"
-                               MinWidth="5">
-            </jitcontrols:AssemblyTextEditor>
+                               MinWidth="5" />
+                </jitcontrols:PermanentTabItem>
+                <Controls:MetroTabItem Header="Output" CloseButtonEnabled="False" Style="{DynamicResource MahApps.Styles.TabItem}">
+                    <avalonedit:TextEditor x:Name="OutputEditor"
+                               Style="{StaticResource TextEditorStyle}"
+                               WordWrap="True"
+                               MinWidth="5"/>
+                </Controls:MetroTabItem>
+            </TabControl>
         </Grid>
 
         <!-- Status bar -->

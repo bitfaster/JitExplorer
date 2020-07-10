@@ -60,7 +60,7 @@
     <Style TargetType="avalonedit:TextEditor" x:Key="TextEditorStyle" >
         <Setter Property="FontFamily" Value="Consolas" />
         <Setter Property="Background" Value="{DynamicResource MahApps.Brushes.Background}" />
-        <Setter Property="Foreground" Value="{DynamicResource MahApps.Brushes.Foreground}" />
+        <Setter Property="Foreground" Value="#d4d4d4" />
         <Setter Property="BorderBrush" Value="{DynamicResource MahApps.Brushes.Border.Normal}" />
         <Setter Property="BorderThickness" Value="{DynamicResource ComboBoxBorderThemeThickness}" />
         

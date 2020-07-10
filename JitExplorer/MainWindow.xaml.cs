@@ -95,6 +95,8 @@ namespace JitExplorer
                 var i = (ComboBoxItem)this.Platform.Items[0];
                 i.IsEnabled = false;
             }
+
+            this.AsmTab.IsButtonEnabled = false;
         }
 
         void a_Loaded(object sender, EventArgs e)
@@ -299,7 +301,15 @@ namespace JitExplorer
 
                 this.Dispatcher.Invoke(
                     () => 
-                    this.AssemblerView.Update(this.dissassembly.Text, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));
+                    this.AssemblerView.Update(this.dissassembly.AsmText, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));
+
+                this.Dispatcher.Invoke(
+                    () =>
+                    this.OutputEditor.Text = this.dissassembly.OutputText);
+
+                this.Dispatcher.Invoke(
+                    () =>
+                    OutputTab.SelectedIndex = this.dissassembly.IsSuccess ? 0 : 1);
             }
             catch (Exception ex)
             {
