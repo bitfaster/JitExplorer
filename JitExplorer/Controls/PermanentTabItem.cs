@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace JitExplorer.Controls
@@ -17,7 +18,5 @@ namespace JitExplorer.Controls
         {
             this.CloseButtonEnabled = false;
         }
-
-        
     }
 }
