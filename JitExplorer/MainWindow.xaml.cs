@@ -96,7 +96,7 @@ namespace JitExplorer
                 i.IsEnabled = false;
             }
 
-            this.AsmTab.IsButtonEnabled = false;
+            this.AsmTab.CloseButtonEnabled = true;
         }
 
         void a_Loaded(object sender, EventArgs e)
