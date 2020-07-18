@@ -11,14 +11,9 @@
     </ResourceDictionary.MergedDictionaries>
 
     <Style x:Key="NonClosableTabItem" BasedOn="{StaticResource {x:Type controls:MetroTabItem}}" TargetType="{x:Type controls:MetroTabItem}">
-        <Setter Property="CloseButtonEnabled" Value="False"></Setter>
-
         <Setter Property="BorderBrush" Value="{DynamicResource BorderBrushNormal}" />
-        <!--  special property for header font size  -->
-        <!--<Setter Property="controls:ControlsHelper.HeaderFontSize" Value="12" />-->
         <Setter Property="controls:TabControlHelper.CloseButtonEnabled" Value="True" />
         <Setter Property="Padding" Value="12 5 12 5" />
-        <!--<Setter Property="controls:ControlsHelper.HeaderFontSize" Value="20"></Setter>-->
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TabItem}">
@@ -50,7 +45,7 @@
                                     VerticalAlignment="Center"
                                     IsTabStop="False"
                                     Style="{DynamicResource StandardTabItemCloseButtonStyle}"
-                                    Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=(controls:TabControlHelper.CloseButtonEnabled), Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    Visibility="Hidden">
                             </Button>
                         </StackPanel>
                     </Border>
