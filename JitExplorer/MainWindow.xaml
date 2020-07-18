@@ -146,12 +146,12 @@
                                MinWidth="5"/>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
             <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}">
-                <jitcontrols:PermanentTabItem x:Name="AsmTab" Header="Asm" Style="{DynamicResource MahApps.Styles.TabItem.VisualStudio}">
+                <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
                     <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
                                Style="{StaticResource TextEditorStyle}"
                                MinWidth="5" />
-                </jitcontrols:PermanentTabItem>
-                <Controls:MetroTabItem Header="Output" CloseButtonEnabled="False" Style="{DynamicResource MahApps.Styles.TabItem.VisualStudio}">
+                </Controls:MetroTabItem>
+                <Controls:MetroTabItem Header="Output" Style="{StaticResource NonClosableTabItem}" >
                     <avalonedit:TextEditor x:Name="OutputEditor"
                                Style="{StaticResource TextEditorStyle}"
                                WordWrap="True"
