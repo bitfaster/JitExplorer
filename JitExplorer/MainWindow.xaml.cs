@@ -5,6 +5,7 @@ using ICSharpCode.AvalonEdit.Editing;
 using ICSharpCode.AvalonEdit.Highlighting;
 using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
+using JitExplorer.Component;
 using JitExplorer.Controls;
 using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
@@ -73,7 +74,7 @@ namespace JitExplorer
 
             this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
 
-            this.Loaded += a_Loaded;
+            this.Loaded += ThinBorder.SetThinBorder;
 
             // in the constructor:
             this.CodeEditor.TextArea.TextEntering += textEditor_TextArea_TextEntering;
@@ -99,13 +100,7 @@ namespace JitExplorer
             this.AsmTab.CloseButtonEnabled = true;
         }
 
-        void a_Loaded(object sender, EventArgs e)
-        {
-            var s = (Window)sender;
-            Matrix m = PresentationSource.FromVisual(s).CompositionTarget.TransformToDevice;
-            double dpiFactor = 1 / m.M11;
-            this.BorderThickness = new Thickness(dpiFactor);
-        }
+
     
         // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)

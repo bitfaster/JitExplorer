@@ -1,4 +1,5 @@
-﻿using MahApps.Metro.Controls;
+﻿using JitExplorer.Component;
+using MahApps.Metro.Controls;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -22,17 +23,7 @@ namespace JitExplorer
         public Splash()
         {
             InitializeComponent();
-            this.Loaded += a_Loaded;
-        }
-
-        void a_Loaded(object sender, EventArgs e)
-        {
-            var s = (Window)sender;
-
-            Matrix m = PresentationSource.FromVisual(s).CompositionTarget.TransformToDevice;
-            double dpiFactor = 1 / m.M11;
-
-            this.BorderThickness = new Thickness(dpiFactor);
+            this.Loaded += ThinBorder.SetThinBorder;
         }
     }
 }
