@@ -35,8 +35,8 @@ namespace JitExplorer
                     return;
                 }
 
-                compilerModel = value;
-                OnPropertyChanged();
+                this.compilerModel = value;
+                this.OnPropertyChanged();
             }
         }
 
@@ -50,8 +50,8 @@ namespace JitExplorer
                     return;
                 }
 
-                jitModel = value;
-                OnPropertyChanged();
+                this.jitModel = value;
+                this.OnPropertyChanged();
             }
         }
 

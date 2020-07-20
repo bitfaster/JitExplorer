@@ -33,7 +33,7 @@ namespace JitExplorer
 
                 this.legacyJit = value;
                 this.LegacyChanged();
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
@@ -49,7 +49,7 @@ namespace JitExplorer
 
                 this.tieredCompilation = value;
                 this.ModernChanged();
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
@@ -65,7 +65,7 @@ namespace JitExplorer
 
                 this.quick = value;
                 this.ModernChanged();
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
@@ -81,7 +81,7 @@ namespace JitExplorer
 
                 this.quickLoop = value;
                 this.ModernChanged();
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
@@ -107,22 +107,22 @@ namespace JitExplorer
         {
             JitMode jitMode = JitMode.Default;
 
-            if (tieredCompilation)
+            if (this.tieredCompilation)
             {
                 jitMode = JitMode.Tiered;
             }
 
-            if (quick)
+            if (this.quick)
             {
                 jitMode = jitMode | JitMode.Quick;
             }
 
-            if (quickLoop)
+            if (this.quickLoop)
             {
                 jitMode = jitMode | JitMode.QuickLoop;
             }
 
-            if (legacyJit)
+            if (this.legacyJit)
             {
                 jitMode = jitMode | JitMode.Legacy;
             }

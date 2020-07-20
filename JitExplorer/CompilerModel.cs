@@ -34,7 +34,7 @@ namespace JitExplorer
                 }
 
                 this.languageSelection = value;
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
@@ -49,7 +49,7 @@ namespace JitExplorer
                 }
 
                 this.buildConfig = value;
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
@@ -64,7 +64,7 @@ namespace JitExplorer
                 }
 
                 this.plaform = value;
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
@@ -79,7 +79,7 @@ namespace JitExplorer
                 }
 
                 this.allowUnsafe = value;
-                OnPropertyChanged();
+                this.OnPropertyChanged();
             }
         }
 
