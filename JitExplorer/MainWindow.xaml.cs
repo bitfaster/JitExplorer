@@ -33,9 +33,9 @@ namespace JitExplorer
     {
         private readonly RuntimeDisassembler dissassembler;
         private readonly RoslynCodeCompletion codeCompletion;
-        private readonly ClassicLru<JitKey, Dissassembly> cache = new ClassicLru<JitKey, Dissassembly>(100);
+        private readonly ClassicLru<JitKey, Disassembly> cache = new ClassicLru<JitKey, Disassembly>(100);
 
-        private Dissassembly dissassembly;
+        private Disassembly dissassembly;
 
         public AppModel AppModel { get; set; }
 
@@ -48,23 +48,6 @@ namespace JitExplorer
 
             this.dissassembler = new RuntimeDisassembler("test.exe");
             this.dissassembler.Progress += IsolatedJit_Progress;
-
-            this.CodeEditor.Text = @"namespace JitExplorer
-{
-    using System;
-
-    public class Test
-    {
-        [" + RuntimeDisassembler.AttributeName + @"]
-        public static void Execute()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                i = i * 3;
-            }
-        }
-    }
-}";
 
             this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
 
@@ -90,12 +73,8 @@ namespace JitExplorer
                 var i = (ComboBoxItem)this.Platform.Items[0];
                 i.IsEnabled = false;
             }
-
-            this.AsmTab.CloseButtonEnabled = true;
         }
 
-
-    
         // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

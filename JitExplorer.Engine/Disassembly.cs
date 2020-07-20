@@ -4,9 +4,9 @@ using System.Text;
 
 namespace JitExplorer.Engine
 {
-    public class Dissassembly
+    public class Disassembly
     {
-        public Dissassembly(string text)
+        public Disassembly(string text)
         {
             this.IsSuccess = false;
             this.OutputText = text;
@@ -15,7 +15,7 @@ namespace JitExplorer.Engine
             this.AsmLineToAsmLineIndex = new Dictionary<int, int>();
         }
 
-        public Dissassembly(string text, Dictionary<int, string> lineAddressIndex, Dictionary<int, int> asmToSourceLineIndex, Dictionary<int, int> asmLineToAsmLineIndex)
+        public Disassembly(string text, Dictionary<int, string> lineAddressIndex, Dictionary<int, int> asmToSourceLineIndex, Dictionary<int, int> asmLineToAsmLineIndex)
         {
             this.IsSuccess = true;
             this.AsmText = text;

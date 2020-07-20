@@ -7,9 +7,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:JitExplorer" 
-                 xmlns:jitcontrols="clr-namespace:JitExplorer.Controls"
-                 mc:Ignorable="d"
+        xmlns:jitcontrols="clr-namespace:JitExplorer.Controls"
+        xmlns:jitbehave="clr-namespace:JitExplorer.Behaviors"
+        mc:Ignorable="d"
         Title="JitExplorer" TitleCharacterCasing="Normal" TitleForeground="{DynamicResource MahApps.Brushes.SemiTransparent}"
         Height="450" Width="800" 
         BorderThickness="0.5" BorderBrush="DarkOrange">
@@ -143,7 +145,12 @@
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
                                ShowLineNumbers="True"
-                               MinWidth="5"/>
+                               MinWidth="5"
+                               >
+                <i:Interaction.Behaviors>
+                    <jitbehave:AvalonEditBehaviour GiveMeTheText="{Binding SourceCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </i:Interaction.Behaviors>
+            </avalonedit:TextEditor>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
             <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}">
                 <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
@@ -153,7 +160,12 @@
                 <Controls:MetroTabItem Header="Output" Style="{StaticResource NonClosableTabItem}" >
                     <avalonedit:TextEditor x:Name="OutputEditor"
                                Style="{StaticResource TextEditorStyle}"
-                               WordWrap="True"/>
+                               WordWrap="True">
+                        <i:Interaction.Behaviors>
+                            <jitbehave:AvalonEditBehaviour GiveMeTheText="{Binding Disassembly.OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        </i:Interaction.Behaviors>
+
+                    </avalonedit:TextEditor>
                 </Controls:MetroTabItem>
             </Controls:MetroTabControl>
         </Grid>

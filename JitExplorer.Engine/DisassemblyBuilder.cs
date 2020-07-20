@@ -6,7 +6,7 @@ using System.Text;
 
 namespace JitExplorer.Engine
 {
-    public class DissassemblyBuilder
+    public class DisassemblyBuilder
     {
         private int lineNo = 1;
         private StringBuilder sb = new StringBuilder();
@@ -72,7 +72,7 @@ namespace JitExplorer.Engine
             }
         }
 
-        public Dissassembly Build()
+        public Disassembly Build()
         {
             var asmLineToAsmLineIndex = new Dictionary<int, int>(this.linesContainingLabels.Count);
 
@@ -84,7 +84,7 @@ namespace JitExplorer.Engine
                 }
             }
 
-            return new Dissassembly(
+            return new Disassembly(
                 sb.ToString(), 
                 asmLineToAddressIndex, 
                 asmToSourceLineIndex,

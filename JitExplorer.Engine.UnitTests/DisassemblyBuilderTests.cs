@@ -6,12 +6,12 @@ using Xunit;
 
 namespace JitExplorer.Engine.UnitTests
 {
-    public class DissassemblyBuilderTests
+    public class DisassemblyBuilderTests
     {
         [Fact]
         public void WhenAddingLinesTheAddressesAreCountedCorrectly()
         {
-            var b = new DissassemblyBuilder();
+            var b = new DisassemblyBuilder();
 
             b.AddLine();
             b.AddLine("line2");
