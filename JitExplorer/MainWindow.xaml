@@ -63,7 +63,7 @@
 
         <!-- Toolbar -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,15">
-            <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" FontSize="10" SelectedIndex="{Binding Path=CompilerModel.LanguageSelection}">
+            <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" SelectedIndex="{Binding Path=CompilerModel.LanguageSelection}">
                 <ComboBoxItem>C# (Default)</ComboBoxItem>
                 <ComboBoxItem>C# 1</ComboBoxItem>
                 <ComboBoxItem>C# 2</ComboBoxItem>
@@ -148,14 +148,12 @@
             <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}">
                 <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
                     <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
-                               Style="{StaticResource TextEditorStyle}"
-                               MinWidth="5" />
+                               Style="{StaticResource TextEditorStyle}"/>
                 </Controls:MetroTabItem>
                 <Controls:MetroTabItem Header="Output" Style="{StaticResource NonClosableTabItem}" >
                     <avalonedit:TextEditor x:Name="OutputEditor"
                                Style="{StaticResource TextEditorStyle}"
-                               WordWrap="True"
-                               MinWidth="5"/>
+                               WordWrap="True"/>
                 </Controls:MetroTabItem>
             </Controls:MetroTabControl>
         </Grid>
