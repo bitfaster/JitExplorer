@@ -300,31 +300,6 @@ namespace JitExplorer
             this.AssemblerView.ShowMemoryAddresses = !this.AssemblerView.ShowMemoryAddresses;
         }
 
-        private void UndoHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Undo();
-        }
-
-        private void RedoHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Redo();
-        }
-
-        private void CutHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Cut();
-        }
-
-        private void CopyHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Copy();
-        }
-
-        private void PasteHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Paste();
-        }
-
         private void AboutHandler(object sender, RoutedEventArgs e)
         {
             string url = @"https://github.com/bitfaster/JitExplorer";

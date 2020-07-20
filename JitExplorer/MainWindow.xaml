@@ -45,12 +45,12 @@
                 <MenuItem Header="_Exit" Click="Exit" />
             </MenuItem>
             <MenuItem Header="_Edit" HorizontalContentAlignment="Left">
-                <MenuItem Header="Undo" Click="UndoHandler"/>
-                <MenuItem Header="Redo" Click="RedoHandler"/>
+                <MenuItem Command="ApplicationCommands.Undo"/>
+                <MenuItem Command="ApplicationCommands.Redo"/>
                 <Separator />
-                <MenuItem Header="Cut" Click="CutHandler"/>
-                <MenuItem Header="Copy" Click="CopyHandler"/>
-                <MenuItem Header="Paste" Click="PasteHandler"/>
+                <MenuItem Command="ApplicationCommands.Cut"/>
+                <MenuItem Command="ApplicationCommands.Copy"/>
+                <MenuItem Command="ApplicationCommands.Paste"/>
             </MenuItem>
             <MenuItem Header="_View" HorizontalContentAlignment="Left">
                 <MenuItem Header="LineNumbers" IsCheckable="True" IsChecked="True" Click="ShowLineNumbersHandler"/>
