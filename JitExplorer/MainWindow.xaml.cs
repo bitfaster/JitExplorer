@@ -187,40 +187,7 @@ namespace JitExplorer
             this.ProgressIcon.Spin = true;
             string source = this.CodeEditor.Text;
 
-            var config = new Config()
-            {
-                CompilerOptions = this.AppModel.CompilerModel.GetCompilerConfig(),
-                JitMode = GetJitMode(),
-            };
-
-            Task.Run(() => this.JitIt(source, config));
-        }
-
-        private JitMode GetJitMode()
-        {
-            JitMode jitMode = JitMode.Default;
-
-            if (this.TieredCompilation.IsChecked.Value)
-            {
-                jitMode = JitMode.Tiered;
-            }
-
-            if (this.QuickJit.IsChecked.Value)
-            {
-                jitMode = jitMode | JitMode.Quick;
-            }
-
-            if (this.LoopJit.IsChecked.Value)
-            {
-                jitMode = jitMode | JitMode.QuickLoop;
-            }
-
-            if (this.Legacy.IsChecked.Value)
-            {
-                jitMode = jitMode | JitMode.Legacy;
-            }
-
-            return jitMode;
+            Task.Run(() => this.JitIt(source, this.AppModel.GetConfig()));
         }
 
         private void JitIt(string source, Config config)
@@ -382,24 +349,6 @@ namespace JitExplorer
                 // hack because of this: https://github.com/dotnet/corefx/issues/10361
                 url = url.Replace("&", "^&");
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-            }
-        }
-
-        private void Legacy_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.Legacy.IsChecked.Value)
-            {
-                this.TieredCompilation.IsChecked = false;
-                this.LoopJit.IsChecked = false;
-                this.QuickJit.IsChecked = false;
-            }    
-        }
-
-        private void ModernJit_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.TieredCompilation.IsChecked.Value || this.LoopJit.IsChecked.Value || this.QuickJit.IsChecked.Value)
-            {
-                this.Legacy.IsChecked = false;
             }
         }
     }

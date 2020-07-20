@@ -99,25 +99,25 @@
             <ToggleButton x:Name="TieredCompilation"  
                           Style="{StaticResource MetroToggleButton}" 
                           ToolTip="Tiered JIT" 
-                          Click="ModernJit_Click">
+                          IsChecked="{Binding Path=JitModel.TieredCompilation}">
                 <fa:ImageAwesome Icon="Cubes" Height="14" Width="14" Foreground="MediumPurple" />
             </ToggleButton>
             <ToggleButton x:Name="QuickJit" 
                           Style="{StaticResource MetroToggleButton}"
                           ToolTip="Quick JIT" 
-                          Click="ModernJit_Click">
+                          IsChecked="{Binding Path=JitModel.Quick}">
                 <fa:ImageAwesome Name="QuickJitIcon" Icon="Bolt" Height="14" Width="14" Foreground="MediumPurple"/>
             </ToggleButton>
             <ToggleButton x:Name="LoopJit" 
                           Style="{StaticResource MetroToggleButton}"
                           ToolTip="Quick Loop JIT" 
-                          Click="ModernJit_Click">
+                          IsChecked="{Binding Path=JitModel.QuickLoop}">
                 <TextBlock FontFamily="Consolas" Foreground="MediumPurple">for</TextBlock>
             </ToggleButton>
             <ToggleButton x:Name="Legacy" 
                           Style="{StaticResource MetroToggleButton}"
                           ToolTip="Legacy JIT" 
-                          Click="Legacy_Click">
+                          IsChecked="{Binding Path=JitModel.LegacyJit}">
                 <fa:ImageAwesome Name="LegacyIcon" Icon="FortAwesome" Height="14" Width="14" Foreground="MediumPurple"/>
             </ToggleButton>
 

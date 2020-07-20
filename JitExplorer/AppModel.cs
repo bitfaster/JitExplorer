@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JitExplorer.Engine;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -18,9 +19,11 @@ namespace JitExplorer
         public AppModel()
         {
             this.CompilerModel = new CompilerModel();
+            this.JitModel = new JitModel();
         }
 
         private CompilerModel compilerModel;
+        private JitModel jitModel;
 
         public CompilerModel CompilerModel
         {
@@ -35,6 +38,32 @@ namespace JitExplorer
                 compilerModel = value;
                 OnPropertyChanged();
             }
+        }
+
+        public JitModel JitModel
+        {
+            get { return this.jitModel; }
+            set
+            {
+                if (value == this.jitModel)
+                {
+                    return;
+                }
+
+                jitModel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public Config GetConfig()
+        {
+            var config = new Config()
+            {
+                CompilerOptions = this.CompilerModel.GetCompilerConfig(),
+                JitMode = this.JitModel.GetJitMode(),
+            };
+
+            return config;
         }
     }
 }
