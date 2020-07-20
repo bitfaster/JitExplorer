@@ -89,9 +89,15 @@ namespace JitExplorer
         {
             if (this.legacyJit)
             {
-                this.TieredCompilation = false;
-                this.Quick = false;
-                this.QuickLoop = false;
+                this.tieredCompilation = false;
+                this.quick = false;
+                this.quickLoop = false;
+
+                // fire the events afterwards, else we trigger ModernChanged while with this.quick == true or this.quickLoop == true
+                // before they are reset
+                this.OnPropertyChanged(nameof(TieredCompilation));
+                this.OnPropertyChanged(nameof(Quick));
+                this.OnPropertyChanged(nameof(QuickLoop));
             }
         }
 
