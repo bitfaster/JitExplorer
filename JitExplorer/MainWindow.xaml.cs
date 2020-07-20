@@ -10,8 +10,6 @@ using JitExplorer.Controls;
 using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
 using MahApps.Metro.Controls;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;
 using System;
@@ -19,21 +17,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml;
 
 namespace JitExplorer
 {
@@ -48,9 +37,14 @@ namespace JitExplorer
 
         private Dissassembly dissassembly;
 
+        public AppModel AppModel { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            this.AppModel = new AppModel();
+            DataContext = this.AppModel;
 
             this.dissassembler = new RuntimeDisassembler("test.exe");
             this.dissassembler.Progress += IsolatedJit_Progress;
@@ -182,105 +176,7 @@ namespace JitExplorer
             this.ProgressIcon.Spin = true;
             string source = this.CodeEditor.Text;
 
-            var compilerOptions = new CompilerOptions()
-            {
-                OutputKind = OutputKind.ConsoleApplication,
-                LanguageVersion = GetLanguageVersion(),
-                Platform = GetPlatform(),
-                OptimizationLevel = GetOptimizationLevel(),
-                AllowUnsafe = GetAllowUnsafe(),
-            };
-
-            var config = new Config()
-            {
-                CompilerOptions = compilerOptions,
-                JitMode = GetJitMode(),
-            };
-
-            Task.Run(() => this.JitIt(source, config));
-        }
-
-        private LanguageVersion GetLanguageVersion()
-        {
-            switch (this.LanguageVersion.SelectedIndex)
-            {
-                case 1:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
-                case 2:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp2;
-                case 3:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp3;
-                case 4:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
-                case 5:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
-                case 6:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
-                case 7:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7;
-                case 8:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_1;
-                case 9:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_2;
-                case 10:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_3;
-                case 11:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp8;
-                case 12:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Latest;
-                default:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default;
-            }
-        }
-
-        private Platform GetPlatform()
-        {
-            switch (this.Platform.SelectedIndex)
-            {
-                case 0:
-                    return Microsoft.CodeAnalysis.Platform.X64;
-                case 1:
-                    return Microsoft.CodeAnalysis.Platform.X86;
-            }
-
-            return Microsoft.CodeAnalysis.Platform.AnyCpu;
-        }
-
-        private OptimizationLevel GetOptimizationLevel()
-        {
-            return this.BuildConfig.SelectedIndex == 0 ? OptimizationLevel.Release : OptimizationLevel.Debug;
-        }
-
-        private bool GetAllowUnsafe ()
-        {
-            return this.Unsafe.IsChecked.Value;
-        }
-
-        private JitMode GetJitMode()
-        {
-            JitMode jitMode = JitMode.Default;
-
-            if (this.TieredCompilation.IsChecked.Value)
-            {
-                jitMode = JitMode.Tiered;
-            }
-
-            if (this.QuickJit.IsChecked.Value)
-            {
-                jitMode = jitMode | JitMode.Quick;
-            }
-
-            if (this.LoopJit.IsChecked.Value)
-            {
-                jitMode = jitMode | JitMode.QuickLoop;
-            }
-
-            if (this.Legacy.IsChecked.Value)
-            {
-                jitMode = jitMode | JitMode.Legacy;
-            }
-
-            return jitMode;
+            Task.Run(() => this.JitIt(source, this.AppModel.GetConfig()));
         }
 
         private void JitIt(string source, Config config)
@@ -442,29 +338,6 @@ namespace JitExplorer
                 // hack because of this: https://github.com/dotnet/corefx/issues/10361
                 url = url.Replace("&", "^&");
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-            }
-        }
-
-        private void AllowUnsafe_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void Legacy_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.Legacy.IsChecked.Value)
-            {
-                this.TieredCompilation.IsChecked = false;
-                this.LoopJit.IsChecked = false;
-                this.QuickJit.IsChecked = false;
-            }    
-        }
-
-        private void ModernJit_Click(object sender, RoutedEventArgs e)
-        {
-            if (this.TieredCompilation.IsChecked.Value || this.LoopJit.IsChecked.Value || this.QuickJit.IsChecked.Value)
-            {
-                this.Legacy.IsChecked = false;
             }
         }
     }
