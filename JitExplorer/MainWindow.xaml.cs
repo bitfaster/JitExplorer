@@ -169,6 +169,9 @@ namespace JitExplorer
                 // Free some memory?
                 // System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
 
+                // TODO: make the line address resolver a property of assembler view, then bind it to the model.
+                // Property setter can fix service provider.
+                // Text can be bound the same as the other controls.
                 this.Dispatcher.Invoke(
                     () => 
                     this.AssemblerView.Update(this.dissassembly.AsmText, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));
