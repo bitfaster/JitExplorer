@@ -48,9 +48,14 @@ namespace JitExplorer
 
         private Dissassembly dissassembly;
 
+        public AppModel AppModel { get; set; }
+
         public MainWindow()
         {
             InitializeComponent();
+
+            this.AppModel = new AppModel();
+            DataContext = this.AppModel;
 
             this.dissassembler = new RuntimeDisassembler("test.exe");
             this.dissassembler.Progress += IsolatedJit_Progress;
@@ -182,78 +187,13 @@ namespace JitExplorer
             this.ProgressIcon.Spin = true;
             string source = this.CodeEditor.Text;
 
-            var compilerOptions = new CompilerOptions()
-            {
-                OutputKind = OutputKind.ConsoleApplication,
-                LanguageVersion = GetLanguageVersion(),
-                Platform = GetPlatform(),
-                OptimizationLevel = GetOptimizationLevel(),
-                AllowUnsafe = GetAllowUnsafe(),
-            };
-
             var config = new Config()
             {
-                CompilerOptions = compilerOptions,
+                CompilerOptions = this.AppModel.CompilerModel.GetCompilerConfig(),
                 JitMode = GetJitMode(),
             };
 
             Task.Run(() => this.JitIt(source, config));
-        }
-
-        private LanguageVersion GetLanguageVersion()
-        {
-            switch (this.LanguageVersion.SelectedIndex)
-            {
-                case 1:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp1;
-                case 2:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp2;
-                case 3:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp3;
-                case 4:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp4;
-                case 5:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp5;
-                case 6:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp6;
-                case 7:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7;
-                case 8:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_1;
-                case 9:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_2;
-                case 10:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp7_3;
-                case 11:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.CSharp8;
-                case 12:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Latest;
-                default:
-                    return Microsoft.CodeAnalysis.CSharp.LanguageVersion.Default;
-            }
-        }
-
-        private Platform GetPlatform()
-        {
-            switch (this.Platform.SelectedIndex)
-            {
-                case 0:
-                    return Microsoft.CodeAnalysis.Platform.X64;
-                case 1:
-                    return Microsoft.CodeAnalysis.Platform.X86;
-            }
-
-            return Microsoft.CodeAnalysis.Platform.AnyCpu;
-        }
-
-        private OptimizationLevel GetOptimizationLevel()
-        {
-            return this.BuildConfig.SelectedIndex == 0 ? OptimizationLevel.Release : OptimizationLevel.Debug;
-        }
-
-        private bool GetAllowUnsafe ()
-        {
-            return this.Unsafe.IsChecked.Value;
         }
 
         private JitMode GetJitMode()
@@ -443,11 +383,6 @@ namespace JitExplorer
                 url = url.Replace("&", "^&");
                 Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
             }
-        }
-
-        private void AllowUnsafe_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void Legacy_Click(object sender, RoutedEventArgs e)

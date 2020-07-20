@@ -63,8 +63,8 @@
 
         <!-- Toolbar -->
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,15">
-            <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" FontSize="10">
-                <ComboBoxItem IsSelected="True">C# (Default)</ComboBoxItem>
+            <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" FontSize="10" SelectedIndex="{Binding Path=CompilerModel.LanguageSelection}">
+                <ComboBoxItem>C# (Default)</ComboBoxItem>
                 <ComboBoxItem>C# 1</ComboBoxItem>
                 <ComboBoxItem>C# 2</ComboBoxItem>
                 <ComboBoxItem>C# 3</ComboBoxItem>
@@ -78,11 +78,11 @@
                 <ComboBoxItem>C# 8</ComboBoxItem>
                 <ComboBoxItem>C# (Latest)</ComboBoxItem>
             </ComboBox>
-            <ComboBox Name="BuildConfig" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0">
+            <ComboBox Name="BuildConfig" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0" SelectedIndex="{Binding Path=CompilerModel.BuildConfig}">
                 <ComboBoxItem IsSelected="True">Release</ComboBoxItem>
                 <ComboBoxItem>Debug</ComboBoxItem>
             </ComboBox>
-            <ComboBox Name="Platform" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0">
+            <ComboBox Name="Platform" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0" SelectedIndex="{Binding Path=CompilerModel.Platform}">
                 <ComboBoxItem IsSelected="True">x64</ComboBoxItem>
                 <ComboBoxItem>x86</ComboBoxItem>
                 <ComboBoxItem>AnyCpu</ComboBoxItem>
@@ -90,7 +90,7 @@
             <ToggleButton x:Name="Unsafe"  
                           Style="{StaticResource MetroToggleButton}" 
                           ToolTip="Allow unsafe code" 
-                          Click="AllowUnsafe_Click">
+                          IsChecked="{Binding Path=CompilerModel.AllowUnsafe}">
                 <fa:ImageAwesome Icon="Bomb" Height="14" Width="14" Foreground="MediumPurple" />
             </ToggleButton>
 
