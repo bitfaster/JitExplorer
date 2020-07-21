@@ -156,7 +156,7 @@
                 </i:Interaction.Behaviors>
             </avalonedit:TextEditor>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
-            <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}">
+            <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}" SelectedIndex="{Binding CurrentTab}">
                 <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
                     <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
                                Style="{StaticResource TextEditorStyle}"

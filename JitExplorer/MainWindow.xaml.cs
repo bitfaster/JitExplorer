@@ -32,9 +32,10 @@ namespace JitExplorer
         public MainWindow()
         {
             InitializeComponent();
-
+            
             this.AppModel = new AppModel();
             DataContext = this.AppModel;
+            AddHandler(Keyboard.KeyDownEvent, (KeyEventHandler)this.AppModel.HandleKeyDownEvent);
 
             this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
 
@@ -61,6 +62,8 @@ namespace JitExplorer
                 i.IsEnabled = false;
             }
         }
+
+
 
         // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)

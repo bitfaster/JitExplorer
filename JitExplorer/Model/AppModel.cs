@@ -5,13 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Windows.Input;
 
 namespace JitExplorer.Model
 {
     // TODO:
-    // - Select output tab on error, asm for non error
-    //  - NavigateToOutputCommand
-    //  - NavigateToAsmCommand
     // - Asm
     //  - Double click support depends on disassembly objects in mainWindow.cs. These should be changed to commands.
     // - Migrate from legacy nuget to Microsoft.Xaml.Behaviors.Wpf, see this:
@@ -41,6 +39,8 @@ namespace JitExplorer.Model
         private StatusModel statusModel;
 
         private JitCommand jitCommand;
+
+        private int currentTab = 0;
 
         public JitCommand JitCommand => this.jitCommand;
 
@@ -120,6 +120,21 @@ namespace JitExplorer.Model
             }
         }
 
+        public int CurrentTab
+        {
+            get { return this.currentTab; }
+            set
+            {
+                if (value == this.currentTab)
+                {
+                    return;
+                }
+
+                this.currentTab = value;
+                this.OnPropertyChanged();
+            }
+        }
+
         public Config GetConfig()
         {
             var config = new Config()
@@ -129,6 +144,16 @@ namespace JitExplorer.Model
             };
 
             return config;
+        }
+
+        public void HandleKeyDownEvent(object sender, KeyEventArgs e)
+        {
+            // ctrl tab through tabs
+            if (e.Key == Key.Tab && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                this.CurrentTab = this.CurrentTab == 0 ? 1 : 0;
+                e.Handled = true;
+            }
         }
 
         private static string GetDefaultSource()
