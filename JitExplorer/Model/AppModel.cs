@@ -26,7 +26,7 @@ namespace JitExplorer.Model
             this.CompilerModel = new CompilerModel();
             this.JitModel = new JitModel();
             this.StatusModel = new StatusModel();
-            this.sourceCode = GetDefaultSource();
+            this.SetDefaultSource();
             this.jitCommand = new JitCommand();
         }
 
@@ -115,6 +115,7 @@ namespace JitExplorer.Model
 
                 this.disassembly = value;
                 this.OnPropertyChanged();
+                GlobalCommands.SaveAsmCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -154,9 +155,9 @@ namespace JitExplorer.Model
             }
         }
 
-        private static string GetDefaultSource()
+        public void SetDefaultSource()
         {
-            return @"namespace JitExplorer
+            this.SourceCode = @"namespace JitExplorer
 {
     using System;
 
