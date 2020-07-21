@@ -125,11 +125,6 @@ namespace JitExplorer
             }
         }
 
-        private void Exit(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
-
         private void ShowLineNumbersHandler(object sender, RoutedEventArgs e)
         {
             this.CodeEditor.ShowLineNumbers = !this.CodeEditor.ShowLineNumbers;
