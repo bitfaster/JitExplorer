@@ -90,15 +90,5 @@ namespace JitExplorer
                 }
             }
         }
-
-        private void ShowLineNumbersHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.ShowLineNumbers = !this.CodeEditor.ShowLineNumbers;
-        }
-
-        private void ShowMemoryAddressesHandler(object sender, RoutedEventArgs e)
-        {
-            this.AssemblerView.ShowMemoryAddresses = !this.AssemblerView.ShowMemoryAddresses;
-        }
     }
 }

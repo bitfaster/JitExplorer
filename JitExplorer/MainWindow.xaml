@@ -62,8 +62,8 @@
                 <MenuItem Command="ApplicationCommands.Paste"/>
             </MenuItem>
             <MenuItem Header="_View" HorizontalContentAlignment="Left">
-                <MenuItem Header="LineNumbers" IsCheckable="True" IsChecked="True" Click="ShowLineNumbersHandler"/>
-                <MenuItem Header="MemoryAddresses" IsCheckable="True" Click="ShowMemoryAddressesHandler"/>
+                <MenuItem Header="LineNumbers" IsCheckable="True" IsChecked="{Binding ElementName=CodeEditor, Path=ShowLineNumbers}"/>
+                <MenuItem Header="MemoryAddresses" IsCheckable="True" IsChecked="{Binding ElementName=AssemblerView, Path=ShowMemoryAddresses}"/>
             </MenuItem>
             <MenuItem Header="_Help" HorizontalContentAlignment="Left">
                 <MenuItem Header="About" Command="commands:GlobalCommands.AboutCommand"/>

@@ -10,7 +10,7 @@ namespace JitExplorer.Commands
 {
     public class OpenCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged = delegate { };
 
         public bool CanExecute(object parameter)
         {

@@ -8,7 +8,7 @@ namespace JitExplorer.Commands
 {
     public class NewCommand : ICommand
     {
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged = delegate { };
 
         public bool CanExecute(object parameter)
         {
