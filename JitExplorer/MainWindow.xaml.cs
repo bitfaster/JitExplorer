@@ -139,21 +139,5 @@ namespace JitExplorer
         {
             this.AssemblerView.ShowMemoryAddresses = !this.AssemblerView.ShowMemoryAddresses;
         }
-
-        private void AboutHandler(object sender, RoutedEventArgs e)
-        {
-            string url = @"https://github.com/bitfaster/JitExplorer";
-
-            try
-            {
-                Process.Start(url);
-            }
-            catch
-            {
-                // hack because of this: https://github.com/dotnet/corefx/issues/10361
-                url = url.Replace("&", "^&");
-                Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
-            }
-        }
     }
 }
