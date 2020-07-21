@@ -11,7 +11,9 @@ namespace JitExplorer.Commands
 {
     public class SaveSourceCommand : ICommand
     {
+#pragma warning disable 67
         public event EventHandler CanExecuteChanged;
+#pragma warning restore 67
 
         public bool CanExecute(object parameter)
         {
