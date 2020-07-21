@@ -10,7 +10,6 @@ namespace JitExplorer
     // TODO:
     // - Asm
     //  - Double click support depends on disassembly objects in mainWindow.cs. These should be changed to commands.
-    // -  this.dissassembler.Progress += IsolatedJit_Progress; event handler for status not fully wired
     // - Migrate from legacy nuget to Microsoft.Xaml.Behaviors.Wpf, see this:
     // https://stackoverflow.com/questions/8360209/how-to-add-system-windows-interactivity-to-project
     // - F5 to run
@@ -33,7 +32,7 @@ namespace JitExplorer
         }
 
         private string sourceCode;
-        private DisassemblyModel disassembly;
+        private Disassembly disassembly;
         private CompilerModel compilerModel;
         private JitModel jitModel;
         private StatusModel statusModel;
@@ -82,20 +81,8 @@ namespace JitExplorer
                     return;
                 }
 
-                //if (this.statusModel != null)
-                //{ 
-                //    this.statusModel.PropertyChanged -= StatusModelChanged; 
-                //}
-
                 this.statusModel = value;
-
-//                this.statusModel.PropertyChanged += StatusModelChanged;
-
                 this.OnPropertyChanged();
-
-                // https://stackoverflow.com/questions/11870069/implementing-inotifypropertychanged-for-nested-properties
-                //void StatusModelChanged(object sender, PropertyChangedEventArgs args)
-                //    => OnPropertyChanged("StatusModel");
             }
         }
 
@@ -115,7 +102,7 @@ namespace JitExplorer
             }
         }
 
-        public DisassemblyModel Disassembly
+        public Disassembly Disassembly
         {
             get { return this.disassembly; }
             set
@@ -127,7 +114,6 @@ namespace JitExplorer
 
                 this.disassembly = value;
                 this.OnPropertyChanged();
-               // this.OnPropertyChanged("Disassembly.AsmText");
             }
         }
 

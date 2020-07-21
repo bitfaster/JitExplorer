@@ -11,7 +11,7 @@ namespace JitExplorer
 {
     public class JitCommand : ICommand
     {
-        private readonly RuntimeDisassembler dissassembler;
+        //private readonly RuntimeDisassembler dissassembler;
         private readonly ClassicLru<JitKey, Disassembly> cache = new ClassicLru<JitKey, Disassembly>(100);
 
         private bool canExecute = true;
@@ -20,7 +20,7 @@ namespace JitExplorer
 
         public JitCommand()
         {
-            this.dissassembler = new RuntimeDisassembler("test.exe");
+            
         }
 
         public bool CanExecute(object parameter)
@@ -39,21 +39,22 @@ namespace JitExplorer
             {
                 model.StatusModel.SetRunning();
 
+                var dissassembler = new RuntimeDisassembler("test.exe");
+                dissassembler.Progress += (object sender, ProgressEventArgs e) => { model.StatusModel.Status = e.StatusMessage; };
+
                 var jitKey = new JitKey(model.SourceCode, model.GetConfig());
 
-                var disassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+                var disassembly = this.cache.GetOrAdd(jitKey, k => dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
 
-                model.Disassembly = new DisassemblyModel(disassembly);
-
-                // this has no effect
-                model.Disassembly.OnPropertyChanged("AsmText");
-                model.Disassembly.OnPropertyChanged("AsmLineAddressIndex");
+                model.Disassembly = disassembly;
 
                 this.canExecute = true;
                 Application.Current.Dispatcher.Invoke((() => { RaiseCanExecuteChanged(); }));
                 model.StatusModel.SetReady();
             });
         }
+
+
 
         private void RaiseCanExecuteChanged()
         {
