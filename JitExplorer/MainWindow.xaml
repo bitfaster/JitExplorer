@@ -67,17 +67,17 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,15">
             <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" SelectedIndex="{Binding Path=CompilerModel.LanguageSelection}">
                 <ComboBoxItem>C# (Default)</ComboBoxItem>
-                <ComboBoxItem>C# 1</ComboBoxItem>
-                <ComboBoxItem>C# 2</ComboBoxItem>
-                <ComboBoxItem>C# 3</ComboBoxItem>
-                <ComboBoxItem>C# 4</ComboBoxItem>
-                <ComboBoxItem>C# 5</ComboBoxItem>
-                <ComboBoxItem>C# 6</ComboBoxItem>
-                <ComboBoxItem>C# 7</ComboBoxItem>
-                <ComboBoxItem>C# 7.1</ComboBoxItem>
-                <ComboBoxItem>C# 7.2</ComboBoxItem>
-                <ComboBoxItem>C# 7.3</ComboBoxItem>
-                <ComboBoxItem>C# 8</ComboBoxItem>
+                <ComboBoxItem>C# 1 (VS .NET)</ComboBoxItem>
+                <ComboBoxItem>C# 2 (VS 2005)</ComboBoxItem>
+                <ComboBoxItem>C# 3 (VS 2008)</ComboBoxItem>
+                <ComboBoxItem>C# 4 (VS 2010)</ComboBoxItem>
+                <ComboBoxItem>C# 5 (VS 2012)</ComboBoxItem>
+                <ComboBoxItem>C# 6 (VS 2015)</ComboBoxItem>
+                <ComboBoxItem>C# 7 (VS 2017)</ComboBoxItem>
+                <ComboBoxItem>C# 7.1 (VS 2017.3)</ComboBoxItem>
+                <ComboBoxItem>C# 7.2 (VS 2017.4)</ComboBoxItem>
+                <ComboBoxItem>C# 7.3 (VS 2017.7)</ComboBoxItem>
+                <ComboBoxItem>C# 8 (VS 2019)</ComboBoxItem>
                 <ComboBoxItem>C# (Latest)</ComboBoxItem>
             </ComboBox>
             <ComboBox Name="BuildConfig" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0" SelectedIndex="{Binding Path=CompilerModel.BuildConfig}">
@@ -156,20 +156,16 @@
                 <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
                     <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
                                Style="{StaticResource TextEditorStyle}"
-                               AsmLineAddressIndex="{Binding Disassembly.AsmLineAddressIndex, Mode=OneWay}">
-                        <i:Interaction.Behaviors>
-                            <jitbehave:AvalonEditBehaviour EditorText="{Binding Disassembly.AsmText, Mode=OneWay}"/>
-                        </i:Interaction.Behaviors>
+                               AsmLineAddressIndex="{Binding Disassembly.AsmLineAddressIndex, Mode=OneWay}"
+                               EditorText="{Binding Disassembly.AsmText, Mode=OneWay}">
+
                     </jitcontrols:AssemblyTextEditor>
                 </Controls:MetroTabItem>
                 <Controls:MetroTabItem Header="Output" Style="{StaticResource NonClosableTabItem}" >
-                    <avalonedit:TextEditor x:Name="OutputEditor"
+                    <jitcontrols:OutputTextEditor x:Name="OutputEditor"
                                Style="{StaticResource TextEditorStyle}"
-                               WordWrap="True">
-                        <i:Interaction.Behaviors>
-                            <jitbehave:AvalonEditBehaviour EditorText="{Binding Disassembly.OutputText, Mode=OneWay}"/>
-                        </i:Interaction.Behaviors>
-                    </avalonedit:TextEditor>
+                               EditorText="{Binding Disassembly.OutputText, Mode=OneWay}">
+                    </jitcontrols:OutputTextEditor>
                 </Controls:MetroTabItem>
             </Controls:MetroTabControl>
         </Grid>

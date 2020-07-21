@@ -41,7 +41,13 @@ namespace JitExplorer
 
                 var jitKey = new JitKey(model.SourceCode, model.GetConfig());
 
-                model.Disassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+                var disassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+
+                model.Disassembly = new DisassemblyModel(disassembly);
+
+                // this has no effect
+                model.Disassembly.OnPropertyChanged("AsmText");
+                model.Disassembly.OnPropertyChanged("AsmLineAddressIndex");
 
                 this.canExecute = true;
                 Application.Current.Dispatcher.Invoke((() => { RaiseCanExecuteChanged(); }));

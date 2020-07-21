@@ -10,8 +10,7 @@ namespace JitExplorer
     // TODO:
     // - Asm
     //  - Double click support depends on disassembly objects in mainWindow.cs. These should be changed to commands.
-    //  - Only works for first run. Probably because Disassembly does not implement INotifyPropertyChanged
-    // - Output
+    // -  this.dissassembler.Progress += IsolatedJit_Progress; event handler for status not fully wired
     // - Migrate from legacy nuget to Microsoft.Xaml.Behaviors.Wpf, see this:
     // https://stackoverflow.com/questions/8360209/how-to-add-system-windows-interactivity-to-project
     // - F5 to run
@@ -34,7 +33,7 @@ namespace JitExplorer
         }
 
         private string sourceCode;
-        private Disassembly disassembly;
+        private DisassemblyModel disassembly;
         private CompilerModel compilerModel;
         private JitModel jitModel;
         private StatusModel statusModel;
@@ -116,7 +115,7 @@ namespace JitExplorer
             }
         }
 
-        public Disassembly Disassembly
+        public DisassemblyModel Disassembly
         {
             get { return this.disassembly; }
             set
@@ -128,7 +127,7 @@ namespace JitExplorer
 
                 this.disassembly = value;
                 this.OnPropertyChanged();
-                this.OnPropertyChanged("Disassembly.AsmText");
+               // this.OnPropertyChanged("Disassembly.AsmText");
             }
         }
 

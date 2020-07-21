@@ -9,15 +9,15 @@ namespace JitExplorer.Behaviors
 {
     public sealed class AvalonEditBehaviour : Behavior<TextEditor>
     {
-        public static readonly DependencyProperty GiveMeTheTextProperty =
+        public static readonly DependencyProperty EditorTextProperty =
             DependencyProperty.Register(nameof(EditorText), typeof(string), typeof(AvalonEditBehaviour),
             new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, PropertyChangedCallback));
 
         public string EditorText
         {
-            get { return (string)GetValue(GiveMeTheTextProperty); }
+            get { return (string)GetValue(EditorTextProperty); }
             set { 
-                SetValue(GiveMeTheTextProperty, value); 
+                SetValue(EditorTextProperty, value); 
             }
         }
 

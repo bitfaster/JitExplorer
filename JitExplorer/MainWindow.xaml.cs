@@ -1,4 +1,4 @@
-﻿using BitFaster.Caching.Lru;
+﻿//using BitFaster.Caching.Lru;
 using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Editing;
@@ -33,9 +33,9 @@ namespace JitExplorer
     {
         private readonly RuntimeDisassembler dissassembler;
         private readonly RoslynCodeCompletion codeCompletion;
-        private readonly ClassicLru<JitKey, Disassembly> cache = new ClassicLru<JitKey, Disassembly>(100);
+        //private readonly ClassicLru<JitKey, Disassembly> cache = new ClassicLru<JitKey, Disassembly>(100);
 
-        private Disassembly dissassembly;
+        // private Disassembly dissassembly;
 
         public AppModel AppModel { get; set; }
 
@@ -91,9 +91,9 @@ namespace JitExplorer
                 var textLine = d.GetLineByNumber(p.Line);
                 var str = d.Text.Substring(textLine.Offset, textLine.Length);
 
-                if (this.dissassembly != null)
+                if (this.AppModel.Disassembly != null)
                 {
-                    if (this.dissassembly.AsmToSourceLineIndex.TryGetValue(p.Line, out var targetLine))
+                    if (this.AppModel.Disassembly.AsmToSourceLineIndex.TryGetValue(p.Line, out var targetLine))
                     {
                         if (targetLine < this.CodeEditor.Document.LineCount)
                         {
@@ -103,7 +103,7 @@ namespace JitExplorer
                         }
                     }
 
-                    if (this.dissassembly.AsmLineToAsmLineIndex.TryGetValue(p.Line, out targetLine))
+                    if (this.AppModel.Disassembly.AsmLineToAsmLineIndex.TryGetValue(p.Line, out targetLine))
                     {
                         if (targetLine < this.AssemblerView.Document.LineCount)
                         {
@@ -117,23 +117,23 @@ namespace JitExplorer
                     return;
                 }
 
-                if (str.Contains('^'))
-                {
-                    var m = Regex.Match(str, @"((\d+))");
+                //if (str.Contains('^'))
+                //{
+                //    var m = Regex.Match(str, @"((\d+))");
 
-                    if (m.Success)
-                    {
-                        if (int.TryParse(m.Value, out int targetLine))
-                        {
-                            if (targetLine < this.CodeEditor.Document.LineCount)
-                            {
-                                var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
-                                this.CodeEditor.ScrollTo(targetLine, 0);
-                                this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
-                            }
-                        }
-                    }
-                }
+                //    if (m.Success)
+                //    {
+                //        if (int.TryParse(m.Value, out int targetLine))
+                //        {
+                //            if (targetLine < this.CodeEditor.Document.LineCount)
+                //            {
+                //                var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
+                //                this.CodeEditor.ScrollTo(targetLine, 0);
+                //                this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
+                //            }
+                //        }
+                //    }
+                //}
             }
         }
 
@@ -207,8 +207,8 @@ namespace JitExplorer
             if (d.ShowDialog().Value)
             {
                 var text = await File.ReadAllTextAsync(d.FileName);
-                this.CodeEditor.Text = text;
-                this.AssemblerView.Text = string.Empty;
+                this.AppModel.SourceCode = text;
+                this.AppModel.Disassembly = null;
             }
         }
 

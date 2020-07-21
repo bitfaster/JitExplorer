@@ -14,11 +14,11 @@ using Microsoft.CodeAnalysis.Wrapping;
 
 namespace JitExplorer.Controls
 {
-    public class AssemblyTextEditor : TextEditor
+    public class AssemblyTextEditor : BindableTextEditor
     {
         private ILineAddressResolver lineAddressResolver = new EmptyAddressResolver();
 
-        public AssemblyTextEditor() : base(new TextArea())
+        public AssemblyTextEditor()
         {
             this.IsReadOnly = true;
             this.WordWrap = true;
@@ -28,16 +28,8 @@ namespace JitExplorer.Controls
 
         public Dictionary<int, string> AsmLineAddressIndex
         {
-            //get { return this.lineAddressResolver;  }
             set { this.lineAddressResolver = new LineAddressResolver(value); this.HookAddressResolver(); } 
         }
-
-        //public void Update(string text, ILineAddressResolver addressResolver)
-        //{
-        //    this.lineAddressResolver = addressResolver;
-        //    this.Text = text;
-        //    this.HookAddressResolver();
-        //}
 
         protected override void OnDocumentChanged(EventArgs e)
         {
