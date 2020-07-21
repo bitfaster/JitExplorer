@@ -63,8 +63,6 @@ namespace JitExplorer
             }
         }
 
-
-
         // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
