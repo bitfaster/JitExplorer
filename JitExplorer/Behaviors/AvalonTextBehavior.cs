@@ -10,13 +10,15 @@ namespace JitExplorer.Behaviors
     public sealed class AvalonEditBehaviour : Behavior<TextEditor>
     {
         public static readonly DependencyProperty GiveMeTheTextProperty =
-            DependencyProperty.Register("GiveMeTheText", typeof(string), typeof(AvalonEditBehaviour),
+            DependencyProperty.Register(nameof(EditorText), typeof(string), typeof(AvalonEditBehaviour),
             new FrameworkPropertyMetadata(default(string), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, PropertyChangedCallback));
 
-        public string GiveMeTheText
+        public string EditorText
         {
             get { return (string)GetValue(GiveMeTheTextProperty); }
-            set { SetValue(GiveMeTheTextProperty, value); }
+            set { 
+                SetValue(GiveMeTheTextProperty, value); 
+            }
         }
 
         protected override void OnAttached()
@@ -39,7 +41,7 @@ namespace JitExplorer.Behaviors
             if (textEditor != null)
             {
                 if (textEditor.Document != null)
-                    GiveMeTheText = textEditor.Document.Text;
+                    EditorText = textEditor.Document.Text;
             }
         }
 

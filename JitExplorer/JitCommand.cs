@@ -3,11 +3,12 @@ using JitExplorer.Engine;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace JitExplorer
 {
-    // http://www.blackwasp.co.uk/WPFCustomCommands_2.aspx
     public class JitCommand : ICommand
     {
         private readonly RuntimeDisassembler dissassembler;
@@ -24,18 +25,33 @@ namespace JitExplorer
 
         public bool CanExecute(object parameter)
         {
-            return true;
+            return this.canExecute;
         }
 
         public void Execute(object parameter)
         {
             this.canExecute = false;
+            RaiseCanExecuteChanged();
 
             var model = parameter as AppModel;
 
-            var jitKey = new JitKey(model.SourceCode, model.GetConfig());
+            Task.Run(() => 
+            {
+                model.StatusModel.SetRunning();
 
-            model.Disassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+                var jitKey = new JitKey(model.SourceCode, model.GetConfig());
+
+                model.Disassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+
+                this.canExecute = true;
+                Application.Current.Dispatcher.Invoke((() => { RaiseCanExecuteChanged(); }));
+                model.StatusModel.SetReady();
+            });
+        }
+
+        private void RaiseCanExecuteChanged()
+        {
+            CanExecuteChanged?.Invoke(this, EventArgs.Empty);
         }
     }
 }

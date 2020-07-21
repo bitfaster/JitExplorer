@@ -124,8 +124,8 @@
             </ToggleButton>
 
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,0,10,0" Background="{DynamicResource MahApps.Brushes.Border.Normal}" />
-            
-            <Button Name="Jit"  Click="Jit_Click" ToolTip="Dissassemble source code using selected Compile and JIT options">
+
+            <Button Name="Jit" Command="{Binding JitCommand}" CommandParameter="{Binding .}" ToolTip="Dissassemble source code using selected Compile and JIT options">
                 <Border Padding="4">
                     <fa:ImageAwesome Name="JitIcon" Icon="Play" Height="10" Width="10" Foreground="LightGreen"/>
                     <!--<TextBlock Margin="5,0,0,0">Dissassemble</TextBlock>-->
@@ -148,23 +148,27 @@
                                MinWidth="5"
                                >
                 <i:Interaction.Behaviors>
-                    <jitbehave:AvalonEditBehaviour GiveMeTheText="{Binding SourceCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <jitbehave:AvalonEditBehaviour EditorText="{Binding SourceCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </i:Interaction.Behaviors>
             </avalonedit:TextEditor>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
             <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}">
                 <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
                     <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
-                               Style="{StaticResource TextEditorStyle}"/>
+                               Style="{StaticResource TextEditorStyle}"
+                               AsmLineAddressIndex="{Binding Disassembly.AsmLineAddressIndex, Mode=OneWay}">
+                        <i:Interaction.Behaviors>
+                            <jitbehave:AvalonEditBehaviour EditorText="{Binding Disassembly.AsmText, Mode=OneWay}"/>
+                        </i:Interaction.Behaviors>
+                    </jitcontrols:AssemblyTextEditor>
                 </Controls:MetroTabItem>
                 <Controls:MetroTabItem Header="Output" Style="{StaticResource NonClosableTabItem}" >
                     <avalonedit:TextEditor x:Name="OutputEditor"
                                Style="{StaticResource TextEditorStyle}"
                                WordWrap="True">
                         <i:Interaction.Behaviors>
-                            <jitbehave:AvalonEditBehaviour GiveMeTheText="{Binding Disassembly.OutputText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            <jitbehave:AvalonEditBehaviour EditorText="{Binding Disassembly.OutputText, Mode=OneWay}"/>
                         </i:Interaction.Behaviors>
-
                     </avalonedit:TextEditor>
                 </Controls:MetroTabItem>
             </Controls:MetroTabControl>
@@ -183,10 +187,13 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,2,0,0" Foreground="DarkOrange"/>
+                <fa:ImageAwesome Name="ProgressIcon" 
+                                 Icon="{Binding StatusModel.Icon}" 
+                                 Spin="{Binding StatusModel.SpinIcon}"
+                                 Height="12" Width="12" Margin="2,2,0,0" Foreground="DarkOrange" />
             </StatusBarItem>
             <StatusBarItem Grid.Column="1">
-                <TextBlock Name="StatusText" Text="Ready" />
+                <TextBlock Name="StatusText" Text="{Binding StatusModel.Status}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>

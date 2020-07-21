@@ -148,57 +148,57 @@ namespace JitExplorer
         // If jit is already running, dispose and restart timer.
         // Track 'version' each time edit occurs. Compare jitted source to current source.
 
-        private void Jit_Click(object sender, RoutedEventArgs e)
-        {
-            this.Jit.IsEnabled = false;
-            this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Cog;
-            this.ProgressIcon.Spin = true;
-            string source = this.CodeEditor.Text;
+        //private void Jit_Click(object sender, RoutedEventArgs e)
+        //{
+        //    this.Jit.IsEnabled = false;
+        //    //this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Cog;
+        //    //this.ProgressIcon.Spin = true;
+        //    string source = this.CodeEditor.Text;
 
-            Task.Run(() => this.JitIt(source, this.AppModel.GetConfig()));
-        }
+        //    Task.Run(() => this.JitIt(source, this.AppModel.GetConfig()));
+        //}
 
-        private void JitIt(string source, Config config)
-        {
-            try
-            {
-                var jitKey = new JitKey(source, config);
+        //private void JitIt(string source, Config config)
+        //{
+        //    try
+        //    {
+        //        var jitKey = new JitKey(source, config);
 
-                this.dissassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
+        //        this.dissassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
 
-                // Free some memory?
-                // System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
+        //        // Free some memory?
+        //        // System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
 
-                // TODO: make the line address resolver a property of assembler view, then bind it to the model.
-                // Property setter can fix service provider.
-                // Text can be bound the same as the other controls.
-                this.Dispatcher.Invoke(
-                    () => 
-                    this.AssemblerView.Update(this.dissassembly.AsmText, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));
+        //        // TODO: make the line address resolver a property of assembler view, then bind it to the model.
+        //        // Property setter can fix service provider.
+        //        // Text can be bound the same as the other controls.
+        //        //this.Dispatcher.Invoke(
+        //        //    () => 
+        //        //    this.AssemblerView.Update(this.dissassembly.AsmText, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));
 
-                this.Dispatcher.Invoke(
-                    () =>
-                    this.OutputEditor.Text = this.dissassembly.OutputText);
+        //        this.Dispatcher.Invoke(
+        //            () =>
+        //            this.OutputEditor.Text = this.dissassembly.OutputText);
 
-                this.Dispatcher.Invoke(
-                    () =>
-                    OutputTab.SelectedIndex = this.dissassembly.IsSuccess ? 0 : 1);
-            }
-            catch (Exception ex)
-            {
-                this.Dispatcher.Invoke(() => this.AssemblerView.Text = ex.ToString());
-            }
-            finally
-            {
-                this.Dispatcher.Invoke(() => 
-                { 
-                    this.Jit.IsEnabled = true; 
-                    this.StatusText.Text = "Ready";
-                    this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
-                    this.ProgressIcon.Spin = false;
-                });
-            }
-        }
+        //        this.Dispatcher.Invoke(
+        //            () =>
+        //            OutputTab.SelectedIndex = this.dissassembly.IsSuccess ? 0 : 1);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        this.Dispatcher.Invoke(() => this.AssemblerView.Text = ex.ToString());
+        //    }
+        //    finally
+        //    {
+        //        this.Dispatcher.Invoke(() => 
+        //        { 
+        //            this.Jit.IsEnabled = true; 
+        //           // this.StatusText.Text = "Ready";
+        //            //this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
+        //          //  this.ProgressIcon.Spin = false;
+        //        });
+        //    }
+        //}
 
         private async void OpenFile(object sender, RoutedEventArgs e)
         {

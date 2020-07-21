@@ -8,10 +8,13 @@ using System.Text;
 namespace JitExplorer
 {
     // TODO:
-    // - Status Bar
     // - Asm
+    //  - Double click support depends on disassembly objects in mainWindow.cs. These should be changed to commands.
+    //  - Only works for first run. Probably because Disassembly does not implement INotifyPropertyChanged
     // - Output
-    // - Jit Command
+    // - Migrate from legacy nuget to Microsoft.Xaml.Behaviors.Wpf, see this:
+    // https://stackoverflow.com/questions/8360209/how-to-add-system-windows-interactivity-to-project
+    // - F5 to run
     public class AppModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
@@ -25,13 +28,20 @@ namespace JitExplorer
         {
             this.CompilerModel = new CompilerModel();
             this.JitModel = new JitModel();
+            this.StatusModel = new StatusModel();
             this.sourceCode = GetDefaultSource();
+            this.jitCommand = new JitCommand();
         }
 
         private string sourceCode;
         private Disassembly disassembly;
         private CompilerModel compilerModel;
         private JitModel jitModel;
+        private StatusModel statusModel;
+
+        private JitCommand jitCommand;
+
+        public JitCommand JitCommand => this.jitCommand;
 
         public CompilerModel CompilerModel
         {
@@ -63,6 +73,33 @@ namespace JitExplorer
             }
         }
 
+        public StatusModel StatusModel
+        {
+            get { return this.statusModel; }
+            set
+            {
+                if (value == this.statusModel)
+                {
+                    return;
+                }
+
+                //if (this.statusModel != null)
+                //{ 
+                //    this.statusModel.PropertyChanged -= StatusModelChanged; 
+                //}
+
+                this.statusModel = value;
+
+//                this.statusModel.PropertyChanged += StatusModelChanged;
+
+                this.OnPropertyChanged();
+
+                // https://stackoverflow.com/questions/11870069/implementing-inotifypropertychanged-for-nested-properties
+                //void StatusModelChanged(object sender, PropertyChangedEventArgs args)
+                //    => OnPropertyChanged("StatusModel");
+            }
+        }
+
         // https://stackoverflow.com/questions/18964176/two-way-binding-to-avalonedit-document-text-using-mvvm
         public string SourceCode
         {
@@ -91,6 +128,7 @@ namespace JitExplorer
 
                 this.disassembly = value;
                 this.OnPropertyChanged();
+                this.OnPropertyChanged("Disassembly.AsmText");
             }
         }
 
