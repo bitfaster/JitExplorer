@@ -146,10 +146,7 @@
             </Grid.ColumnDefinitions>
             <jitcontrols:CSharpCodeEditor x:Name="CodeEditor"
                                Style="{StaticResource TextEditorStyle}"
-                               Grid.Column="0"
-                               SyntaxHighlighting="C#" 
-                               ShowLineNumbers="True"
-                               >
+                               Grid.Column="0">
                 <i:Interaction.Behaviors>
                     <jitbehave:AvalonEditBehaviour EditorText="{Binding SourceCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </i:Interaction.Behaviors>

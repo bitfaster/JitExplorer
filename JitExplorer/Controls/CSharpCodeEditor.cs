@@ -1,6 +1,7 @@
 ﻿using ICSharpCode.AvalonEdit;
 using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Editing;
+using ICSharpCode.AvalonEdit.Highlighting;
 using JitExplorer.Completion;
 using JitExplorer.Engine.Compile;
 using Microsoft.CodeAnalysis.Formatting;
@@ -19,6 +20,11 @@ namespace JitExplorer.Controls
 
         public CSharpCodeEditor() : base(new TextArea())
         {
+            this.IsReadOnly = false;
+            this.WordWrap = false;
+            this.ShowLineNumbers = true;
+            this.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("C#");
+
             this.TextArea.TextEntering += OnTextEntering;
             this.TextArea.TextEntered += OnTextEntered;
 
