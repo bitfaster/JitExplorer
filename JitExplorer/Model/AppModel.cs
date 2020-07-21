@@ -1,18 +1,21 @@
-﻿using JitExplorer.Engine;
+﻿using JitExplorer.Commands;
+using JitExplorer.Engine;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace JitExplorer
+namespace JitExplorer.Model
 {
     // TODO:
+    // - Select output tab on error, asm for non error
+    //  - NavigateToOutputCommand
+    //  - NavigateToAsmCommand
     // - Asm
     //  - Double click support depends on disassembly objects in mainWindow.cs. These should be changed to commands.
     // - Migrate from legacy nuget to Microsoft.Xaml.Behaviors.Wpf, see this:
     // https://stackoverflow.com/questions/8360209/how-to-add-system-windows-interactivity-to-project
-    // - F5 to run
     public class AppModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;

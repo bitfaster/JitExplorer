@@ -1,11 +1,9 @@
-﻿using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.CodeCompletion;
+﻿using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Editing;
 using JitExplorer.Completion;
 using JitExplorer.Component;
-using JitExplorer.Controls;
-using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
+using JitExplorer.Model;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;

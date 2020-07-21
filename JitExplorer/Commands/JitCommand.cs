@@ -1,5 +1,6 @@
 ﻿using BitFaster.Caching.Lru;
 using JitExplorer.Engine;
+using JitExplorer.Model;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -7,11 +8,10 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace JitExplorer
+namespace JitExplorer.Commands
 {
     public class JitCommand : ICommand
     {
-        //private readonly RuntimeDisassembler dissassembler;
         private readonly ClassicLru<JitKey, Disassembly> cache = new ClassicLru<JitKey, Disassembly>(100);
 
         private bool canExecute = true;
@@ -19,8 +19,7 @@ namespace JitExplorer
         public event EventHandler CanExecuteChanged;
 
         public JitCommand()
-        {
-            
+        {         
         }
 
         public bool CanExecute(object parameter)
@@ -53,8 +52,6 @@ namespace JitExplorer
                 model.StatusModel.SetReady();
             });
         }
-
-
 
         private void RaiseCanExecuteChanged()
         {

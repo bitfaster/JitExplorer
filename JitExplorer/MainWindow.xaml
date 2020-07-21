@@ -22,6 +22,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding JitCommand}" CommandParameter="{Binding .}"/>
+        <!--<KeyBinding Gesture="Ctrl+Alt+Add" Command="{Binding IncrementCommand}" />-->
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"></RowDefinition>

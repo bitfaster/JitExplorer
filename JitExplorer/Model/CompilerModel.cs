@@ -7,7 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace JitExplorer
+namespace JitExplorer.Model
 {
     public class CompilerModel : INotifyPropertyChanged
     {

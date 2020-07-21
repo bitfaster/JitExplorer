@@ -7,6 +7,7 @@ using System.Windows.Interactivity;
 
 namespace JitExplorer.Behaviors
 {
+    // https://stackoverflow.com/questions/18964176/two-way-binding-to-avalonedit-document-text-using-mvvm
     public sealed class AvalonEditBehaviour : Behavior<TextEditor>
     {
         public static readonly DependencyProperty EditorTextProperty =
