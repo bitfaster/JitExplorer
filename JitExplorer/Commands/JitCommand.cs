@@ -47,6 +47,15 @@ namespace JitExplorer.Commands
 
                 model.Disassembly = disassembly;
 
+                if (disassembly.IsSuccess)
+                {
+                    new NavigateToAsmCommand().Execute(model);
+                }
+                else
+                {
+                    new NavigateToOutputCommand().Execute(model);
+                }
+
                 this.canExecute = true;
                 Application.Current.Dispatcher.Invoke((() => { RaiseCanExecuteChanged(); }));
                 model.StatusModel.SetReady();

@@ -32,9 +32,10 @@ namespace JitExplorer
         public MainWindow()
         {
             InitializeComponent();
-
+            
             this.AppModel = new AppModel();
             DataContext = this.AppModel;
+            AddHandler(Keyboard.KeyDownEvent, (KeyEventHandler)this.AppModel.HandleKeyDownEvent);
 
             this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
 
