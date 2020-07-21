@@ -12,8 +12,6 @@ namespace JitExplorer.Model
     // TODO:
     // - Asm
     //  - Double click support depends on disassembly objects in mainWindow.cs. These should be changed to commands.
-    // - Migrate from legacy nuget to Microsoft.Xaml.Behaviors.Wpf, see this:
-    // https://stackoverflow.com/questions/8360209/how-to-add-system-windows-interactivity-to-project
     public class AppModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
