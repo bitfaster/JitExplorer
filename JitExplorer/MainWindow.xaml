@@ -25,6 +25,7 @@
     </Window.Resources>
     <Window.InputBindings>
         <KeyBinding Key="F5" Command="{Binding JitCommand}" CommandParameter="{Binding .}"/>
+        <KeyBinding Key="Esc" Command="commands:GlobalCommands.ExitCommand"/>
         <!--<KeyBinding Gesture="Ctrl+Alt+Add" Command="{Binding IncrementCommand}" />-->
     </Window.InputBindings>
     <Grid>
@@ -49,7 +50,7 @@
                 <MenuItem Header="_Save Source" Click="SaveCode"/>
                 <MenuItem Header="Save Assembler"  Click="SaveDissassemble"/>
                 <Separator />
-                <MenuItem Header="_Exit" Click="Exit" />
+                <MenuItem Header="_Exit" Command="commands:GlobalCommands.ExitCommand" InputGestureText="Esc" />
             </MenuItem>
             <MenuItem Header="_Edit" HorizontalContentAlignment="Left">
                 <MenuItem Command="ApplicationCommands.Undo"/>
