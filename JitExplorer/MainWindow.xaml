@@ -144,13 +144,13 @@
                 <ColumnDefinition Width="5"></ColumnDefinition>
                 <ColumnDefinition ></ColumnDefinition>
             </Grid.ColumnDefinitions>
-            <jitcontrols:CSharpCodeEditor x:Name="CodeEditor"
+            <jitcontrols:CSharpTextEditor x:Name="CodeEditor"
                                Style="{StaticResource TextEditorStyle}"
                                Grid.Column="0">
                 <i:Interaction.Behaviors>
                     <jitbehave:AvalonEditBehaviour EditorText="{Binding SourceCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </i:Interaction.Behaviors>
-            </jitcontrols:CSharpCodeEditor>
+            </jitcontrols:CSharpTextEditor>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
             <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}" SelectedIndex="{Binding CurrentTab}">
                 <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
