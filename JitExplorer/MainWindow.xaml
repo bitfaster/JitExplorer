@@ -11,6 +11,7 @@
         xmlns:local="clr-namespace:JitExplorer" 
         xmlns:jitcontrols="clr-namespace:JitExplorer.Controls"
         xmlns:jitbehave="clr-namespace:JitExplorer.Behaviors"
+        xmlns:commands="clr-namespace:JitExplorer.Commands"
         mc:Ignorable="d"
         Title="JitExplorer" TitleCharacterCasing="Normal" TitleForeground="{DynamicResource MahApps.Brushes.SemiTransparent}"
         Height="450" Width="800" 
@@ -63,7 +64,7 @@
                 <MenuItem Header="MemoryAddresses" IsCheckable="True" Click="ShowMemoryAddressesHandler"/>
             </MenuItem>
             <MenuItem Header="_Help" HorizontalContentAlignment="Left">
-                <MenuItem Header="About" Click="AboutHandler"/>
+                <MenuItem Header="About" Command="commands:GlobalCommands.AboutCommand"/>
             </MenuItem>
         </Menu>
 
