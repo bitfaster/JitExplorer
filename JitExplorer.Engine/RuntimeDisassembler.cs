@@ -36,7 +36,7 @@ namespace JitExplorer.Engine
             this.csFileName = "program.cs";
         }
 
-        public Dissassembly CompileJitAndDisassemble(string sourceCode, Config config)
+        public Disassembly CompileJitAndDisassemble(string sourceCode, Config config)
         {
             this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Compiling..." });
             (ExtractMarkedMethod userMethod, Compile.Compilation compilation) = Compile(this.exeName, sourceCode, config);
@@ -56,7 +56,7 @@ namespace JitExplorer.Engine
                         sb.AppendLine(e.ToString());
                     }
 
-                    return new Dissassembly(sb.ToString());
+                    return new Disassembly(sb.ToString());
                 }
 
                 this.Progress?.Invoke(this, new ProgressEventArgs() { StatusMessage = "Writing to disk..." });
@@ -315,9 +315,9 @@ namespace JitExplorer.Engine
             return dissassembler.AttachAndDisassemble(settings);
         }
 
-        private static Dissassembly FormatResult(DisassemblyResult result)
+        private static Disassembly FormatResult(DisassemblyResult result)
         {
-            var builder = new DissassemblyBuilder();
+            var builder = new DisassemblyBuilder();
 
             int referenceIndex = 0;
             int methodIndex = 0;

@@ -9,14 +9,16 @@ using System.Windows.Controls;
 using System.Windows;
 using ICSharpCode.AvalonEdit.Utils;
 using ICSharpCode.AvalonEdit.Highlighting;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Wrapping;
 
 namespace JitExplorer.Controls
 {
-    public class AssemblyTextEditor : TextEditor
+    public class AssemblyTextEditor : BindableTextEditor
     {
         private ILineAddressResolver lineAddressResolver = new EmptyAddressResolver();
 
-        public AssemblyTextEditor() : base(new TextArea())
+        public AssemblyTextEditor()
         {
             this.IsReadOnly = true;
             this.WordWrap = true;
@@ -24,11 +26,9 @@ namespace JitExplorer.Controls
             this.SyntaxHighlighting = HighlightingManager.Instance.GetDefinition("Asm");
         }
 
-        public void Update(string text, ILineAddressResolver addressResolver)
+        public Dictionary<int, string> AsmLineAddressIndex
         {
-            this.lineAddressResolver = addressResolver;
-            this.Text = text;
-            this.HookAddressResolver();
+            set { this.lineAddressResolver = new LineAddressResolver(value); this.HookAddressResolver(); } 
         }
 
         protected override void OnDocumentChanged(EventArgs e)
@@ -42,6 +42,22 @@ namespace JitExplorer.Controls
             var sp = this.Document.ServiceProvider;
             var wrapped = new ServiceProviderWrapper(sp, this.lineAddressResolver);
             this.Document.ServiceProvider = wrapped;
+        }
+
+        public static readonly DependencyProperty AsmLineAddressIndexProperty =
+            DependencyProperty.Register("AsmLineAddressIndex", typeof(Dictionary<int, string>), typeof(TextEditor),
+                                        new FrameworkPropertyMetadata(null, OnAsmLineAddressIndexChanged));
+
+        static void OnAsmLineAddressIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AssemblyTextEditor editor = (AssemblyTextEditor)d;
+
+            var index = e.NewValue as Dictionary<int, string>;
+
+            if (index != null)
+            {
+                editor.AsmLineAddressIndex = index;
+            }
         }
 
         public static readonly DependencyProperty ShowMemoryAddressesProperty =

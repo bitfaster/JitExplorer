@@ -1,14 +1,9 @@
-﻿using BitFaster.Caching.Lru;
-using ICSharpCode.AvalonEdit;
-using ICSharpCode.AvalonEdit.CodeCompletion;
+﻿using ICSharpCode.AvalonEdit.CodeCompletion;
 using ICSharpCode.AvalonEdit.Editing;
-using ICSharpCode.AvalonEdit.Highlighting;
-using ICSharpCode.AvalonEdit.Highlighting.Xshd;
 using JitExplorer.Completion;
 using JitExplorer.Component;
-using JitExplorer.Controls;
-using JitExplorer.Engine;
 using JitExplorer.Engine.Compile;
+using JitExplorer.Model;
 using MahApps.Metro.Controls;
 using Microsoft.CodeAnalysis.Formatting;
 using Microsoft.Win32;
@@ -18,7 +13,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -31,11 +25,7 @@ namespace JitExplorer
     /// </summary>
     public partial class MainWindow : MetroWindow 
     {
-        private readonly RuntimeDisassembler dissassembler;
         private readonly RoslynCodeCompletion codeCompletion;
-        private readonly ClassicLru<JitKey, Dissassembly> cache = new ClassicLru<JitKey, Dissassembly>(100);
-
-        private Dissassembly dissassembly;
 
         public AppModel AppModel { get; set; }
 
@@ -45,26 +35,6 @@ namespace JitExplorer
 
             this.AppModel = new AppModel();
             DataContext = this.AppModel;
-
-            this.dissassembler = new RuntimeDisassembler("test.exe");
-            this.dissassembler.Progress += IsolatedJit_Progress;
-
-            this.CodeEditor.Text = @"namespace JitExplorer
-{
-    using System;
-
-    public class Test
-    {
-        [" + RuntimeDisassembler.AttributeName + @"]
-        public static void Execute()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                i = i * 3;
-            }
-        }
-    }
-}";
 
             this.AssemblerView.MouseDoubleClick += AssemblerView_MouseDoubleClick;
 
@@ -90,12 +60,8 @@ namespace JitExplorer
                 var i = (ComboBoxItem)this.Platform.Items[0];
                 i.IsEnabled = false;
             }
-
-            this.AsmTab.CloseButtonEnabled = true;
         }
 
-
-    
         // Scroll to line
         private void AssemblerView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -112,9 +78,9 @@ namespace JitExplorer
                 var textLine = d.GetLineByNumber(p.Line);
                 var str = d.Text.Substring(textLine.Offset, textLine.Length);
 
-                if (this.dissassembly != null)
+                if (this.AppModel.Disassembly != null)
                 {
-                    if (this.dissassembly.AsmToSourceLineIndex.TryGetValue(p.Line, out var targetLine))
+                    if (this.AppModel.Disassembly.AsmToSourceLineIndex.TryGetValue(p.Line, out var targetLine))
                     {
                         if (targetLine < this.CodeEditor.Document.LineCount)
                         {
@@ -124,7 +90,7 @@ namespace JitExplorer
                         }
                     }
 
-                    if (this.dissassembly.AsmLineToAsmLineIndex.TryGetValue(p.Line, out targetLine))
+                    if (this.AppModel.Disassembly.AsmLineToAsmLineIndex.TryGetValue(p.Line, out targetLine))
                     {
                         if (targetLine < this.AssemblerView.Document.LineCount)
                         {
@@ -137,84 +103,6 @@ namespace JitExplorer
                     e.Handled = true;
                     return;
                 }
-
-                if (str.Contains('^'))
-                {
-                    var m = Regex.Match(str, @"((\d+))");
-
-                    if (m.Success)
-                    {
-                        if (int.TryParse(m.Value, out int targetLine))
-                        {
-                            if (targetLine < this.CodeEditor.Document.LineCount)
-                            {
-                                var ceLine = this.CodeEditor.TextArea.Document.GetLineByNumber(targetLine);
-                                this.CodeEditor.ScrollTo(targetLine, 0);
-                                this.CodeEditor.TextArea.Selection = Selection.Create(this.CodeEditor.TextArea, ceLine.Offset, ceLine.EndOffset);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void IsolatedJit_Progress(object sender, ProgressEventArgs e)
-        {
-            this.Dispatcher.Invoke(() => this.StatusText.Text = e.StatusMessage);
-        }
-
-        // Each time a key is pressed, it starts a timer.
-        // After 100ms is elapsed, run Jit
-        // If key is pressed again, dispose and restart timer.
-        // If jit is already running, dispose and restart timer.
-        // Track 'version' each time edit occurs. Compare jitted source to current source.
-
-        private void Jit_Click(object sender, RoutedEventArgs e)
-        {
-            this.Jit.IsEnabled = false;
-            this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Cog;
-            this.ProgressIcon.Spin = true;
-            string source = this.CodeEditor.Text;
-
-            Task.Run(() => this.JitIt(source, this.AppModel.GetConfig()));
-        }
-
-        private void JitIt(string source, Config config)
-        {
-            try
-            {
-                var jitKey = new JitKey(source, config);
-
-                this.dissassembly = this.cache.GetOrAdd(jitKey, k => this.dissassembler.CompileJitAndDisassemble(k.SourceCode, k.Config));
-
-                // Free some memory?
-                // System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet = System.Diagnostics.Process.GetCurrentProcess().MinWorkingSet;
-
-                this.Dispatcher.Invoke(
-                    () => 
-                    this.AssemblerView.Update(this.dissassembly.AsmText, new LineAddressResolver(this.dissassembly.AsmLineAddressIndex)));
-
-                this.Dispatcher.Invoke(
-                    () =>
-                    this.OutputEditor.Text = this.dissassembly.OutputText);
-
-                this.Dispatcher.Invoke(
-                    () =>
-                    OutputTab.SelectedIndex = this.dissassembly.IsSuccess ? 0 : 1);
-            }
-            catch (Exception ex)
-            {
-                this.Dispatcher.Invoke(() => this.AssemblerView.Text = ex.ToString());
-            }
-            finally
-            {
-                this.Dispatcher.Invoke(() => 
-                { 
-                    this.Jit.IsEnabled = true; 
-                    this.StatusText.Text = "Ready";
-                    this.ProgressIcon.Icon = FontAwesome.WPF.FontAwesomeIcon.Stop;
-                    this.ProgressIcon.Spin = false;
-                });
             }
         }
 
@@ -225,8 +113,8 @@ namespace JitExplorer
             if (d.ShowDialog().Value)
             {
                 var text = await File.ReadAllTextAsync(d.FileName);
-                this.CodeEditor.Text = text;
-                this.AssemblerView.Text = string.Empty;
+                this.AppModel.SourceCode = text;
+                this.AppModel.Disassembly = null;
             }
         }
 
@@ -298,31 +186,6 @@ namespace JitExplorer
         private void ShowMemoryAddressesHandler(object sender, RoutedEventArgs e)
         {
             this.AssemblerView.ShowMemoryAddresses = !this.AssemblerView.ShowMemoryAddresses;
-        }
-
-        private void UndoHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Undo();
-        }
-
-        private void RedoHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Redo();
-        }
-
-        private void CutHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Cut();
-        }
-
-        private void CopyHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Copy();
-        }
-
-        private void PasteHandler(object sender, RoutedEventArgs e)
-        {
-            this.CodeEditor.Paste();
         }
 
         private void AboutHandler(object sender, RoutedEventArgs e)

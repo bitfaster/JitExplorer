@@ -7,9 +7,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
         xmlns:local="clr-namespace:JitExplorer" 
-                 xmlns:jitcontrols="clr-namespace:JitExplorer.Controls"
-                 mc:Ignorable="d"
+        xmlns:jitcontrols="clr-namespace:JitExplorer.Controls"
+        xmlns:jitbehave="clr-namespace:JitExplorer.Behaviors"
+        mc:Ignorable="d"
         Title="JitExplorer" TitleCharacterCasing="Normal" TitleForeground="{DynamicResource MahApps.Brushes.SemiTransparent}"
         Height="450" Width="800" 
         BorderThickness="0.5" BorderBrush="DarkOrange">
@@ -20,6 +22,10 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{Binding JitCommand}" CommandParameter="{Binding .}"/>
+        <!--<KeyBinding Gesture="Ctrl+Alt+Add" Command="{Binding IncrementCommand}" />-->
+    </Window.InputBindings>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="25"></RowDefinition>
@@ -45,12 +51,12 @@
                 <MenuItem Header="_Exit" Click="Exit" />
             </MenuItem>
             <MenuItem Header="_Edit" HorizontalContentAlignment="Left">
-                <MenuItem Header="Undo" Click="UndoHandler"/>
-                <MenuItem Header="Redo" Click="RedoHandler"/>
+                <MenuItem Command="ApplicationCommands.Undo"/>
+                <MenuItem Command="ApplicationCommands.Redo"/>
                 <Separator />
-                <MenuItem Header="Cut" Click="CutHandler"/>
-                <MenuItem Header="Copy" Click="CopyHandler"/>
-                <MenuItem Header="Paste" Click="PasteHandler"/>
+                <MenuItem Command="ApplicationCommands.Cut"/>
+                <MenuItem Command="ApplicationCommands.Copy"/>
+                <MenuItem Command="ApplicationCommands.Paste"/>
             </MenuItem>
             <MenuItem Header="_View" HorizontalContentAlignment="Left">
                 <MenuItem Header="LineNumbers" IsCheckable="True" IsChecked="True" Click="ShowLineNumbersHandler"/>
@@ -65,17 +71,17 @@
         <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5,5,0,15">
             <ComboBox Name="LanguageVersion" Grid.Column="0" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" SelectedIndex="{Binding Path=CompilerModel.LanguageSelection}">
                 <ComboBoxItem>C# (Default)</ComboBoxItem>
-                <ComboBoxItem>C# 1</ComboBoxItem>
-                <ComboBoxItem>C# 2</ComboBoxItem>
-                <ComboBoxItem>C# 3</ComboBoxItem>
-                <ComboBoxItem>C# 4</ComboBoxItem>
-                <ComboBoxItem>C# 5</ComboBoxItem>
-                <ComboBoxItem>C# 6</ComboBoxItem>
-                <ComboBoxItem>C# 7</ComboBoxItem>
-                <ComboBoxItem>C# 7.1</ComboBoxItem>
-                <ComboBoxItem>C# 7.2</ComboBoxItem>
-                <ComboBoxItem>C# 7.3</ComboBoxItem>
-                <ComboBoxItem>C# 8</ComboBoxItem>
+                <ComboBoxItem>C# 1 (VS .NET)</ComboBoxItem>
+                <ComboBoxItem>C# 2 (VS 2005)</ComboBoxItem>
+                <ComboBoxItem>C# 3 (VS 2008)</ComboBoxItem>
+                <ComboBoxItem>C# 4 (VS 2010)</ComboBoxItem>
+                <ComboBoxItem>C# 5 (VS 2012)</ComboBoxItem>
+                <ComboBoxItem>C# 6 (VS 2015)</ComboBoxItem>
+                <ComboBoxItem>C# 7 (VS 2017)</ComboBoxItem>
+                <ComboBoxItem>C# 7.1 (VS 2017.3)</ComboBoxItem>
+                <ComboBoxItem>C# 7.2 (VS 2017.4)</ComboBoxItem>
+                <ComboBoxItem>C# 7.3 (VS 2017.7)</ComboBoxItem>
+                <ComboBoxItem>C# 8 (VS 2019)</ComboBoxItem>
                 <ComboBoxItem>C# (Latest)</ComboBoxItem>
             </ComboBox>
             <ComboBox Name="BuildConfig" BorderBrush="{DynamicResource MahApps.Brushes.Border.Normal}" Margin="5,0" SelectedIndex="{Binding Path=CompilerModel.BuildConfig}">
@@ -122,8 +128,8 @@
             </ToggleButton>
 
             <Separator Style="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}" Margin="5,0,10,0" Background="{DynamicResource MahApps.Brushes.Border.Normal}" />
-            
-            <Button Name="Jit"  Click="Jit_Click" ToolTip="Dissassemble source code using selected Compile and JIT options">
+
+            <Button Name="Jit" Command="{Binding JitCommand}" CommandParameter="{Binding .}" ToolTip="Dissassemble source code using selected Compile and JIT options">
                 <Border Padding="4">
                     <fa:ImageAwesome Name="JitIcon" Icon="Play" Height="10" Width="10" Foreground="LightGreen"/>
                     <!--<TextBlock Margin="5,0,0,0">Dissassemble</TextBlock>-->
@@ -143,17 +149,27 @@
                                Grid.Column="0"
                                SyntaxHighlighting="C#" 
                                ShowLineNumbers="True"
-                               MinWidth="5"/>
+                               MinWidth="5"
+                               >
+                <i:Interaction.Behaviors>
+                    <jitbehave:AvalonEditBehaviour EditorText="{Binding SourceCode, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                </i:Interaction.Behaviors>
+            </avalonedit:TextEditor>
             <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="{DynamicResource MahApps.Brushes.WindowTitle}" />
             <Controls:MetroTabControl Grid.Column="2" Name="OutputTab" Style="{DynamicResource MahApps.Styles.TabControl.VisualStudio}">
                 <Controls:MetroTabItem x:Name="AsmTab" Header="Asm" Style="{StaticResource NonClosableTabItem}" >
                     <jitcontrols:AssemblyTextEditor x:Name="AssemblerView" 
-                               Style="{StaticResource TextEditorStyle}"/>
+                               Style="{StaticResource TextEditorStyle}"
+                               AsmLineAddressIndex="{Binding Disassembly.AsmLineAddressIndex, Mode=OneWay}"
+                               EditorText="{Binding Disassembly.AsmText, Mode=OneWay}">
+
+                    </jitcontrols:AssemblyTextEditor>
                 </Controls:MetroTabItem>
                 <Controls:MetroTabItem Header="Output" Style="{StaticResource NonClosableTabItem}" >
-                    <avalonedit:TextEditor x:Name="OutputEditor"
+                    <jitcontrols:OutputTextEditor x:Name="OutputEditor"
                                Style="{StaticResource TextEditorStyle}"
-                               WordWrap="True"/>
+                               EditorText="{Binding Disassembly.OutputText, Mode=OneWay}">
+                    </jitcontrols:OutputTextEditor>
                 </Controls:MetroTabItem>
             </Controls:MetroTabControl>
         </Grid>
@@ -171,10 +187,13 @@
                 </ItemsPanelTemplate>
             </StatusBar.ItemsPanel>
             <StatusBarItem Grid.Column="0">
-                <fa:ImageAwesome Name="ProgressIcon" Icon="Stop" Height="12" Width="12" Margin="2,2,0,0" Foreground="DarkOrange"/>
+                <fa:ImageAwesome Name="ProgressIcon" 
+                                 Icon="{Binding StatusModel.Icon}" 
+                                 Spin="{Binding StatusModel.SpinIcon}"
+                                 Height="12" Width="12" Margin="2,2,0,0" Foreground="DarkOrange" />
             </StatusBarItem>
             <StatusBarItem Grid.Column="1">
-                <TextBlock Name="StatusText" Text="Ready" />
+                <TextBlock Name="StatusText" Text="{Binding StatusModel.Status}" />
             </StatusBarItem>
         </StatusBar>
     </Grid>
