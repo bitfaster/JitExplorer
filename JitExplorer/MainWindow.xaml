@@ -46,9 +46,10 @@
         <!-- Menu -->
         <Menu Grid.Row="0">
             <MenuItem Header="_File" HorizontalContentAlignment="Left">
-                <MenuItem Header="_Open" Click="OpenFile"/>
-                <MenuItem Header="_Save Source" Click="SaveCode"/>
-                <MenuItem Header="Save Assembler"  Click="SaveDissassemble"/>
+                <MenuItem Header="_New" Command="commands:GlobalCommands.NewCommand" CommandParameter="{Binding .}"/>
+                <MenuItem Header="_Open" Command="commands:GlobalCommands.OpenCommand" CommandParameter="{Binding .}"/>
+                <MenuItem Header="_Save Source" Command="commands:GlobalCommands.SaveSourceCommand" CommandParameter="{Binding .}"/>
+                <MenuItem Header="Save Asm" Command="commands:GlobalCommands.SaveAsmCommand" CommandParameter="{Binding .}"/>
                 <Separator />
                 <MenuItem Header="_Exit" Command="commands:GlobalCommands.ExitCommand" InputGestureText="Esc" />
             </MenuItem>

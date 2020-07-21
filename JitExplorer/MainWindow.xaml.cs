@@ -1,16 +1,12 @@
 ﻿using ICSharpCode.AvalonEdit.Editing;
 using JitExplorer.Component;
-using JitExplorer.Engine.Compile;
 using JitExplorer.Model;
 using MahApps.Metro.Controls;
-using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -92,36 +88,6 @@ namespace JitExplorer
                     e.Handled = true;
                     return;
                 }
-            }
-        }
-
-        private async void OpenFile(object sender, RoutedEventArgs e)
-        {
-            var d = new OpenFileDialog();
-            
-            if (d.ShowDialog().Value)
-            {
-                var text = await File.ReadAllTextAsync(d.FileName);
-                this.AppModel.SourceCode = text;
-                this.AppModel.Disassembly = null;
-            }
-        }
-
-        private async void SaveCode(object sender, RoutedEventArgs e)
-        {
-            var d = new SaveFileDialog();
-            if (d.ShowDialog().Value)
-            {
-                await File.WriteAllTextAsync(d.FileName, this.CodeEditor.Text);
-            }
-        }
-
-        private async void SaveDissassemble(object sender, RoutedEventArgs e)
-        {
-            var d = new SaveFileDialog();
-            if (d.ShowDialog().Value)
-            {
-                await File.WriteAllTextAsync(d.FileName, this.AssemblerView.Text);
             }
         }
 
