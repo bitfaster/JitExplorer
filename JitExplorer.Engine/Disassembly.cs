@@ -4,21 +4,21 @@ using System.Text;
 
 namespace JitExplorer.Engine
 {
-    public class Dissassembly
+    public class Disassembly
     {
-        public Dissassembly(string text)
+        public Disassembly(string text)
         {
             this.IsSuccess = false;
-            this.Text = text;
+            this.OutputText = text;
             this.AsmLineAddressIndex = new Dictionary<int, string>();
             this.AsmToSourceLineIndex = new Dictionary<int, int>();
             this.AsmLineToAsmLineIndex = new Dictionary<int, int>();
         }
 
-        public Dissassembly(string text, Dictionary<int, string> lineAddressIndex, Dictionary<int, int> asmToSourceLineIndex, Dictionary<int, int> asmLineToAsmLineIndex)
+        public Disassembly(string text, Dictionary<int, string> lineAddressIndex, Dictionary<int, int> asmToSourceLineIndex, Dictionary<int, int> asmLineToAsmLineIndex)
         {
             this.IsSuccess = true;
-            this.Text = text;
+            this.AsmText = text;
             this.AsmLineAddressIndex = lineAddressIndex;
             this.AsmToSourceLineIndex = asmToSourceLineIndex;
             this.AsmLineToAsmLineIndex = asmLineToAsmLineIndex;
@@ -41,6 +41,8 @@ namespace JitExplorer.Engine
         /// </summary>
         public Dictionary<int, int> AsmLineToAsmLineIndex { get; }
 
-        public string Text { get; }
+        public string AsmText { get; }
+
+        public string OutputText { get; }
     }
 }

@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace JitExplorer
+namespace JitExplorer.Commands
 {
     public class JitKey : IEquatable<JitKey>
     {
