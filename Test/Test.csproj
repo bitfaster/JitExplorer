@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="BitFaster.Caching" Version="1.0.0" />
+    <PackageReference Include="BitFaster.Caching" Version="1.0.1" />
   </ItemGroup>
 
 </Project>
